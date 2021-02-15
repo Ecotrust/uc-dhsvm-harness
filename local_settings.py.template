@@ -1,0 +1,18 @@
+DHSVM_EXE='set/me'
+SOURCE_INPUT_DIR='set/me'
+SOURCE_INPUT={}
+# contains:
+#   Modelstate
+#   DEM
+#   DIR
+#   SOIL DEPTH
+#   SOIL TYPE
+#   VEGETATION
+#   STREAM NETWORK
+#   STREAM PROPERTY
+#   STREAM MAP
+#   SURFACE ROUTING
+#   SOURCE_MET_DIR='set/me'
+#   SOURCE_MASKS_DIR='set/me'
+#   SOURCE_SHADOWS_DIR='set/me'
+#   OUTPUT_DIR='set/me'
