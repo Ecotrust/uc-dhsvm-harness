@@ -118,6 +118,44 @@ def main(argv):
         else:
             print("desired yllcorner not found in mask header")
 
+        # Create the mask polygon
+        #########################
+
+        masked_dir = os.path.join(basin_orig_input_files_dir, 'masked')
+        if os.path.isdir(masked_dir):
+            shutil.rmtree(masked_dir)
+        os.mkdir(masked_dir)
+
+        if ".shp" in mask:
+            import fiona
+
+            with fiona.open(mask, "r+") as shapefile:
+                mask_feature = [feature["geometry"] for feature in shapefile]
+
+            print("use of shp as mask is in active development. please stand by. in the mean time feel free to use an ascii mask with header")
+            sys.exit()
+
+        else:
+            mask_feature = os.path.join(masked_dir, "basin.geojson")
+
+            # Convert ascii to geojson feature
+            os.system("rio shapes --projected %s > %s" % (mask, mask_feature))
+
+            # mask_geojson_dump = {
+            #     "type": "FeatureCollection",
+            #     "features": []
+            # }
+            #
+            # with open(mask_feature, "r+") as open_mask:
+            #     for feat in open_mask:
+            #         # store rio output shape in var
+            #         mask_feat = json.loads(feat)
+            #         # add the rio output to formatted GEOJson
+            #         mask_geojson_dump["features"].append(mask_feat)
+            #     open_mask.seek(0,0)
+            #     open_mask.write(json.dumps(mask_geojson_dump))
+            #     open_mask.close()
+
 
     # if not dhsvm_build_path:
     #     dhsvm_build_path = '/storage/DHSVM_2020/DHSVM-PNNL/build'
@@ -200,7 +238,7 @@ def main(argv):
             # splittext gives us the name bc its form ('<data>.asc', '.bin')
             unmasked_asc_name = os.path.splitext(input)[0]
             unmasked_asc_path = os.path.abspath(os.path.join(basin_orig_input_files_dir, unmasked_asc_name))
-            unmasked_bin_path = os.path.abspath(os.path.join(run_dir, input))
+            unmasked_bin_path = os.path.abspath(os.path.join(basin_orig_input_files_dir, input))
             for key in data_types:
                 if key in input:
                     use_type = data_types[key]
@@ -224,8 +262,7 @@ def main(argv):
 
     # Add Header to ascii files
     ###########################
-
-    ascii_header = "ncols        %s\nnrows        %s\nxllcorner    %s\nyllcorner    %s\ncellsize     %s\nNODATA_value  %s\n" % (number_of_rows, number_of_columns, xllcorner, yllcorner, cellsize, NODATA_value)
+    ascii_header = "ncols        %s\nnrows        %s\nxllcorner    %s\nyllcorner    %s\ncellsize     %s\nNODATA_value  %s\n" % (number_of_columns, number_of_rows, xllcorner, yllcorner, cellsize, NODATA_value)
 
     for input_file in basin_orig_input_files:
         input_extension = os.path.splitext(input_file)[-1]
@@ -261,44 +298,6 @@ def main(argv):
 
 
 
-    # Create the mask polygon
-    #########################
-
-    masked_dir = os.path.join(basin_orig_input_files_dir, 'masked')
-    if os.path.isdir(masked_dir):
-        shutil.rmtree(masked_dir)
-    os.mkdir(masked_dir)
-
-    if ".shp" in mask:
-        import fiona
-
-        with fiona.open(mask, "r+") as shapefile:
-            mask_feature = [feature["geometry"] for feature in shapefile]
-
-        print("use of shp as mask is in active development. please stand by. in the mean time feel free to use an ascii mask with header")
-        sys.exit()
-
-    else:
-        mask_feature = os.path.join(masked_dir, "basin.geojson")
-
-        # Convert ascii to geojson feature
-        os.system("rio shapes --projected %s > %s" % (mask, mask_feature))
-
-        # mask_geojson_dump = {
-        #     "type": "FeatureCollection",
-        #     "features": []
-        # }
-        #
-        # with open(mask_feature, "r+") as open_mask:
-        #     for feat in open_mask:
-        #         # store rio output shape in var
-        #         mask_feat = json.loads(feat)
-        #         # add the rio output to formatted GEOJson
-        #         mask_geojson_dump["features"].append(mask_feat)
-        #     open_mask.seek(0,0)
-        #     open_mask.write(json.dumps(mask_geojson_dump))
-        #     open_mask.close()
-
 
     # Warp the ascii to the bounds of the mask
     # overwrite the data file with warp
@@ -316,7 +315,16 @@ def main(argv):
     # Mask
     ######
 
-    for unmasked_file in basin_orig_input_files_dir:
+    '''
+    ncols 498
+    nrows 708
+    xllcorner    538900.7258
+    yllcorner    1504211.1592
+    cellsize     90
+    NODATA_value  0
+    '''
+
+    for unmasked_file in basin_orig_input_files:
         input_extension = os.path.splitext(unmasked_file)[-1]
         if input_extension == ".asc":
             mask_feature = os.path.join(masked_dir, "basin.geojson")
@@ -324,7 +332,6 @@ def main(argv):
             input_path = os.path.abspath(os.path.join(basin_orig_input_files_dir, unmasked_file))
             output_masked = os.path.abspath(os.path.join(masked_dir, unmasked_file))
             os.system("rio mask %s %s --crop --overwrite --geojson-mask %s" % (input_path, output_masked, mask_feature))
-
 
     # Remove header from ascii
     ##########################
@@ -377,8 +384,6 @@ def main(argv):
     input_config.set("AREA", "Number of Columns", mask_ncols)
     input_config.set("AREA", "Extreme West", mask_xllcorner)
     input_config.set("AREA", "Extreme North", mask_yllcorner)
-
-    # import ipdb; ipdb.set_trace()
 
     # Run DHSVM
     ###########
