@@ -3,26 +3,28 @@ import os
 '''
 ASSUMPTIONS:
 model state is a dir with 4 files per year
-- each has the following convention:
-- {Type}.State.MM.DD.YYY.00.00.00
+  - each has the following convention:
+    - {Type}.State.MM.DD.YYY.00.00.00
 shadows dir had 12 'Shadow.##.bin' files (01-12)
-- also a 'SkyView.bin'
+  - also a 'SkyView.bin'
 '''
 
-DHSVM_EXE='/usr/local/apps/snow2flow2021/DHSVM-PNNL/DHSVM/sourcecode/DHSVM'
+DHSVM_BUILD='/usr/local/apps/snow2flow2021/DHSVM-PNNL/build'
 BASINS_DIR='/usr/local/apps/snow2flow2021/marineplanner-core/data/basins'
 SOURCE_INPUT={
     'entiat': {
-        'modelstate':os.path.join(BASINS_DIR,'entiat','inputs','modelstate'),
-        'dem':os.path.join(BASINS_DIR,'entiat','inputs','entiat_dem_fillflat.asc.bin'),
-        'dir':os.path.join(BASINS_DIR,'entiat','inputs','entiat_dir.asc.bin'),
-        'mask':os.path.join(BASINS_DIR,'entiat','inputs','entiat_mask.asc.bin'),
-        'soil_depth':os.path.join(BASINS_DIR,'entiat','inputs','entiat_soild.asc.bin'),
-        'soil_type':os.path.join(BASINS_DIR,'entiat','inputs','entiat_soiltype.asc.bin'),
-        'stream_network':os.path.join(BASINS_DIR,'entiat','inputs','entiat_stream.network_v2.dat'),
-        'stream_class':os.path.join(BASINS_DIR,'entiat','inputs','stream_property.class'),
-        'surface_routing':os.path.join(BASINS_DIR,'entiat','inputs','surface.routing.txt'),
-        'veg':os.path.join(BASINS_DIR,'entiat','inputs','entiat_veg_dhsvm091420rmnan_int.asc.bin'),
+        'inputs': {
+            'modelstate':os.path.join(BASINS_DIR,'entiat','inputs','modelstate'),
+            'dem':os.path.join(BASINS_DIR,'entiat','inputs','entiat_dem_fillflat.asc.bin'),
+            'dir':os.path.join(BASINS_DIR,'entiat','inputs','entiat_dir.asc.bin'),
+            'mask':os.path.join(BASINS_DIR,'entiat','inputs','entiat_mask.asc.bin'),
+            'soil_depth':os.path.join(BASINS_DIR,'entiat','inputs','entiat_soild.asc.bin'),
+            'soil_type':os.path.join(BASINS_DIR,'entiat','inputs','entiat_soiltype.asc.bin'),
+            'stream_network':os.path.join(BASINS_DIR,'entiat','inputs','entiat_stream.network_v2.dat'),
+            'stream_class':os.path.join(BASINS_DIR,'entiat','inputs','stream_property.class'),
+            'surface_routing':os.path.join(BASINS_DIR,'entiat','inputs','surface.routing.txt'),
+            'veg':os.path.join(BASINS_DIR,'entiat','inputs','entiat_veg_dhsvm091420rmnan_int.asc.bin'),
+        },
         'met_dir':os.path.join(BASINS_DIR,'met_data'),
         'masks':os.path.join(BASINS_DIR,'masks'),
         'shadows':os.path.join(BASINS_DIR,'shadows'),
