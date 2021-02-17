@@ -125,8 +125,8 @@ Albedo Melting Min = -9999		                         # Min albedo value during m
 ################################################################################
 
 [TERRAIN]                                 # Terrain information
-DEM File    	  = ./inputs/masked/entiat_dem_fillflat.asc.bin
-Basin Mask File   = ./inputs/masked/entiat_mask.asc.bin
+DEM File    	  = ./inputs/entiat_dem_fillflat.asc.bin
+Basin Mask File   = ./inputs/entiat_mask.asc.bin
 
 ################################################################################
 # ROUTING SECTION
@@ -1425,8 +1425,8 @@ Precipitation lapse rate =
 ################################################################################
 [SOILS]                                   # Soil information
 
-Soil Map File	     = ./inputs/masked/entiat_soiltype.asc.bin
-Soil Depth File      = ./inputs/masked/entiat_soild.asc.bin
+Soil Map File	     = ./inputs/entiat_soiltype.asc.bin
+Soil Depth File      = ./inputs/entiat_soild.asc.bin
 Number of Soil Types = 19
 
 ######################################### SOIL 1 ###############################################
@@ -1822,7 +1822,7 @@ Thermal Capacity       19 = 1.4e6 1.4e6 1.4e6 # Dry soil thermal capacity (J/(m3
 ################################################################################
 [VEGETATION]
 
-Vegetation Map File = ./inputs/masked/entiat_veg_dhsvm091420rmnan_int.asc.bin
+Vegetation Map File = ./inputs/entiat_veg_dhsvm091420rmnan_int.asc.bin
 #Canopy Gap Map File = ./inputs/veg/    # Gap diameter spatial input
 #Vegetation FC Map File = ./inputs/veg/
 #Vegetation LAI Map File = ./inputs/veg/
