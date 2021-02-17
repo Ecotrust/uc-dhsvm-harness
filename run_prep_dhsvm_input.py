@@ -226,7 +226,7 @@ def main(argv):
         "_dem": "float",
         "_dir": "character",
         "_mask": "character",
-        "_soild": "character",
+        "_soild": "float",
         "_soiltype": "character",
         "_veg": "character",
     }
@@ -314,24 +314,24 @@ def main(argv):
 
     # Mask
     ######
-
-    '''
-    ncols 498
-    nrows 708
-    xllcorner    538900.7258
-    yllcorner    1504211.1592
-    cellsize     90
-    NODATA_value  0
-    '''
-
     for unmasked_file in basin_orig_input_files:
         input_extension = os.path.splitext(unmasked_file)[-1]
         if input_extension == ".asc":
-            mask_feature = os.path.join(masked_dir, "basin.geojson")
-            input_name = os.path.splitext(unmasked_file)[0]
-            input_path = os.path.abspath(os.path.join(basin_orig_input_files_dir, unmasked_file))
-            output_masked = os.path.abspath(os.path.join(masked_dir, unmasked_file))
-            os.system("rio mask %s %s --crop --overwrite --geojson-mask %s" % (input_path, output_masked, mask_feature))
+            mask_json = os.path.join(masked_dir, "basin.geojson")
+            input_unmasked_ascii = os.path.abspath(os.path.join(basin_orig_input_files_dir, unmasked_file))
+            input_unmasked_tiff = "%s.tif" % input_unmasked_ascii
+            output_masked_ascii = os.path.abspath(os.path.join(masked_dir, unmasked_file))
+            output_masked_tiff = "%s.tiff" % output_masked_ascii
+            os.system("gdal_translate -of \"GTiff\" %s %s" % (input_unmasked_ascii,input_unmasked_tiff))
+            os.system("rio mask %s %s --crop --overwrite --geojson-mask %s" % (input_unmasked_tiff, output_masked_tiff, mask_json))
+            os.system("gdal_translate -of \"AAIGrid\" %s %s" % (output_masked_tiff,output_masked_ascii))
+            os.system("sed -i 's/^[ \t]*//g' %s" % output_masked_ascii )
+            os.system("sed -i 's/ /\t/g' %s" % output_masked_ascii )
+            os.system("sed -i 's/$/\t/g' %s" % output_masked_ascii )
+            # Delete tiffs and unmasked ascii
+            os.remove(input_unmasked_ascii)
+            os.remove(input_unmasked_tiff)
+            os.remove(output_masked_tiff)
 
     # Remove header from ascii
     ##########################
@@ -345,7 +345,7 @@ def main(argv):
         sys.exit()
 
     # Off with their heads!
-    for masked_file in masked_dir:
+    for masked_file in os.listdir(masked_dir):
         input_extension = os.path.splitext(masked_file)[-1]
         if input_extension == '.asc':
             input_path = os.path.abspath(os.path.join(masked_dir, masked_file))
@@ -375,7 +375,6 @@ def main(argv):
                 "%s ascii %s %s %s %s %s"
                 % (myconvert, use_type, masked_ascii_path, masked_bin_path, mask_nrows, mask_ncols)
             )
-
 
     # Update INPUT config file
     ##########################
