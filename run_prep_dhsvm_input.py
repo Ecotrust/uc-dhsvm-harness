@@ -127,13 +127,13 @@ def main(argv):
         os.mkdir(masked_dir)
 
         if ".shp" in mask:
-            import fiona
+        #    import fiona
 
-            with fiona.open(mask, "r+") as shapefile:
-                mask_feature = [feature["geometry"] for feature in shapefile]
+        #    with fiona.open(mask, "r+") as shapefile:
+        #        mask_feature = [feature["geometry"] for feature in shapefile]
 
             print("use of shp as mask is in active development. please stand by. in the mean time feel free to use an ascii mask with header")
-            sys.exit()
+        #    sys.exit()
 
         else:
             mask_feature = os.path.join(masked_dir, "basin.geojson")
