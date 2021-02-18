@@ -1,6 +1,5 @@
 import os, sys, getopt
 
-
 def main(argv):
     help_text = "usage: dat_to_asc.py -i <path to the stream.map.dat> -o <path to output ASCII file> -r <num rows> -c <num cols> -x <xll coord in 102218> -y <yll coord in 102218> -z <0 or 1 indexed>"
     ncols = 277
@@ -16,7 +15,6 @@ def main(argv):
     except getopt.GetoptError:
         print(help_text)
         sys.exit(2)
-
 
     for (opt, arg) in opts:
         if opt == "-h":
@@ -53,13 +51,11 @@ def main(argv):
             dat_x = int(line_data[1])    # [0] should be ''
             dat_y = int(line_data[2])
             segment_id = int(line_data[3])
-            # asc_y = nrows - (dat_y-1)   # row ID needs to be inverted - asc are bottom-up, dat are top-down
-            asc_y = dat_y
             try:
-                data_grid[asc_y-indexing][dat_x-indexing] = segment_id
+                data_grid[dat_y-indexing][dat_x-indexing] = segment_id
             except IndexError as e:
                 import ipdb; ipdb.set_trace()
-                data_grid[asc_y-indexing][dat_x-indexing] = segment_id
+                data_grid[dat_y-indexing][dat_x-indexing] = segment_id
 
     out_data = open(stream_map_asc, 'w')
     out_data.write('ncols\t%s\n' % ncols)
@@ -79,8 +75,6 @@ def main(argv):
     out_data.close()
 
     print('New ASCII file created at %s' % stream_map_asc)
-
-
 
 if __name__ == "__main__":
     main(sys.argv[1:])
