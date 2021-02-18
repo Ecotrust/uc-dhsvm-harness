@@ -11,6 +11,49 @@ import json
 
 import settings
 
+def clip_stream_map(mask_dict, source_map_file, out_map_file):
+    # values are 1-indexed, and start in the Upper Left Corner
+    try:
+        sys.path.append(os.path.join(os.getcwd(), 'masks'))
+        from parent_basin import parent_basin
+    except Exception as e:
+        print("Parent Basin not defined in %s. Please create this file." % os.path.join(os.getcwd(), 'masks', 'parent_basin.py'))
+        sys.exit()
+
+    # get row/column diffs
+    col_diff = int((float(mask_dict['xllcorner'])-float(parent_basin['xllcorner']))/90)
+    row_diff = int((float(mask_dict['extreme_north'])-float(parent_basin['extreme_north']))/90)
+    # Get min/max row values
+    min_row_ID = row_diff + 1 # IDs are 1-indexed!
+    # import ipdb; ipdb.set_trace()
+    max_row_ID = row_diff + mask_dict['nrows']
+    # Get min/max column values
+    min_col_ID = col_diff + 1 # IDs are 1-indexed!
+    max_col_ID = col_diff + mask_dict['ncols']
+    # read/translate old stream.map.dat into new clipped stream.map.dat
+    source_file = open(source_map_file, 'r')
+    source_lines = source_file.readlines()
+    source_file.close()
+    out_file = open(out_map_file, 'w')
+    #       Segment Cut/Bank        Cut     Segment
+    #       Col     Row     ID      Length  Height  Width   Aspect  SINK?
+    #       (m)     (m)     (m)     (d)     (optional)
+    #
+    for line in source_lines:
+        vals = line.split('\t')
+        if len(vals[0]) > 0 and vals[0][0] != '#':   # ['', '503', '20', '1', '90', '0.95', '0.3', '270', '\n']
+            # vals[1] == 'Column'
+            if vals[1] >= min_col_ID and vals[1] <= max_col_ID:
+                #vals[2] == 'Row'
+                if vals[2] >= min_row_ID and vals[2] <= max_row_ID:
+                    new_row_vals = [x for x in vals]
+                    new_row_vals[1] = str(int(vals[1]) - col_diff)
+                    new_row_vals[2] = str(int(vals[2]) - row_diff)
+                    out_file.write('\t'.join(new_row))
+    out_file.close()
+
+
+
 def main(argv):
     dhsvm_input_config = False
     dhsvm_build_path = settings.DHSVM_BUILD
@@ -251,6 +294,20 @@ def main(argv):
             # Save full basin mask path for later
             # if "mask" in unmasked_asc_name:
             #     entire_basin_mask = unmasked_asc_path
+
+        elif input_extension == '.dat' and 'stream' in input and 'map' in input:
+            mask_dict = {
+                'ncols': int(mask_ncols),
+                'nrows': int(mask_nrows),
+                'xllcorner': float(mask_xllcorner),
+                'yllcorner': float(mask_yllcorner),
+                'extreme_north': float(mask_yllcorner)+(90*int(mask_nrows)),
+                'cellsize': 90,
+                'NODATA_value': 0
+            }
+            out_map_file = os.path.join(masked_dir, 'stream.map.dat')
+            in_map_file = os.path.join(basin_orig_input_files_dir,input)
+            clip_stream_map(mask_dict, in_map_file, out_map_file)
 
     # check that entire basin mask file is created
     # try:
