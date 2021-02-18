@@ -22,12 +22,13 @@ def clip_stream_map(mask_dict, source_map_file, out_map_file):
 
     # get row/column diffs
     col_diff = int((float(mask_dict['xllcorner'])-float(parent_basin['xllcorner']))/90)
-    row_diff = int((float(mask_dict['extreme_north'])-float(parent_basin['extreme_north']))/90)
+    row_diff = int((float(parent_basin['extreme_north'])-float(mask_dict['extreme_north']))/90)
     # Get min/max row values
+    # min_row_ID = row_diff
     min_row_ID = row_diff + 1 # IDs are 1-indexed!
-    # import ipdb; ipdb.set_trace()
     max_row_ID = row_diff + mask_dict['nrows']
     # Get min/max column values
+    # min_col_ID = col_diff
     min_col_ID = col_diff + 1 # IDs are 1-indexed!
     max_col_ID = col_diff + mask_dict['ncols']
     # read/translate old stream.map.dat into new clipped stream.map.dat
@@ -39,17 +40,20 @@ def clip_stream_map(mask_dict, source_map_file, out_map_file):
     #       Col     Row     ID      Length  Height  Width   Aspect  SINK?
     #       (m)     (m)     (m)     (d)     (optional)
     #
+    print('===========================================')
+    print('Writing clipped stream.map.dat file')
+    print('===========================================')
     for line in source_lines:
         vals = line.split('\t')
-        if len(vals[0]) > 0 and vals[0][0] != '#':   # ['', '503', '20', '1', '90', '0.95', '0.3', '270', '\n']
+        if len(vals) >= 8 and len(vals[0]) == 0 or vals[0][0] != '#':   # ['', '503', '20', '1', '90', '0.95', '0.3', '270', '\n']
             # vals[1] == 'Column'
-            if vals[1] >= min_col_ID and vals[1] <= max_col_ID:
+            if int(vals[1]) >= min_col_ID and int(vals[1]) <= max_col_ID:
                 #vals[2] == 'Row'
-                if vals[2] >= min_row_ID and vals[2] <= max_row_ID:
+                if int(vals[2]) >= min_row_ID and int(vals[2]) <= max_row_ID:
                     new_row_vals = [x for x in vals]
                     new_row_vals[1] = str(int(vals[1]) - col_diff)
                     new_row_vals[2] = str(int(vals[2]) - row_diff)
-                    out_file.write('\t'.join(new_row))
+                    out_file.write('\t'.join(new_row_vals))
     out_file.close()
 
 
