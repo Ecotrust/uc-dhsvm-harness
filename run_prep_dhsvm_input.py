@@ -345,7 +345,7 @@ def main(argv):
         sys.exit()
 
     # Off with their heads!
-    for masked_file in os.listdir(masked_dir):
+    for masked_file in basin_masked_files:
         input_extension = os.path.splitext(masked_file)[-1]
         if input_extension == '.asc':
             input_path = os.path.abspath(os.path.join(masked_dir, masked_file))
