@@ -48,9 +48,9 @@ def main(argv):
     for line in stream_lines:
         if line[0] != '#':
             line_data = line.split('\t')
-            dat_x = int(line_data[1])    # [0] should be ''
-            dat_y = int(line_data[2])
-            segment_id = int(line_data[3])
+            dat_x = int(line_data[0])    # [0] should be ''
+            dat_y = int(line_data[1])
+            segment_id = int(line_data[2])
             try:
                 data_grid[dat_y-indexing][dat_x-indexing] = segment_id
             except IndexError as e:
