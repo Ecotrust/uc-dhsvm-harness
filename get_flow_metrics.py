@@ -111,7 +111,7 @@ def get_metric_flow(inlines, segment_ids=False):
     #   3   float   lateral inflow
     #   4   float   outflow
     #   5   float   [
-    #               single segment line: Delta in segment storage
+    #               single segment line: Delta in segment storage (not FLOW!)
     #               Total line: total network storage
     #           ]
     #   6   fl/str  [
@@ -132,9 +132,14 @@ def get_metric_flow(inlines, segment_ids=False):
             for metric_key in FLOW_METRICS.keys():
                 if FLOW_METRICS[metric_key]['measure'] == 'abs':    # Establish abs flow rates/deltas for future reference
                     if FLOW_METRICS[metric_key]['delta']:
+                        # Assumes 'Absolute Flow Rate' has already been addressed for this segment's timestep
+                        if len(segments[segment_name][ABSOLUTE_FLOW_METRIC]) > 1:
+                            value = segments[segment_name][ABSOLUTE_FLOW_METRIC][-1]['value'] - segments[segment_name][ABSOLUTE_FLOW_METRIC][-2]['value']
+                        else:
+                            value = 0
                         segments[segment_name][metric_key].append({
                             'timestep': timestamp,
-                            'value': float(data[5])/float(TIMESTEP)
+                            'value': value
                         })
                     else:
                         segments[segment_name][metric_key].append({
