@@ -82,7 +82,7 @@ def aggregate_flow_results(inlines, segment_ids='all'):
         elif isinstance(segment_ids, str):
             if segment_ids == 'all':
                 segment_ids = get_segment_id_list(inlines)
-            elif isinstance(int(segment_ids.split('shed_')[1]), int):
+            elif 'shed_' in segment_ids and isinstance(int(segment_ids.split('shed_')[1]), int):
                 segment_ids = [segment_ids]
             else:
                 print("Unknown segment ID value: '%s'. Quitting...\n" % segment_ids)
