@@ -12,6 +12,10 @@ import json
 import settings
 
 def clip_stream_map(mask_dict, source_map_file, out_map_file):
+    MASK_HEADER_OFFSET = 6
+    MASK_DELIMITER = '\t'
+    SOURCE_HEADER_OFFSET = 0
+    SOURCE_DELIMITER = '\t'
     # values are 1-indexed, and start in the Upper Left Corner
     try:
         sys.path.append(os.path.join(os.getcwd(), 'masks'))
@@ -35,25 +39,54 @@ def clip_stream_map(mask_dict, source_map_file, out_map_file):
     source_file = open(source_map_file, 'r')
     source_lines = source_file.readlines()
     source_file.close()
+    if source_lines[SOURCE_HEADER_OFFSET].count(SOURCE_DELIMITER) < 2:
+        if SOURCE_DELIMITER == '\t':
+            SOURCE_DELIMITER = ' '
+        else:
+            SOURCE_DELIMITER = '\t'
+
+    mask_file = open(mask_dict['mask_file'], 'r')
+    mask_lines = mask_file.readlines()
+    mask_file.close()
+    if not mask_lines[MASK_HEADER_OFFSET].count(MASK_DELIMITER) >= (int(mask_dict['ncols'])-1):
+        if MASK_DELIMITER == '\t':
+            MASK_DELIMITER = ' '
+        else:
+            MASK_DELIMITER = '\t'
+
     out_file = open(out_map_file, 'w')
     #       Segment Cut/Bank        Cut     Segment
     #       Col     Row     ID      Length  Height  Width   Aspect  SINK?
     #       (m)     (m)     (m)     (d)     (optional)
     #
-    print('===========================================')
-    print('Writing clipped stream.map.dat file')
-    print('===========================================')
+
+    new_row_vals = []
     for line in source_lines:
-        vals = line.split('\t')
-        if len(vals) >= 8 and len(vals[0]) == 0 or vals[0][0] != '#':   # ['', '503', '20', '1', '90', '0.95', '0.3', '270', '\n']
-            # vals[1] == 'Column'
-            if int(vals[1]) >= min_col_ID and int(vals[1]) <= max_col_ID:
-                #vals[2] == 'Row'
-                if int(vals[2]) >= min_row_ID and int(vals[2]) <= max_row_ID:
-                    new_row_vals = [x for x in vals]
-                    new_row_vals[1] = str(int(vals[1]) - col_diff)
-                    new_row_vals[2] = str(int(vals[2]) - row_diff)
-                    out_file.write('\t'.join(new_row_vals))
+        vals = line.split(SOURCE_DELIMITER)
+        # vals = list(filter((SOURCE_DELIMITER).__ne__, vals))        # remove duplicate delimiter chars
+        # vals = [x for x in vals if x != SOURCE_DELIMITER]        # remove duplicate delimiter chars
+        vals = [x for x in vals if x != '']                     # remove blank values from back-to-back delimiters
+        try:
+            if len(vals) >= 3 and len(vals[0]) > 0 and vals[0][0] != '#':   # ['', '503', '20', '1', '90', '0.95', '0.3', '270', '\n']
+                # vals[0] == 'Column'
+                if int(vals[0]) >= min_col_ID and int(vals[0]) <= max_col_ID:
+                    #vals[1] == 'Row'
+                    if int(vals[1]) >= min_row_ID and int(vals[1]) <= max_row_ID:
+                        new_row_vals = [x for x in vals]
+                        # update the column ID
+                        new_row_vals[0] = str(int(vals[0]) - col_diff)
+                        # update the row ID
+                        new_row_vals[1] = str(int(vals[1]) - row_diff)
+                        if int(mask_lines[int(new_row_vals[1])-1+MASK_HEADER_OFFSET].split(MASK_DELIMITER)[int(new_row_vals[0])-1]) != mask_dict['NODATA_value']: # 1-indexed
+                            out_file.write('\t'.join(new_row_vals))
+        except IndexError as e:
+            import ipdb; ipdb.set_trace()
+            print(e)
+        except Exception as e:
+            print('Unknown exception "%s" occurred' % e)
+            sys.exit()
+    if len(new_row_vals) < 1:
+        import ipdb; ipdb.set_trace()
     out_file.close()
 
 
@@ -241,6 +274,14 @@ def main(argv):
         shutil.rmtree(run_output_dir)
     os.mkdir(run_output_dir)
 
+    # Parent Basin Info
+    try:
+        sys.path.append(os.path.join(os.getcwd(), 'masks'))
+        from parent_basin import parent_basin
+    except Exception as e:
+        print("Parent Basin not defined in %s. Please create this file." % os.path.join(os.getcwd(), 'masks', 'parent_basin.py'))
+        sys.exit()
+
 
     # Parse input config file
     #########################
@@ -270,16 +311,34 @@ def main(argv):
     # ASSUPTION: basin name never contains '_'
 
     data_types = {
-        "_dem": "float",
-        "_dir": "character",
-        "_mask": "character",
-        "_soild": "float",
-        "_soiltype": "character",
-        "_veg": "character",
+        "_dem": {
+            "type": "float",
+            "nodata": "-9999"
+        },
+        "_dir": {
+            "type": "character",
+            "nodata": "0"
+        },
+        "_mask": {
+            "type": "character",
+            "nodata": "0"
+        },
+        "_soild": {
+            "type": "float",
+            "nodata": "-9999"
+        },
+        "_soiltype": {
+            "type": "character",
+            "nodata": "0"
+        },
+        "_veg": {
+            "type": "character",
+            "nodata": "0"
+        }
     }
 
     # Now create the rest of the data files
-    for input in basin_orig_input_files:
+    for input in os.listdir(basin_orig_input_files_dir):
         input_extension = os.path.splitext(input)[-1]
         if input_extension == '.bin':
             # splittext gives us the name bc its form ('<data>.asc', '.bin')
@@ -291,27 +350,16 @@ def main(argv):
                     use_type = data_types[key]
             os.system(
                 "%s %s ascii %s %s %s %s"
-                % (myconvert, use_type, unmasked_bin_path, unmasked_asc_path, number_of_rows, number_of_columns)
+                % (myconvert, use_type['type'], unmasked_bin_path, unmasked_asc_path, parent_basin['nrows'], parent_basin['ncols'])
             )
-            print("myconvert to ascii \npath: %s \ntype: %s \noutput: %s" % (unmasked_bin_path, use_type, unmasked_asc_path))
+            # print("myconvert to ascii \npath: %s \ntype: %s \noutput: %s" % (unmasked_bin_path, use_type, unmasked_asc_path))
+            # print("myconvert to ascii INPUT %s" % input)
+            print("%s %s ascii %s %s %s %s"
+            % (myconvert, use_type['type'], unmasked_bin_path, unmasked_asc_path, parent_basin['nrows'], parent_basin['ncols']))
 
             # Save full basin mask path for later
             # if "mask" in unmasked_asc_name:
             #     entire_basin_mask = unmasked_asc_path
-
-        elif input_extension == '.dat' and 'stream' in input and 'map' in input:
-            mask_dict = {
-                'ncols': int(mask_ncols),
-                'nrows': int(mask_nrows),
-                'xllcorner': float(mask_xllcorner),
-                'yllcorner': float(mask_yllcorner),
-                'extreme_north': float(mask_yllcorner)+(90*int(mask_nrows)),
-                'cellsize': 90,
-                'NODATA_value': 0
-            }
-            out_map_file = os.path.join(masked_dir, 'stream.map.dat')
-            in_map_file = os.path.join(basin_orig_input_files_dir,input)
-            clip_stream_map(mask_dict, in_map_file, out_map_file)
 
     # check that entire basin mask file is created
     # try:
@@ -323,18 +371,26 @@ def main(argv):
 
     # Add Header to ascii files
     ###########################
-    ascii_header = "ncols        %s\nnrows        %s\nxllcorner    %s\nyllcorner    %s\ncellsize     %s\nNODATA_value  %s\n" % (number_of_columns, number_of_rows, xllcorner, yllcorner, cellsize, NODATA_value)
+    # unmasked_ascii_header = "ncols        %s\nnrows        %s\nxllcorner    %s\nyllcorner    %s\ncellsize     %s\nNODATA_value  %s\n" % (
+    #     parent_basin['ncols'], parent_basin['nrows'], xllcorner, yllcorner, cellsize, NODATA_value
+    # )
+    # ascii_header = "ncols        %s\nnrows        %s\nxllcorner    %s\nyllcorner    %s\ncellsize     %s\nNODATA_value  %s\n" % (number_of_columns, number_of_rows, xllcorner, yllcorner, cellsize, NODATA_value)
 
-    for input_file in basin_orig_input_files:
+    for input_file in os.listdir(basin_orig_input_files_dir):
+        for key in data_types:
+            if key in input_file:
+                use_type = data_types[key]
+        unmasked_ascii_header = "ncols        %s\nnrows        %s\nxllcorner    %s\nyllcorner    %s\ncellsize     %s\nNODATA_value  %s\n" % (
+            parent_basin['ncols'], parent_basin['nrows'], parent_basin['xllcorner'], parent_basin['yllcorner'], cellsize, use_type['nodata']
+        )
         input_extension = os.path.splitext(input_file)[-1]
         if input_extension == '.asc':
             input_path = os.path.abspath(os.path.join(basin_orig_input_files_dir, input_file))
             ascii_file = open(input_path, "r+")
             content = ascii_file.read()
             ascii_file.seek(0,0)
-            ascii_file.write(ascii_header + content)
+            ascii_file.write(unmasked_ascii_header + content)
             ascii_file.close()
-
 
     # Overwrite full basin mask with desired mask
     #############################################
@@ -375,8 +431,9 @@ def main(argv):
 
     # Mask
     ######
-    for unmasked_file in basin_orig_input_files:
+    for unmasked_file in os.listdir(basin_orig_input_files_dir):
         input_extension = os.path.splitext(unmasked_file)[-1]
+        print("masking INPUT file %s" % unmasked_file)
         if input_extension == ".asc":
             mask_json = os.path.join(masked_dir, "basin.geojson")
             input_unmasked_ascii = os.path.abspath(os.path.join(basin_orig_input_files_dir, unmasked_file))
@@ -390,9 +447,26 @@ def main(argv):
             os.system("sed -i 's/ /\t/g' %s" % output_masked_ascii )
             os.system("sed -i 's/$/\t/g' %s" % output_masked_ascii )
             # Delete tiffs and unmasked ascii
-            os.remove(input_unmasked_ascii)
+            # print("REMOVING file %s" % input_unmasked_ascii)
+            # os.remove(input_unmasked_ascii)
+            print("REMOVING file %s" % input_unmasked_tiff)
             os.remove(input_unmasked_tiff)
+            print("REMOVING file %s" % output_masked_tiff)
             os.remove(output_masked_tiff)
+        elif input_extension == '.dat' and 'stream' in unmasked_file and 'map' in unmasked_file:
+            mask_dict = {
+                'ncols': int(mask_ncols),
+                'nrows': int(mask_nrows),
+                'xllcorner': float(mask_xllcorner),
+                'yllcorner': float(mask_yllcorner),
+                'extreme_north': float(mask_yllcorner)+(90*int(mask_nrows)),
+                'cellsize': 90,
+                'NODATA_value': 0,
+                'mask_file': mask
+            }
+            out_map_file = os.path.join(masked_dir, unmasked_file)
+            in_map_file = os.path.join(basin_orig_input_files_dir,unmasked_file)
+            clip_stream_map(mask_dict, in_map_file, out_map_file)
 
     # Remove header from ascii
     ##########################
@@ -434,7 +508,7 @@ def main(argv):
                     use_type = data_types[key]
             os.system(
                 "%s ascii %s %s %s %s %s"
-                % (myconvert, use_type, masked_ascii_path, masked_bin_path, mask_nrows, mask_ncols)
+                % (myconvert, use_type['type'], masked_ascii_path, masked_bin_path, mask_nrows, mask_ncols)
             )
 
     # Update INPUT config file
@@ -447,6 +521,8 @@ def main(argv):
 
     # Run DHSVM
     ###########
+
+    import ipdb; ipdb.set_trace()
 
     dhsvm_path = os.path.join(dhsvm_build_path, 'DHSVM','sourcecode','DHSVM')
     os.system("mpiexec -n %s %s %s" % (num_cores, dhsvm_path, dhsvm_input_config))
