@@ -20,4 +20,4 @@ FLOW_METRICS['Change in 1 Day Mean Flow Rate'] = {'measure': 'mean', 'delta':Tru
 
 TIMESTEP = 3
 
-from local_settings import *
+from dhsvm_harness.local_settings import *

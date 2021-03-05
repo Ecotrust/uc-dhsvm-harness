@@ -1,6 +1,6 @@
 import os, sys, getopt, shutil, json, statistics
 
-from settings import FLOW_METRICS, TIMESTEP, ABSOLUTE_FLOW_METRIC, DELTA_FLOW_METRIC
+from dhsvm_harness.settings import FLOW_METRICS, TIMESTEP, ABSOLUTE_FLOW_METRIC, DELTA_FLOW_METRIC
 
 def main(argv):
     help_text = "usage: get_flow_metrics.py -s <numeric segment id> -i <path to the raw Stream.Flow file> -o <path to output data file>"
