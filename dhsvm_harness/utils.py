@@ -1,4 +1,4 @@
-import sys, statistics
+import sys, statistics, shutil
 from ucsrb.models import PourPointBasin, StreamFlowReading, TreatmentScenario
 from .settings import FLOW_METRICS, TIMESTEP, ABSOLUTE_FLOW_METRIC, DELTA_FLOW_METRIC
 
@@ -11,11 +11,7 @@ def getSegmentIdList(inlines):
         segment_id.append(line_list[-1].split('"')[1])
     return segment_id
 
-def ReadStreamFlowData(flow_file, segment_ids=None, scenario=None, is_baseline=True):
-
-    with open(flow_file, 'r') as f:
-        inlines=f.readlines()
-
+def check_stream_segment_ids(inlines, segment_ids=None):
     if not isinstance(segment_ids, list):
         if segment_ids == None:
             segment_ids = getSegmentIdList(inlines)
@@ -28,6 +24,35 @@ def ReadStreamFlowData(flow_file, segment_ids=None, scenario=None, is_baseline=T
         else:
             print("Unknown segment ID value: '%s'. Quitting...\n" % segment_ids)
             sys.exit(1)
+
+    return segment_ids
+
+
+def cleanStreamFlowData(flow_file, out_file, segment_ids=None):
+    if not segment_ids:
+        shutil.copyfile(flow_file, out_file)
+        return True
+    else:
+        with open(flow_file, 'r') as f:
+            inlines=f.readlines()
+
+        segment_ids = check_stream_segment_ids(inlines, segment_ids)
+
+        with open(out_file, 'w') as f:
+            for line in inlines:
+                for id in segment_ids:
+                    if id in line:
+                        f.write(line)
+
+        return True
+
+
+def readStreamFlowData(flow_file, segment_ids=None, scenario=None, is_baseline=True):
+
+    with open(flow_file, 'r') as f:
+        inlines=f.readlines()
+
+    segment_ids = check_stream_segment_ids(inlines, segment_ids)
 
     readings_per_day = 24/TIMESTEP
 

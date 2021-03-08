@@ -7,7 +7,7 @@ from ucsrb.models import StreamFlowReading, PourPointBasin
 # from django.conf import settings as dj_settings
 from dhsvm_harness import settings as harness_settings
 from dhsvm_harness.tests import testing_settings as settings
-from dhsvm_harness.utils import ReadStreamFlowData
+from dhsvm_harness.utils import readStreamFlowData, cleanStreamFlowData
 
 class ImportTestCase(TestCase):
     def setUp(self):
@@ -23,32 +23,7 @@ class ImportTestCase(TestCase):
             ppt_ID=1,
             segment_ID=settings.BASIN_1_ID,
             area=basin_1_json['features'][0]['properties']['acres'],
-            mean_elev=1,
-            avg_slp=0,
-            slp_gt60=0,
-            elev_dif=0,
-            mean_shade=0,
-            veg_prop=0,
-            thc_11=0,
-            thc_12=0,
-            thc_13=0,
-            thc_14=0,
-            thc_15=0,
-            thc_21=0,
-            thc_22=0,
-            thc_23=0,
-            thc_24=0,
-            thc_25=0,
-            fc_11=0,
-            fc_12=0,
-            fc_13=0,
-            fc_14=0,
-            fc_15=0,
-            fc_21=0,
-            fc_22=0,
-            fc_23=0,
-            fc_24=0,
-            fc_25=0
+            superbasin=settings.BASIN_1_ID.split('_')[0]
         )
         basin1.save()
 
@@ -60,32 +35,7 @@ class ImportTestCase(TestCase):
             ppt_ID=2,
             segment_ID=settings.BASIN_2_ID,
             area=basin_2_json['features'][0]['properties']['acres'],
-            mean_elev=1,
-            avg_slp=0,
-            slp_gt60=0,
-            elev_dif=0,
-            mean_shade=0,
-            veg_prop=0,
-            thc_11=0,
-            thc_12=0,
-            thc_13=0,
-            thc_14=0,
-            thc_15=0,
-            thc_21=0,
-            thc_22=0,
-            thc_23=0,
-            thc_24=0,
-            thc_25=0,
-            fc_11=0,
-            fc_12=0,
-            fc_13=0,
-            fc_14=0,
-            fc_15=0,
-            fc_21=0,
-            fc_22=0,
-            fc_23=0,
-            fc_24=0,
-            fc_25=0
+            superbasin=settings.BASIN_2_ID.split('_')[0]
         )
         basin2.save()
 
@@ -99,7 +49,7 @@ class ImportTestCase(TestCase):
         BASINS = [settings.BASIN_1_ID, settings.BASIN_2_ID]
         BASIN_READINGS_COUNT = 8*365+1  # daily_timesteps*days_per_year+1
         # read in flow data to DB
-        ReadStreamFlowData(settings.FLOW_FILE, segment_ids=BASINS)
+        readStreamFlowData(settings.FLOW_FILE, segment_ids=BASINS)
         print("Added %d records to StreamFlow Data!" % StreamFlowReading.objects.all().count())
         self.assertTrue(StreamFlowReading.objects.all().count() == 10*2*BASIN_READINGS_COUNT) # metrics*basins*BASIN_READINGS_COUNT
 
@@ -118,3 +68,17 @@ class ImportTestCase(TestCase):
 
         # Test all 3726 flows are greater than 3729 flows
         # self.assertTrue(False)
+
+    ############################################################################
+    # RDH: 3/8/2021 - this isn't a real test case, just a way to build test data
+    #       ...We probably will want to test this function if we don't export
+    #           clean flow data during the run itself
+    ############################################################################
+    # def test_clean_flow_data(self):
+    #     print('====================================')
+    #     print('ImportTestCase: test_clean_flow_data')
+    #     print('====================================')
+    #     flow_file = "/usr/local/apps/snow2flow2021/runs/methow/2002_baseline_NT_output/Stream.Flow"
+    #     out_file = "/usr/local/apps/snow2flow/uc-dhsvm-harness/dhsvm_harness/tests/test_data/Test_Methow_Stream.Flow"
+    #     BASINS = [settings.BASIN_1_ID, settings.BASIN_2_ID]
+    #     cleanStreamFlowData(flow_file, out_file, BASINS)
