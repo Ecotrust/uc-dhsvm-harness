@@ -1,4 +1,6 @@
 import sys, statistics, shutil
+from datetime import datetime
+from django.utils.timezone import get_current_timezone
 from ucsrb.models import PourPointBasin, StreamFlowReading, TreatmentScenario
 from .settings import FLOW_METRICS, TIMESTEP, ABSOLUTE_FLOW_METRIC, DELTA_FLOW_METRIC
 
@@ -55,6 +57,7 @@ def readStreamFlowData(flow_file, segment_ids=None, scenario=None, is_baseline=T
     segment_ids = check_stream_segment_ids(inlines, segment_ids)
 
     readings_per_day = 24/TIMESTEP
+    tz = get_current_timezone()
 
     for segment_name in segment_ids:
         try:
@@ -72,6 +75,7 @@ def readStreamFlowData(flow_file, segment_ids=None, scenario=None, is_baseline=T
                 data = line.split()
                 timestamp = data[0]
                 reading = data[4]
+                time = tz.localize(datetime.strptime(timestamp, "%m.%d.%Y-%H:%M:%S"))
                 # segment_readings.append({'timestamp':timestamp, 'reading':reading})
 
                 for metric_key in FLOW_METRICS.keys():
@@ -85,7 +89,7 @@ def readStreamFlowData(flow_file, segment_ids=None, scenario=None, is_baseline=T
                         else:
                             value = float(reading)/float(TIMESTEP)
                         segment_readings[metric_key].append({
-                            'timestep': timestamp,
+                            'timestamp': timestamp,
                             'value': value
                         })
                     else:
@@ -98,7 +102,7 @@ def readStreamFlowData(flow_file, segment_ids=None, scenario=None, is_baseline=T
                                 readings.sort()
                                 value = readings[0]
                             segment_readings[metric_key].append({
-                                'timestep': timestamp,
+                                'timestamp': timestamp,
                                 'value': value
                             })
                         else:
@@ -130,6 +134,7 @@ def readStreamFlowData(flow_file, segment_ids=None, scenario=None, is_baseline=T
 
                     StreamFlowReading.objects.create(
                         timestamp=timestamp,
+                        time=time,
                         basin=basin,
                         metric=metric_key,
                         is_baseline=is_baseline,
