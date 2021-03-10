@@ -13,10 +13,10 @@ FLOW_METRICS['Seven Day Low Flow'] = {'measure': 'low', 'delta':False, 'period':
 FLOW_METRICS['Seven Day Mean Flow'] = {'measure': 'mean', 'delta':False, 'period':7 }
 FLOW_METRICS['One Day Low Flow'] = {'measure': 'low', 'delta':False, 'period':1 }
 FLOW_METRICS['One Day Mean Flow'] = {'measure': 'mean', 'delta':False, 'period':1 }
-FLOW_METRICS['Change in 7 Day Low Flow Rate'] = {'measure': 'low', 'delta':True, 'period':7 }
-FLOW_METRICS['Change in 7 Day Mean Flow Rate'] = {'measure': 'mean', 'delta':True, 'period':7 }
-FLOW_METRICS['Change in 1 Day Low Flow Rate'] = {'measure': 'low', 'delta':True, 'period':1 }
-FLOW_METRICS['Change in 1 Day Mean Flow Rate'] = {'measure': 'mean', 'delta':True, 'period':1 }
+FLOW_METRICS['Change in 7 Day Low Flow Rate'] = {'measure': 'low', 'delta':True, 'period':7, 'source_metric':'Seven Day Low Flow'}
+FLOW_METRICS['Change in 7 Day Mean Flow Rate'] = {'measure': 'mean', 'delta':True, 'period':7, 'source_metric':'Seven Day Mean Flow' }
+FLOW_METRICS['Change in 1 Day Low Flow Rate'] = {'measure': 'low', 'delta':True, 'period':1, 'source_metric':'One Day Low Flow' }
+FLOW_METRICS['Change in 1 Day Mean Flow Rate'] = {'measure': 'mean', 'delta':True, 'period':1, 'source_metric':'One Day Mean Flow' }
 
 TIMESTEP = 3
 
