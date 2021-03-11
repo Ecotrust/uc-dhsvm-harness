@@ -6,3 +6,6 @@ BASIN_JSON_2 = os.path.join(pathlib.Path(__file__).parent.absolute(), 'test_data
 BASIN_2_ID = "metw_3739"
 
 FLOW_FILE = os.path.join(pathlib.Path(__file__).parent.absolute(), 'test_data', 'Test_Methow_Stream.Flow')
+
+ANONYMOUS_USER_PK = 2
+INPUT_TEMPLATE = os.path.join(pathlib.Path(__file__).parent.absolute(), 'test_data', 'INPUT.test.template')

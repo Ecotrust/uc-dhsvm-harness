@@ -1,7 +1,30 @@
+import os
+
 from collections import OrderedDict
 
 BASINS = ['entiat', 'methow', 'okan', 'wena']
 DEFAULT_BASIN_NAME = 'entiat'
+BASINS_DIR='/usr/local/apps/marineplanner-core/apps/uc-dhsvm-harness/basins'
+RUNS_DIR='/usr/local/apps/marineplanner-core/apps/uc-dhsvm-harness/runs'
+SUPERBASINS = {
+    'enti': {
+        'name': 'Entiat',
+        'inputs': os.path.join(BASINS_DIR, 'entiat')
+    },
+    'metw': {
+        'name': 'Methow',
+        'inputs': os.path.join(BASINS_DIR, 'methow')
+    },
+    'okan': {
+        'name': 'Okanogan',
+        'inputs': os.path.join(BASINS_DIR, 'okan')
+    },
+    'wena': {
+        'name': 'Wenatchee',
+        'inputs': os.path.join(BASINS_DIR, 'wena')
+    }
+}
+
 
 ABSOLUTE_FLOW_METRIC = 'Absolute Flow Rate'
 DELTA_FLOW_METRIC = 'Change in Flow Rate'
