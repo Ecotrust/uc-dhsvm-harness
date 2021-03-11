@@ -202,7 +202,6 @@ def getTargetStreamSegments(basin):
         basin_stream_segments = PourPointBasin.objects.filter(geom__within=basin.geometry)
     except Exception as e:
         print('No sub basins found within "%s"' % basin)
-        continue
 
     return basin_stream_segments
 

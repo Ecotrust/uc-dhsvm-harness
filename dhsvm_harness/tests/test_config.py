@@ -82,4 +82,4 @@ class ConfigRunTest(TestCase):
         ts_run_dir = getRunDir(treatment_scenario1)
         print(ts_run_dir)
 
-        runTreatmentScenario(treatment_scenario1)
+        runHarnessConfig(treatment_scenario1)
