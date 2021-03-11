@@ -44,9 +44,9 @@ PRISM data extension =                    # file extension for PRISM files
 Gridded Met data     = FALSE               # TRUE or FALSE
 Canopy radiation attenuation mode = FIXED # FIXED or VARIABLE
 Shading              = TRUE   	          # TRUE or FALSE
-Shading data path    = ./shadows/Shadow  	  # path for shading files
+Shading data path    = ./basins/wena/shadows/Shadow  	  # path for shading files
 Shading data extension = bin              # file extension for shading files 
-Skyview data path    = ./shadows/SkyView.bin	  # skyview file
+Skyview data path    = ./basins/wena/shadows/SkyView.bin	  # skyview file
 Snotel               = FALSE              # TRUE or FALSE
 Outside              = FALSE    	      # TRUE or FALSE
 Rhoverride           = FALSE              # TRUE or FALSE
@@ -88,8 +88,8 @@ Point East           =                   # East coordinate for point model if Ex
 ################################################################################
 [TIME]                                   # Model period
 Time Step            = 3                 # Model time step (hours)
-Model Start          = 10/01/2000-00     # Model start time (MM/DD/YYYY-HH)
-Model End            = 12/01/2000-00     # Model end time (MM/DD/YYYY-HH)
+Model Start = 09/01/1992-00 # Model start time (MM/DD/YYYY-HH) 
+Model End = 10/01/2012-00 # Model end time (MM/DD/YYYY-HH) 
 # 29-year historical period 1975-2003 relative to future 30-year period 2027-2055
 ################################################################################
 # CONSTANTS SECTION
@@ -103,9 +103,9 @@ Rain LAI Multiplier  = 0.0001             # LAI Multiplier for rain interception
 Snow LAI Multiplier  = 0.0005             # LAI Mulitplier for snow interception
 Min Intercepted Snow = 0.005              # Intercepted snow that can only be melted (m)
 Outside Basin Value  = 0                  # Value in mask that indicates outside the basin
-Temperature Lapse Rate   = -0.0065        # Temperature lapse rate (C/m)
-Precipitation Lapse Rate = 3e-06          # Precipitation lapse rate (m/m). Use a linear function to
-Max Surface Snow Layer Depth = 0.125      # maximum depth of the surface snow layer in water equivalent (m) 
+Temperature Lapse Rate   = -0.0047        # Temperature lapse rate (C/m)
+Precipitation Lapse Rate = 0          # Precipitation lapse rate (m/m). Use a linear function to
+Max Surface Snow Layer Depth = 0.05   #10mum depth of the surface snow layer in water equivalent (m) 
 Gap Wind Adj Factor = 1.0                 # Adjustment for wind received by gap (0-1)
 
 ########################################################
@@ -113,13 +113,13 @@ Gap Wind Adj Factor = 1.0                 # Adjustment for wind received by gap 
 # or the path to a spatial parameter binary file in the same format as DEM, soil and veg  
 
 Precipitation Multiplier Map =  # no correction be made if leave blank, or a constant applied basin-wide, or a spatial input
-Rain Threshold       = -0.450848                       # Minimum temperature at which rain occurs (C)
-Snow Threshold       = 0.455319                        # Maximum temperature at which snow occurs (C)
-Fresh Snow Albedo    = 0.89                            # Fresh snow albedo (0.85 is the default value used in older versions)
-Albedo Accumulation Lambda = 0.95 	                     # Lambda for accumulation period
-Albedo Melting Lambda = 0.7		                       # Lambda for melting period
-Albedo Accumulation Min = -9999 		                     # Min albedo value during accumulation period; set to -9999 if min value is not needed.
-Albedo Melting Min = -9999		                         # Min albedo value during melting period; set to -9999 if min value is not needed.
+Rain Threshold       = ./basins/wena/spatial/snow_params_rain.asc.bin                     # Minimum temperature at which rain occurs (C)
+Snow Threshold       = ./basins/wena/spatial/snow_params_snow.asc.bin                       # Maximum temperature at which snow occurs (C)
+Fresh Snow Albedo    = 0.803                           # Fresh snow albedo (0.85 is the default value used in older versions)
+Albedo Accumulation Lambda = 0.955                     # Lambda for accumulation period
+Albedo Melting Lambda = 0.64		                       # Lambda for melting period
+Albedo Accumulation Min = 0.70		                     # Min albedo value during accumulation period; set to -9999 if min value is not needed.
+Albedo Melting Min = 0.26		                         # Min albedo value during melting period; set to -9999 if min value is not needed.
 Precipitation Multiplier Map =                         # no correction be made if leave blank, or a constant applied basin-wide
                                                        # or path to a 2D spatial input in the same format as DEM, soil and veg  
 
@@ -128,8 +128,8 @@ Precipitation Multiplier Map =                         # no correction be made i
 ################################################################################
 
 [TERRAIN]                                 # Terrain information
-DEM File    	  = ./inputs/wena_dem_filflat.asc.bin
-Basin Mask File   = ./inputs/wena_mask.asc.bin
+DEM File    	  = ./basins/wena/inputs/wena_dem_filflat.asc.bin
+Basin Mask File = ./basins/wena/inputs/wena_mask.asc.bin
 
 ################################################################################
 # ROUTING SECTION
@@ -141,9 +141,9 @@ Basin Mask File   = ./inputs/wena_mask.asc.bin
 ################ STREAM NETWORK ################################################
 
 # The following three fields are only used if Flow Routing = NETWORK
-Stream Map File      = ./inputs/stream.map.dat
-Stream Network File  = ./inputs/wena_stream.network_v2.dat
-Stream Class File    = ./inputs/stream_property.class
+Stream Map File      = ./basins/wena/inputs/stream.map.dat
+Stream Network File  = ./basins/wena/inputs/wena_stream.network_v2.added.dat
+Stream Class File    = ./basins/wena/inputs/stream_property.class
 
 ################ ROAD NETWORK ##################################################
 
@@ -1428,13 +1428,14 @@ Precipitation lapse rate =
 ################################################################################
 [SOILS]                                   # Soil information
 
-Soil Map File	     = ./inputs/wena_soiltype.asc.bin
-Soil Depth File      = ./inputs/wena_soild.asc.bin
+Soil Map File	     = ./basins/wena/inputs/wena_soiltype.asc.bin
+Soil Depth File      = ./basins/wena/inputs/wena_soild.asc.bin
+Soil Conductivity Map File = ./basins/wena/spatial/soil_type_kslat1000.asc.bin  # Unit: mm/s
 Number of Soil Types = 19
 
 ######################################### SOIL 1 ###############################################
 Soil Description       1 = Sandy Loam        # Description of soil type
-Lateral Conductivity   1 = 5e-5              # Lateral saturated hydraulic conductivity (m/s)
+Lateral Conductivity 1 = 0.0001 # Lateral saturated hydraulic conductivity (m/s) 
 Exponential Decrease   1 = 0.03              # Exponent for decrease in conductivity with depth
 Depth Threshold        1 = 1.5
 Maximum Infiltration   1 = 1e-4              # Maximum infiltration rate (m/s)
@@ -1454,7 +1455,7 @@ Thermal Capacity       1 = 1.4e6 1.4e6 1.4e6 # Dry soil thermal capacity (J/(m3*
 
 ######################################### SOIL 2 ###############################################
 Soil Description       2 = Loamy Sand   # Description of soil type
-Lateral Conductivity   2 = 1.6972e-05            # Lateral saturated hydraulic conductivity (m/s)
+Lateral Conductivity 2 = 3.3944e-05 # Lateral saturated hydraulic conductivity (m/s) 
 Exponential Decrease   2 = 0.03               # Exponent for decrease in conductivity with depth
 Depth Threshold        2 = 1.5
 Maximum Infiltration   2 = 1e-4               # Maximum infiltration rate (m/s)
@@ -1473,7 +1474,7 @@ Thermal Capacity       2 = 1.4e6 1.4e6 1.4e6  # Dry soil thermal capacity (J/(m3
 
 ######################################### SOIL 3 ###############################################
 Soil Description       3 = Sandy Loam              # Description of soil type
-Lateral Conductivity   3 = 7.1945e-06               # Lateral saturated hydraulic conductivity (m/s)
+Lateral Conductivity 3 = 1.4389e-05 # Lateral saturated hydraulic conductivity (m/s) 
 Exponential Decrease   3 = 0.05                 # Exponent for decrease in conductivity with depth
 Depth Threshold        3 = 1.5
 Maximum Infiltration   3 = 1e-4                 # Maximum infiltration rate (m/s)
@@ -1493,7 +1494,7 @@ Thermal Capacity       3 = 1.4e6 1.4e6 1.4e6    # Dry soil thermal capacity (J/(
 
 ######################################### SOIL 4 ###############################################
 Soil Description       4 = Loam             # Description of soil type
-Lateral Conductivity   4 = 1.8889e-06            # Lateral saturated hydraulic conductivity (m/s)
+Lateral Conductivity 4 = 3.7778e-06 # Lateral saturated hydraulic conductivity (m/s) 
 Exponential Decrease   4 = 0.03              # Exponent for decrease in conductivity with depth
 Depth Threshold        4 = 1.5
 Maximum Infiltration   4 = 1e-4              # Maximum infiltration rate (m/s)
@@ -1514,7 +1515,7 @@ Thermal Capacity       4 = 1.4e6 1.4e6 1.4e6 # Dry soil thermal capacity (J/(m3*
 
 ######################################### SOIL 5 ###############################################
 Soil Description       5 = Silt Loam             # Description of soil type
-Lateral Conductivity   5 = 3.6667e-06            # Lateral saturated hydraulic conductivity (m/s)
+Lateral Conductivity 5 = 7.3334e-06 # Lateral saturated hydraulic conductivity (m/s) 
 Exponential Decrease   5 = 0.03              # Exponent for decrease in conductivity with depth
 Depth Threshold        5 = 1.5
 Maximum Infiltration   5 = 1e-4              # Maximum infiltration rate (m/s)
@@ -1535,7 +1536,7 @@ Thermal Capacity       5 = 1.4e6 1.4e6 1.4e6 # Dry soil thermal capacity (J/(m3*
 
 ######################################### SOIL 6 ###############################################
 Soil Description       6 = Silt             # Description of soil type
-Lateral Conductivity   6 = 3.6667e-06            # Lateral saturated hydraulic conductivity (m/s)
+Lateral Conductivity 6 = 7.3334e-06 # Lateral saturated hydraulic conductivity (m/s) 
 Exponential Decrease   6 = 0.03              # Exponent for decrease in conductivity with depth
 Depth Threshold        6 = 1.5
 Maximum Infiltration   6 = 1e-4              # Maximum infiltration rate (m/s)
@@ -1556,7 +1557,7 @@ Thermal Capacity       6 = 1.4e6 1.4e6 1.4e6 # Dry soil thermal capacity (J/(m3*
 
 ######################################### SOIL 7 ###############################################
 Soil Description       7 = Sandy Clay Loam            # Description of soil type
-Lateral Conductivity   7 = 1.1944e-06            # Lateral saturated hydraulic conductivity (m/s)
+Lateral Conductivity 7 = 2.3888e-06 # Lateral saturated hydraulic conductivity (m/s) 
 Exponential Decrease   7 = 0.03              # Exponent for decrease in conductivity with depth
 Depth Threshold        7 = 1.5
 Maximum Infiltration   7 = 1e-4              # Maximum infiltration rate (m/s)
@@ -1577,7 +1578,7 @@ Thermal Capacity       7 = 1.4e6 1.4e6 1.4e6 # Dry soil thermal capacity (J/(m3*
 
 ######################################### SOIL 8 ###############################################
 Soil Description       8 = Clay Loam             # Description of soil type
-Lateral Conductivity   8 = 6.3889e-07            # Lateral saturated hydraulic conductivity (m/s)
+Lateral Conductivity 8 = 1.27778e-06 # Lateral saturated hydraulic conductivity (m/s) 
 Exponential Decrease   8 = 0.03              # Exponent for decrease in conductivity with depth
 Depth Threshold        8 = 1.5
 Maximum Infiltration   8 = 1e-4              # Maximum infiltration rate (m/s)
@@ -1597,7 +1598,7 @@ Thermal Capacity       8 = 1.4e6 1.4e6 1.4e6 # Dry soil thermal capacity (J/(m3*
 
 ######################################### SOIL 9 ###############################################
 Soil Description       9 = Silty Clay Loam             # Description of soil type
-Lateral Conductivity   9 = 4.1667e-07            # Lateral saturated hydraulic conductivity (m/s)
+Lateral Conductivity 9 = 8.3334e-07 # Lateral saturated hydraulic conductivity (m/s) 
 Exponential Decrease   9 = 0.03              # Exponent for decrease in conductivity with depth
 Depth Threshold        9 = 1.5
 Maximum Infiltration   9 = 1e-4              # Maximum infiltration rate (m/s)
@@ -1618,7 +1619,7 @@ Thermal Capacity       9 = 1.4e6 1.4e6 1.4e6 # Dry soil thermal capacity (J/(m3*
 
 ######################################### SOIL 10 ###############################################
 Soil Description       10 = Sandy Clay             # Description of soil type
-Lateral Conductivity   10 = 3.3333e-07            # Lateral saturated hydraulic conductivity (m/s)
+Lateral Conductivity 10 = 6.6666e-07 # Lateral saturated hydraulic conductivity (m/s) 
 Exponential Decrease   10 = 0.03              # Exponent for decrease in conductivity with depth
 Depth Threshold        10 = 1.5
 Maximum Infiltration   10 = 1e-4              # Maximum infiltration rate (m/s)
@@ -1638,7 +1639,7 @@ Thermal Capacity       10 = 1.4e6 1.4e6 1.4e6 # Dry soil thermal capacity (J/(m3
 
 ######################################### SOIL 11 ###############################################
 Soil Description       11 = Silty Clay             # Description of soil type
-Lateral Conductivity   11 = 2.5000e-07            # Lateral saturated hydraulic conductivity (m/s)
+Lateral Conductivity 11 = 5e-07 # Lateral saturated hydraulic conductivity (m/s) 
 Exponential Decrease   11 = 0.03              # Exponent for decrease in conductivity with depth
 Depth Threshold        11 = 1.5
 Maximum Infiltration   11 = 1e-4              # Maximum infiltration rate (m/s)
@@ -1659,7 +1660,7 @@ Thermal Capacity       11 = 1.4e6 1.4e6 1.4e6 # Dry soil thermal capacity (J/(m3
 
 ######################################### SOIL 12 ###############################################
 Soil Description       12 = Clay            # Description of soil type
-Lateral Conductivity   12 = 1.6667e-07           # Lateral saturated hydraulic conductivity (m/s)
+Lateral Conductivity 12 = 3.3334e-07 # Lateral saturated hydraulic conductivity (m/s) 
 Exponential Decrease   12 = 0.03              # Exponent for decrease in conductivity with depth
 Depth Threshold        12 = 1.5
 Maximum Infiltration   12 = 1e-4              # Maximum infiltration rate (m/s)
@@ -1680,7 +1681,7 @@ Thermal Capacity       12 = 1.4e6 1.4e6 1.4e6 # Dry soil thermal capacity (J/(m3
 
 ######################################### SOIL 13 ###############################################
 Soil Description       13 = Bedrock           # Description of soil type
-Lateral Conductivity   13 = 1.5e-9            # Lateral saturated hydraulic conductivity (m/s)
+Lateral Conductivity 13 = 3e-09 # Lateral saturated hydraulic conductivity (m/s) 
 Exponential Decrease   13 = 0.05              # Exponent for decrease in conductivity with depth
 Depth Threshold        13 = 1.5
 Maximum Infiltration   13 = 1e-9              # Maximum infiltration rate (m/s)
@@ -1700,7 +1701,7 @@ Thermal Capacity       13 = 1.4e6 1.4e6 1.4e6 # Dry soil thermal capacity (J/(m3
 
 ######################################### SOIL 14 ###############################################
 Soil Description       14 = Water           # Description of soil type
-Lateral Conductivity   14 = 1.0e-5            # Lateral saturated hydraulic conductivity (m/s)
+Lateral Conductivity 14 = 2e-05 # Lateral saturated hydraulic conductivity (m/s) 
 Exponential Decrease   14 = 0.03              # Exponent for decrease in conductivity with depth
 Depth Threshold        14 = 1.5
 Maximum Infiltration   14 = 1e-5              # Maximum infiltration rate (m/s)
@@ -1720,7 +1721,7 @@ Thermal Capacity       14 = 1.4e6 1.4e6 1.4e6 # Dry soil thermal capacity (J/(m3
 
 ######################################### SOIL 15 ###############################################
 Soil Description       15 = Variable            # Description of soil type
-Lateral Conductivity   15 = 1.6667e-07           # Lateral saturated hydraulic conductivity (m/s)
+Lateral Conductivity 15 = 3.3334e-07 # Lateral saturated hydraulic conductivity (m/s) 
 Exponential Decrease   15 = 0.03              # Exponent for decrease in conductivity with depth
 Depth Threshold        15 = 1.5
 Maximum Infiltration   15 = 1e-4              # Maximum infiltration rate (m/s)
@@ -1741,7 +1742,7 @@ Thermal Capacity       15 = 1.4e6 1.4e6 1.4e6 # Dry soil thermal capacity (J/(m3
 
 ######################################### SOIL 16 ###############################################
 Soil Description       16 = Variable            # Description of soil type
-Lateral Conductivity   16 = 1.6667e-07           # Lateral saturated hydraulic conductivity (m/s)
+Lateral Conductivity 16 = 3.3334e-07 # Lateral saturated hydraulic conductivity (m/s) 
 Exponential Decrease   16 = 0.03              # Exponent for decrease in conductivity with depth
 Depth Threshold        16 = 1.5
 Maximum Infiltration   16 = 1e-4              # Maximum infiltration rate (m/s)
@@ -1761,7 +1762,7 @@ Thermal Capacity       16 = 1.4e6 1.4e6 1.4e6 # Dry soil thermal capacity (J/(m3
 
 ######################################### SOIL 17 ###############################################
 Soil Description       17 = Variable            # Description of soil type
-Lateral Conductivity   17 = 1.6667e-07           # Lateral saturated hydraulic conductivity (m/s)
+Lateral Conductivity 17 = 3.3334e-07 # Lateral saturated hydraulic conductivity (m/s) 
 Exponential Decrease   17 = 0.03              # Exponent for decrease in conductivity with depth
 Depth Threshold        17 = 1.5
 Maximum Infiltration   17 = 1e-4              # Maximum infiltration rate (m/s)
@@ -1781,7 +1782,7 @@ Thermal Capacity       17 = 1.4e6 1.4e6 1.4e6 # Dry soil thermal capacity (J/(m3
 
 ######################################### SOIL 18 ###############################################
 Soil Description       18 = Variable            # Description of soil type
-Lateral Conductivity   18 = 1.6667e-07           # Lateral saturated hydraulic conductivity (m/s)
+Lateral Conductivity 18 = 3.3334e-07 # Lateral saturated hydraulic conductivity (m/s) 
 Exponential Decrease   18 = 0.03              # Exponent for decrease in conductivity with depth
 Depth Threshold        18 = 1.5
 Maximum Infiltration   18 = 1e-4              # Maximum infiltration rate (m/s)
@@ -1801,7 +1802,7 @@ Thermal Capacity       18 = 1.4e6 1.4e6 1.4e6 # Dry soil thermal capacity (J/(m3
 
 ######################################### SOIL 19 ###############################################
 Soil Description       19 = Variable            # Description of soil type
-Lateral Conductivity   19 = 1.6667e-07           # Lateral saturated hydraulic conductivity (m/s)
+Lateral Conductivity 19 = 3.3334e-07 # Lateral saturated hydraulic conductivity (m/s) 
 Exponential Decrease   19 = 0.03              # Exponent for decrease in conductivity with depth
 Depth Threshold        19 = 1.5
 Maximum Infiltration   19 = 1e-4              # Maximum infiltration rate (m/s)
@@ -1825,10 +1826,10 @@ Thermal Capacity       19 = 1.4e6 1.4e6 1.4e6 # Dry soil thermal capacity (J/(m3
 ################################################################################
 [VEGETATION]
 
-Vegetation Map File = ./inputs/wena_veg_dhsvm091420rmnan_int.asc.bin
-#Canopy Gap Map File = ./inputs/veg/    # Gap diameter spatial input
-#Vegetation FC Map File = ./inputs/veg/
-#Vegetation LAI Map File = ./inputs/veg/
+Vegetation Map File = ./basins/wena/inputs/wena_veg_dhsvm091420rmnan_int.asc.bin
+#Canopy Gap Map File = ./basins/wena/inputs/veg/    # Gap diameter spatial input
+#Vegetation FC Map File = ./basins/wena/inputs/veg/
+#Vegetation LAI Map File = ./basins/wena/inputs/veg/
 
 Number of Vegetation Types = 173
 
@@ -8417,7 +8418,7 @@ Max Snow Int Capacity           173  =  0.00
 Mass Release Drip Ratio         173  =  0.0
 Snow Interception Eff           173  =  0.0
 Impervious Fraction             173  =  0.5
-IMPERVIOUS SURFACE ROUTING FILE = ./inputs/surface.routing.txt         
+IMPERVIOUS SURFACE ROUTING FILE = ./basins/wena/inputs/surface.routing.txt
 Height                          173  =  0.0
 Maximum Resistance              173  =  0.0
 Minimum Resistance              173  =  0.0
@@ -8442,8 +8443,8 @@ Canopy View Adj Factor 173 = 1.0
 ################################################################################
 ################################################################################
 [OUTPUT]                   # Information what to output when
-Output Directory = ./output/
-Initial State Directory    = ./inputs/modelstate/
+Output Directory = ./
+Initial State Directory    = ./basins/wena/inputs/modelstate/
 
 ################ PIXEL DUMPS ###################################################
 
@@ -8485,7 +8486,7 @@ East Coordinate  8 = 660079.041
 Name             8 = Diam-14-Veg64
 
 ################ MODEL STATE ###################################################                
-Number of Model States     =  9            # Number of model states to dump
+Number of Model States     =  0            # Number of model states to dump
 
 # For each model state make a key-entry pair as indicated below, varying the 
 # number for the model state dump (1, .. , Number of Model States)
