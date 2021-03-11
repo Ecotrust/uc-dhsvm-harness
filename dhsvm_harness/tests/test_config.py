@@ -9,7 +9,7 @@ from ucsrb.models import TreatmentScenario
 
 from dhsvm_harness import settings as harness_settings
 from dhsvm_harness.tests import testing_settings as settings
-from dhsvm_harness.utils import getRunDir
+from dhsvm_harness.utils import getRunDir, runHarnessConfig
 
 class ConfigRunTest(TestCase):
 

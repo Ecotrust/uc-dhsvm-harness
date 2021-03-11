@@ -149,7 +149,7 @@ def getRunDir(treatment_scenario):
 def getRunSuperBasinDir(treatment_scenario):
 
     # Original basin files directory
-    BASINS_DIR = settings.BASINS_DIR
+    # BASINS_DIR = settings.BASINS_DIR
     try:
         os.path.isdir(BASINS_DIR)
     except OSError:
@@ -246,7 +246,7 @@ def runHarnessConfig(treatment_scenario):
 
 def createInputConfig(treatment_scenario):
 
-    SUPERBASINS = settings.SUPERBASINS
+    # SUPERBASINS = settings.SUPERBASINS
     ts_superbasin_name = SUPERBASINS[ts_superbasin]['name'].lower()
     # TODO make lowercase name
     superbasin_input_template = os.path.join(ts_superbasin_dir, ts_superbasin_name)
