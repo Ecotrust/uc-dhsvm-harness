@@ -1,7 +1,7 @@
 import sys, statistics, shutil, os
 from datetime import datetime
 from django.utils.timezone import get_current_timezone
-from ucsrb.models import PourPointBasin, StreamFlowReading, TreatmentScenario
+from ucsrb.models import PourPointBasin, StreamFlowReading, TreatmentScenario, FocusArea
 from .settings import FLOW_METRICS, TIMESTEP, ABSOLUTE_FLOW_METRIC, DELTA_FLOW_METRIC, BASINS_DIR, RUNS_DIR, SUPERBASINS
 
 def getSegmentIdList(inlines):
@@ -184,12 +184,19 @@ def getTargetBasin(treatment_scenario):
     # Basin will have 1 field which is cat name of superbasin_segmentId
     # Query run against overlapping_pourpoint_basin
     if treatment_scenario.focus_area_input:
-        basin = PourPointBasin.objects.filter(geom__contains=treatment_scenario.focus_area_input.geometry.order_by('area')[0])
+        target_basins =  FocusArea.objects.filter(unit_type="PourPointOverlap", geometry__contains=treatment_scenario.focus_area_input.geometry)
+        lcd_basin_area = 0
+        for tb in target_basins:
+            tb_area = tb.geometry.area
+            if tb_area > lcd_basin_area:
+                target_basin = tb
+        # The below would work if FocusArea had a field for area
+        # basin =  FocusArea.objects.filter(unit_type="PourPointOverlap", geometry__contains=treatment_scenario.focus_area_input.geometry).order_by('area')
     else:
-        basin = None
+        target_basin = None
         print("No TreatmentScenario focus area provided")
 
-    return basin
+    return target_basin
 
 
 # ======================================
@@ -199,7 +206,7 @@ def getTargetBasin(treatment_scenario):
 def getTargetStreamSegments(basin):
 
     try:
-        basin_stream_segments = PourPointBasin.objects.filter(geom__within=basin.geometry)
+        basin_stream_segments = FocusArea.objects.filter(geom__within=basin.geometry)
     except Exception as e:
         print('No sub basins found within "%s"' % basin)
 
@@ -225,17 +232,28 @@ def runHarnessConfig(treatment_scenario):
 
     os.system("ln -s %s/shadows %s/inputs/shadows" % (ts_superbasin_dir, ts_run_dir))
 
+    # sym link inputs
+    os.system("ln -s %s/inputs %s/inputs" % (ts_superbasin_dir, ts_run_dir))
+
+    # Create output dir
+    ts_run_output_dir = os.path.join(ts_run_dir, "output")
+
     # Create veg layer
     ts_run_veg_layer = getVegLayer(ts_superbasin_dir, ts_run_dir)
 
     # Get LCD basin
     ts_target_basin = getTargetBasin(treatment_scenario)
+    ts_mask_name = ts_target_basin.unit_type + '_' + ts.target_basin.unit_id
+    # TODO create mask file
 
     # Get sub LCD basins
     if ts_target_basin:
         ts_target_streams = getTargetStreamSegments(ts_target_basin)
     else:
         ts_target_streams = None
+
+
+    createInputConfig(ts_run_dir, ts_run_output_dir, ts_run_veg_layer, ts_mask_name)
 
 
 
@@ -257,3 +275,22 @@ def createInputConfig(treatment_scenario):
 
     # set timestep
     input_config.set("TIME", "Time Step", TIMESTEP)
+
+    #  TODO post 3.25
+    # input_config.set("TIME", "Model Start", MODELSTART)
+    # input_config.set("TIME", "Model End", MODELEND)
+
+    # Location of mask
+    # TODO
+    # input_config.set("TERRAIN", "Basin Mask File", ts_mask)
+
+    # Output
+    input_config.set("OUTPUT", "Output Directory", ts_output_dir)
+
+    # DEM file
+    input_config.set("TERRAIN", "DEM File", "./inputs/dem.asc.bin")
+
+    # Stream
+    input_config.set("ROUTING", "Stream Map File", "./inputs/stream.map.dat")
+    input_config.set("ROUTING", "Stream Network File", "./inputs/stream.network.dat")
+    input_config.set("ROUTING", "Stream Class File", "./inputs/stream_property.class")

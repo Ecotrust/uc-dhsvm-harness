@@ -9,7 +9,7 @@ from ucsrb.models import TreatmentScenario
 
 from dhsvm_harness import settings as harness_settings
 from dhsvm_harness.tests import testing_settings as settings
-from dhsvm_harness.utils import getRunDir, runHarnessConfig
+from dhsvm_harness.utils import getRunDir, runHarnessConfig, getTargetBasin
 
 class ConfigRunTest(TestCase):
 
@@ -81,5 +81,9 @@ class ConfigRunTest(TestCase):
         # is run directory ready
         ts_run_dir = getRunDir(treatment_scenario1)
         print(ts_run_dir)
+
+        # Can't write test bc dont know how to add FocusArea object to TreatmentScenario test case focus_area_input
+        # ts_target_basin = getTargetBasin(treatment_scenario1)
+        # print('Target basin: %s' % ts_target_basin)
 
         runHarnessConfig(treatment_scenario1)
