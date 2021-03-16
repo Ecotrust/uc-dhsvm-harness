@@ -5,7 +5,7 @@ from django.test import TestCase
 from django.contrib.gis.geos import GEOSGeometry
 from django.contrib.auth.models import User, AnonymousUser
 
-from ucsrb.models import TreatmentScenario
+from ucsrb.models import TreatmentScenario, FocusArea
 
 from dhsvm_harness import settings as harness_settings
 from dhsvm_harness.tests import testing_settings as settings
@@ -23,6 +23,8 @@ class ConfigRunTest(TestCase):
         user_id = User.objects.get(username='testy').id
 
         treatment_scenario1 = TreatmentScenario.objects.create(
+            focus_area=True,
+            focus_area_input=FocusArea.objects.get(id="metw_2114"),
             user_id=user_id,
             name="treatment_scenario1",
             date_created="2021-03-07T16:03:28.464",
