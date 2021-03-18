@@ -9,7 +9,7 @@ from ucsrb.models import TreatmentScenario, FocusArea
 
 from dhsvm_harness import settings as harness_settings
 from dhsvm_harness.tests import testing_settings as settings
-from dhsvm_harness.utils import getRunDir, runHarnessConfig, getTargetBasin
+from dhsvm_harness.utils import getRunDir, runHarnessConfig, getTargetBasin, setVegLayer
 
 class ConfigRunTest(TestCase):
 
@@ -22,9 +22,15 @@ class ConfigRunTest(TestCase):
         self.user =  User.objects.create_user(username='testy', email='testy@ecotrust.org', password='top_secret')
         user_id = User.objects.get(username='testy').id
 
+        focus_area1 = FocusArea.objects.create(
+            unit_id="metw_2114",
+            unit_type="PourPointOverlap",
+            geometry="SRID=3857;MULTIPOLYGON (((-13404632.90275132 6206835.507293843, -13404567.14376381 6206516.980143133, -13404569.9379526 6206512.010218441, -13404651.54548705 6206587.495385414, -13404713.37956141 6206520.269885256, -13404736.64698542 6206501.496226428, -13404737.90306285 6206506.394523728, -13404708.49654546 6206526.382869873, -13404763.4827089 6206773.57293795, -13404660.39831809 6206850.146972733, -13404632.90275132 6206835.507293843)), ((-13404627.52118118 6207010.663111246, -13404635.1077042 6207008.620792534, -13404664.51565169 6206988.631482083, -13404632.90275132 6206835.507293843, -13404660.39831809 6206850.146972734, -13404763.4827089 6206773.57293795, -13404819.11522982 6207023.661840364, -13404791.97998846 6207128.353333187, -13404841.41544553 6207258.558558098, -13404766.9647465 6207388.176079581, -13404703.40673706 6207407.593457979, -13404707.76377893 6207407.741359051, -13404706.2321753 6207453.126513464, -13404660.9802281 6207451.590259524, -13404569.55104149 6207448.485616824, -13404524.71130773 6207462.183370249, -13404434.26493706 6207489.812379636, -13404422.88258562 6207445.416476022, -13404411.50037194 6207401.020835403, -13404454.82757682 6207389.357866131, -13404443.44518713 6207344.962623181, -13404486.77221378 6207333.299638862, -13404475.3897966 6207288.904805, -13404518.71649418 6207277.241800513, -13404507.33397664 6207232.84729752, -13404550.660496 6207221.184277997, -13404539.27795096 6207176.790184072, -13404582.60414382 6207165.127068744, -13404571.22149589 6207120.733381322, -13404614.54743511 6207109.070248406, -13404591.78219978 6207020.283833805, -13404627.52118118 6207010.663111246)))"
+        )
+
         treatment_scenario1 = TreatmentScenario.objects.create(
             focus_area=True,
-            focus_area_input=FocusArea.objects.get(id="metw_2114"),
+            focus_area_input=focus_area1,
             user_id=user_id,
             name="treatment_scenario1",
             date_created="2021-03-07T16:03:28.464",
@@ -73,19 +79,18 @@ class ConfigRunTest(TestCase):
 
         # TreatmentScenario related items
         treatment_scenario1 = TreatmentScenario.objects.get(name="treatment_scenario1")
-        treatment_scenario1_geom = treatment_scenario1.geometry_dissolved
-        treatment_scenario1_id = treatment_scenario1.id
-        treatment_scenario1_rx = treatment_scenario1.prescription_treatment_selection
+
+        self.assertTrue(treatment_scenario1.active)
 
         # settings related items
         timestep = harness_settings.TIMESTEP
 
         # is run directory ready
-        ts_run_dir = getRunDir(treatment_scenario1)
-        print(ts_run_dir)
+        # ts_run_dir = getRunDir(treatment_scenario1)
+        # self.assertTrue(os.path.isdir(ts_run_dir))
 
         # Can't write test bc dont know how to add FocusArea object to TreatmentScenario test case focus_area_input
         # ts_target_basin = getTargetBasin(treatment_scenario1)
-        # print('Target basin: %s' % ts_target_basin)
+        # self.assertTrue(ts_target_basin)
 
         runHarnessConfig(treatment_scenario1)
