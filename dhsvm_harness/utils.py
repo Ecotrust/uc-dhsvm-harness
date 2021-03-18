@@ -214,7 +214,8 @@ def setVegLayer(treatment_scenario, ts_superbasin_dict, ts_run_dir):
     from rasterio.mask import mask
     from rasterio.merge import merge
     import rasterio
-    from rasterio import Affine, MemoryFile
+    from rasterio import Affine
+    from rasterio.io import MemoryFile
     from rasterio.enums import Resampling
 
     from shapely.geometry import shape, GeometryCollection
@@ -232,9 +233,9 @@ def setVegLayer(treatment_scenario, ts_superbasin_dict, ts_run_dir):
     # Create sym link for veg layer
     baseline_veg_filename = "%s/inputs/veg_files/%s_notr.tif" % (ts_superbasin_dir, ts_superbasin_code)
 
-    if rx_id == 'notr':
+    # if rx_id == 'notr':
         # copy baseline veg bin file to ts_run_dir inputs (not tif)
-        return True
+        # return True
 
     baseline_veg_file = rasterio.open(baseline_veg_filename, "r")
     treatment_veg_file = rasterio.open("%s/inputs/veg_files/%s_%s.tif" % (ts_superbasin_dir, ts_superbasin_code, rx_id), "r")
@@ -250,17 +251,14 @@ def setVegLayer(treatment_scenario, ts_superbasin_dict, ts_run_dir):
     ts_shape = shapely.ops.transform(tfm, feature_shape)
 
     clipped_treatment = mask(treatment_veg_file, ts_shape, nodata=0)
+    clipped_treatment_mask = clipped_treatment[0]
 
-    # with rasterio.open(
-    #     "%s/ts_clipped_layer" % ts_run_dir, 'w',
-    #     driver='GTiff',
-    #     dtype=rasterio.uint8,
-    #     count=1,
-    #     width=treatment_veg_file.width,
-    #     height=treatment_veg_file.height) as dst:
-    #         dst.write(clipped_treatment, indexes=1)
+    profile = treatment_veg_file.profile
 
-    # dst_open = rasterio.open('%s/ts_clipped_layer' % ts_run_dir, 'r')
+    with rasterio.open("%s/ts_clipped_layer" % ts_run_dir, 'w', **profile) as dst:
+        dst.write(clipped_treatment_mask)
+
+    dst_open = rasterio.open('%s/ts_clipped_layer' % ts_run_dir, 'r+')
 
     # t = treatment_veg_file.transform
     #
@@ -269,7 +267,6 @@ def setVegLayer(treatment_scenario, ts_superbasin_dict, ts_run_dir):
     # height = int(treatment_veg_file.height / scale)
     # width = int(treatment_veg_file.width / scale)
 
-    profile = treatment_veg_file.profile
     # profile.update(transform=transform, driver='GTiff', height=height, width=width)
 
     # data = raster.read(
@@ -277,26 +274,28 @@ def setVegLayer(treatment_scenario, ts_superbasin_dict, ts_run_dir):
     #         resampling=Resampling.bilinear,
     #     )
 
-    # if out_path is None:
-    #     with write_mem_raster(data, **profile) as dataset:
-    #         del data
-    #         yield dataset
+    # with MemoryFile() as memfile:
+    #     with memfile.open(**profile) as dataset:  # Open as DatasetWriter
+    #         dataset.write(clipped_treatment_mask)
+    #
+    #     with memfile.open() as dataset:  # Reopen as DatasetReader
+    #         yield dataset  # Note yield not return
 
-    with MemoryFile() as memfile:
-        with memfile.open(**profile) as dataset:  # Open as DatasetWriter
-            dataset.write(clipped_treatment)
+    merged_veg = merge([dst_open, baseline_veg_file], nodata=0, dtype="uint8")
+    merged_veg_layer = merged_veg[0]
 
-        with memfile.open() as dataset:  # Reopen as DatasetReader
-            yield dataset  # Note yield not return
+    ts_run_dir_inputs = os.path.join('%s/ts_inputs' % ts_run_dir)
+    ts_treated_veg_layer = os.path.join('%s/treated_veg_layer' % ts_run_dir_inputs)
 
-    merged_veg_layer = merge([clipped_treatment[0], baseline_veg_file], nodata=0, dtype="uint8")
+    with rasterio.open(ts_treated_veg_layer, 'w', **profile) as dst:
+        dst.write(merged_veg_layer)
 
     baseline_veg_file.close()
     treatment_veg_file.close()
-    # dst_open.close()
+    dst_open.close()
 
     # Remove header if there
-    
+
     # TODO convert ascii to bin
 
 
@@ -309,6 +308,7 @@ def setVegLayer(treatment_scenario, ts_superbasin_dict, ts_run_dir):
     #  cellsize
     #  rows
     #  cols
+
 
 # ======================================
 # Identify basin/LCD segment
