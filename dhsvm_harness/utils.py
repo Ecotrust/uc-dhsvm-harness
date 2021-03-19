@@ -204,11 +204,20 @@ def createBasinMask(ts, ts_run_dir):
     # os.system("rio shapes --projected %s > %s" % (mask, mask_feature))
 
 
+def getSuperBasinDetails():
+    #  xll
+    #  yll
+    #  cellsize
+    #  rows
+    #  cols
+    print()
+
+
 # ======================================
 # CREATE TREATED VEG LAYER
 # ======================================
 
-def setRunLayers(treatment_scenario, ts_superbasin_dict, ts_run_dir):
+def setVegLayers(treatment_scenario, ts_superbasin_dict, ts_run_dir):
 
     import json
     from rasterio.mask import mask
@@ -248,10 +257,6 @@ def setRunLayers(treatment_scenario, ts_superbasin_dict, ts_run_dir):
         # OPEN:
             # Baeline Veg Layer
             # Treatment Veg Layer
-            # DEM Layer
-            # DIR Layer
-            # Soil Depth Layer
-            # Soil Type Layer
         baseline_veg_file = rasterio.open("%s/inputs/veg_files/%s_notr.tif" % (ts_superbasin_dir, ts_superbasin_code), "r")
         treatment_veg_file = rasterio.open("%s/inputs/veg_files/%s_%s.tif" % (ts_superbasin_dir, ts_superbasin_code, rx_id), "r")
 
@@ -281,39 +286,41 @@ def setRunLayers(treatment_scenario, ts_superbasin_dict, ts_run_dir):
         clipped_treatment_mask = clipped_treatment[0]
 
         profile = treatment_veg_file.profile
-        profile['driver'] = 'AAIGrid'
         profile['nodata'] = 0
 
-        with rasterio.open("%s/ts_clipped_treatment_layer.asc" % ts_run_dir_inputs, 'w', **profile) as dst:
+        with rasterio.open("%s/ts_clipped_treatment_layer.tif" % ts_run_dir, 'w', **profile) as dst:
             dst.write(clipped_treatment_mask)
 
         # Baseline Veg Layer
 
-        clipped_baseline = mask(baseline_veg_file, ts_shape, nodata=0)
-        clipped_baseline_mask = clipped_baseline[0]
+        # clipped_baseline = mask(baseline_veg_file, ts_shape, nodata=0)
+        # clipped_baseline_mask = clipped_baseline[0]
+        #
+        # baseline_profile = baseline_veg_file.profile
+        # baseline_profile['driver'] = 'AAIGrid'
+        # baseline_profile['nodata'] = 0
+        #
+        # with rasterio.open("%s/baseline_veg_layer.asc" % ts_run_dir_inputs, 'w', **baseline_profile) as dst:
+        #     dst.write(clipped_baseline_mask)
 
-        baseline_profile = baseline_veg_file.profile
-        baseline_profile['driver'] = 'AAIGrid'
-        baseline_profile['nodata'] = 0
+        ts_treated_veg_layer = rasterio.open('%s/ts_clipped_treatment_layer.tif' % ts_run_dir, 'r+')
+        merged_veg = merge([ts_treated_veg_layer, baseline_veg_file], nodata=0, dtype="uint8")
+        merged_veg_layer = merged_veg[0]
 
-        with rasterio.open("%s/treated_veg_layer.asc" % ts_run_dir_inputs, 'w', **baseline_profile) as dst:
-            dst.write(clipped_baseline_mask)
+        profile['driver'] = 'AAIGrid'
 
-    # dst_open = rasterio.open('%s/ts_clipped_layer' % ts_run_dir, 'r+')
-    # merged_veg = merge([dst_open, baseline_veg_file], nodata=0, dtype="uint8")
-    # merged_veg_layer = merged_veg[0]
+        with rasterio.open("%s/ts_clipped_treatment_layer.asc" % ts_run_dir_inputs, 'w', **profile) as dst:
+            dst.write(merged_veg_layer)
 
-    # with rasterio.open(ts_treated_veg_layer, 'w', **profile) as dst:
-        # dst.write(merged_veg_layer)
+        baseline_veg_file.close()
+        treatment_veg_file.close()
 
-    baseline_veg_file.close()
-    treatment_veg_file.close()
-    # dst_open.close()
+        # dst_open.close()
 
-    import ipdb; ipdb.set_trace()
 
     # Remove header from ascii
     ##########################
+
     try:
         ts_run_inputs_listdir = os.listdir(ts_run_dir_inputs)
     except OSError:
@@ -324,10 +331,10 @@ def setRunLayers(treatment_scenario, ts_superbasin_dict, ts_run_dir):
         sys.exit()
 
     # Off with their heads!
-    for ts_run_inputs_listdir in ts_run_input:
-        input_extension = os.path.splitext(masked_file)[-1]
+    for ts_run_input in ts_run_inputs_listdir:
+        input_extension = os.path.splitext(ts_run_input)[-1]
         if input_extension == '.asc':
-            input_path = os.path.abspath(os.path.join(ts_run_inputs_listdir, ts_run_input))
+            input_path = os.path.abspath(os.path.join(ts_run_dir_inputs, ts_run_input))
             ascii_file = open(input_path, "r+")
             content_lines = ascii_file.readlines()
             ascii_file.seek(0,0)
@@ -338,18 +345,24 @@ def setRunLayers(treatment_scenario, ts_superbasin_dict, ts_run_dir):
                 count += 1
             ascii_file.close()
 
-    # TODO convert ascii to bin
 
+    # Convert ascii to bin
+    ######################
 
-    # Todo write head
+    # path to myconvert
+    myconvert = os.path.join(dhsvm_build_path, 'DHSVM', 'program', 'myconvert')
 
-    # TODO
-    # def getSuperBasinDetails():
-    #  xll
-    #  yll
-    #  cellsize
-    #  rows
-    #  cols
+    for ts_run_input in ts_run_inputs_listdir:
+        input_extension = os.path.splitext(ts_run_input)[-1]
+        if input_extension == '.asc':
+            bin_file_name = os.path.splitext(ts_run_input)[0] + ".asc.bin"
+            bin_file_path = os.path.abspath(os.path.join(ts_run_dir_inputs, bin_file_name))
+            ascii_file_path = os.path.abspath(os.path.join(ts_run_dir_inputs, ts_run_input))
+            use_type = "character"
+            os.system(
+                "%s ascii %s %s %s %s %s"
+                % (myconvert, use_type, ascii_file_path, bin_file_path, mask_nrows, mask_ncols)
+            )
 
 
 # ======================================
@@ -405,7 +418,7 @@ def runHarnessConfig(treatment_scenario):
     ts_run_dir = getRunDir(treatment_scenario, ts_superbasin_dict)
 
     # Create run layer
-    ts_layers = setRunLayers(treatment_scenario, ts_superbasin_dict, ts_run_dir)
+    ts_layers = setVegLayers(treatment_scenario, ts_superbasin_dict, ts_run_dir)
 
     # Get LCD basin
     ts_target_basin = getTargetBasin(treatment_scenario)
@@ -475,7 +488,7 @@ def createInputConfig(ts_superbasin_dict, ts_run_dir, ts_layers, ts_target_basin
     input_config.set("OUTPUT", "Output Directory", ts_output_dir)
 
     # DEM file
-    input_config.set("TERRAIN", "DEM File", "./inputs/dem.asc.bin")
+    # input_config.set("TERRAIN", "DEM File", "./inputs/dem.asc.bin")
 
     # Stream
     input_config.set("ROUTING", "Stream Map File", "./inputs/stream.map.dat")
