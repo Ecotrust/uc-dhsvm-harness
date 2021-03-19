@@ -208,7 +208,7 @@ def createBasinMask(ts, ts_run_dir):
 # CREATE TREATED VEG LAYER
 # ======================================
 
-def setVegLayer(treatment_scenario, ts_superbasin_dict, ts_run_dir):
+def setRunLayers(treatment_scenario, ts_superbasin_dict, ts_run_dir):
 
     import json
     from rasterio.mask import mask
@@ -237,9 +237,6 @@ def setVegLayer(treatment_scenario, ts_superbasin_dict, ts_run_dir):
         # TODO: copy baseline veg bin file to ts_run_dir inputs (not tif)
         return True
 
-    # Baseline veg layer location
-    baseline_veg_filename = "%s/inputs/veg_files/%s_notr.tif" % (ts_superbasin_dir, ts_superbasin_code)
-
     # Projection assigned for later use
     # TODO: add to settings
     PROJECTION = 'PROJCS["NAD_1983_USFS_R6_Albers",GEOGCS["GCS_North_American_1983",DATUM["D_North_American_1983",SPHEROID["GRS_1980",6378137.0,298.257222101]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Albers"],PARAMETER["False_Easting",600000.0],PARAMETER["False_Northing",0.0],PARAMETER["Central_Meridian",-120.0],PARAMETER["Standard_Parallel_1",43.0],PARAMETER["Standard_Parallel_2",48.0],PARAMETER["Latitude_Of_Origin",34.0],UNIT["Meter",1.0]]'
@@ -251,8 +248,13 @@ def setVegLayer(treatment_scenario, ts_superbasin_dict, ts_run_dir):
         # OPEN:
             # Baeline Veg Layer
             # Treatment Veg Layer
-        baseline_veg_file = rasterio.open(baseline_veg_filename, "r")
+            # DEM Layer
+            # DIR Layer
+            # Soil Depth Layer
+            # Soil Type Layer
+        baseline_veg_file = rasterio.open("%s/inputs/veg_files/%s_notr.tif" % (ts_superbasin_dir, ts_superbasin_code), "r")
         treatment_veg_file = rasterio.open("%s/inputs/veg_files/%s_%s.tif" % (ts_superbasin_dir, ts_superbasin_code, rx_id), "r")
+
 
         # CREATE treatment shape/feature from TreatmentScenario geometry
         feature = json.loads(treatment_scenario.geometry_dissolved.json)
@@ -310,7 +312,31 @@ def setVegLayer(treatment_scenario, ts_superbasin_dict, ts_run_dir):
 
     import ipdb; ipdb.set_trace()
 
-    # Remove header if there
+    # Remove header from ascii
+    ##########################
+    try:
+        ts_run_inputs_listdir = os.listdir(ts_run_dir_inputs)
+    except OSError:
+        print(
+            "Path not found: %s. Please make a masked directory in your basins inputs directory."
+            % ts_run_inputs_listdir
+        )
+        sys.exit()
+
+    # Off with their heads!
+    for ts_run_inputs_listdir in ts_run_input:
+        input_extension = os.path.splitext(masked_file)[-1]
+        if input_extension == '.asc':
+            input_path = os.path.abspath(os.path.join(ts_run_inputs_listdir, ts_run_input))
+            ascii_file = open(input_path, "r+")
+            content_lines = ascii_file.readlines()
+            ascii_file.seek(0,0)
+            count = 0
+            for l in content_lines:
+                if count > 5:
+                    ascii_file.write(l)
+                count += 1
+            ascii_file.close()
 
     # TODO convert ascii to bin
 
@@ -378,8 +404,8 @@ def runHarnessConfig(treatment_scenario):
     # TreatmentScenario run directory
     ts_run_dir = getRunDir(treatment_scenario, ts_superbasin_dict)
 
-    # Create veg layer
-    ts_run_veg_layer = setVegLayer(treatment_scenario, ts_superbasin_dict, ts_run_dir)
+    # Create run layer
+    ts_layers = setRunLayers(treatment_scenario, ts_superbasin_dict, ts_run_dir)
 
     # Get LCD basin
     ts_target_basin = getTargetBasin(treatment_scenario)
@@ -396,7 +422,7 @@ def runHarnessConfig(treatment_scenario):
         ts_target_streams = None
 
 
-    createInputConfig(ts_superbasin_dict, ts_run_dir, ts_run_veg_layer, ts_target_basin)
+    createInputConfig(ts_superbasin_dict, ts_run_dir, ts_layers, ts_target_basin)
 
     # TODO: run DHSVM
 
@@ -410,7 +436,7 @@ def runHarnessConfig(treatment_scenario):
 # CREATE INPUT CONFIG FILE
 # ======================================
 
-def createInputConfig(ts_superbasin_dict, ts_run_dir, ts_run_veg_layer, ts_target_basin):
+def createInputConfig(ts_superbasin_dict, ts_run_dir, ts_layers, ts_target_basin):
 
     import configparser
 
