@@ -227,72 +227,88 @@ def setVegLayer(treatment_scenario, ts_superbasin_dict, ts_run_dir):
     ts_superbasin_dir = ts_superbasin_dict['basin_dir']
     ts_superbasin_code = ts_superbasin_dict['basin_code']
 
+    # inputs for TreatmentScenario to feed into DHSVM
+    ts_run_dir_inputs = os.path.join('%s/ts_inputs' % ts_run_dir)
+
     # Prescription ID
     rx_id = treatment_scenario.prescription_treatment_selection
 
-    # Create sym link for veg layer
+    if rx_id == 'notr':
+        # TODO: copy baseline veg bin file to ts_run_dir inputs (not tif)
+        return True
+
+    # Baseline veg layer location
     baseline_veg_filename = "%s/inputs/veg_files/%s_notr.tif" % (ts_superbasin_dir, ts_superbasin_code)
 
-    # if rx_id == 'notr':
-        # copy baseline veg bin file to ts_run_dir inputs (not tif)
-        # return True
+    # Projection assigned for later use
+    # TODO: add to settings
+    PROJECTION = 'PROJCS["NAD_1983_USFS_R6_Albers",GEOGCS["GCS_North_American_1983",DATUM["D_North_American_1983",SPHEROID["GRS_1980",6378137.0,298.257222101]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Albers"],PARAMETER["False_Easting",600000.0],PARAMETER["False_Northing",0.0],PARAMETER["Central_Meridian",-120.0],PARAMETER["Standard_Parallel_1",43.0],PARAMETER["Standard_Parallel_2",48.0],PARAMETER["Latitude_Of_Origin",34.0],UNIT["Meter",1.0]]'
 
-    baseline_veg_file = rasterio.open(baseline_veg_filename, "r")
-    treatment_veg_file = rasterio.open("%s/inputs/veg_files/%s_%s.tif" % (ts_superbasin_dir, ts_superbasin_code, rx_id), "r")
 
-    # create treatment geometry
-    feature = json.loads(treatment_scenario.geometry_dissolved.json)
-    feature_shape = shape(feature)
-    # feature_collection = GeometryCollection([feature_shape.buffer(0)])
+    # Start a rasterio environment
+    with rasterio.Env():
 
-    projection = 'PROJCS["NAD_1983_USFS_R6_Albers",GEOGCS["GCS_North_American_1983",DATUM["D_North_American_1983",SPHEROID["GRS_1980",6378137.0,298.257222101]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Albers"],PARAMETER["False_Easting",600000.0],PARAMETER["False_Northing",0.0],PARAMETER["Central_Meridian",-120.0],PARAMETER["Standard_Parallel_1",43.0],PARAMETER["Standard_Parallel_2",48.0],PARAMETER["Latitude_Of_Origin",34.0],UNIT["Meter",1.0]]'
+        # OPEN:
+            # Baeline Veg Layer
+            # Treatment Veg Layer
+        baseline_veg_file = rasterio.open(baseline_veg_filename, "r")
+        treatment_veg_file = rasterio.open("%s/inputs/veg_files/%s_%s.tif" % (ts_superbasin_dir, ts_superbasin_code, rx_id), "r")
 
-    tfm = partial(pyproj.transform, pyproj.Proj("epsg:3857"), pyproj.Proj(projection))
-    ts_shape = shapely.ops.transform(tfm, feature_shape)
+        # CREATE treatment shape/feature from TreatmentScenario geometry
+        feature = json.loads(treatment_scenario.geometry_dissolved.json)
+        feature_shape = shape(feature)
 
-    clipped_treatment = mask(treatment_veg_file, ts_shape, nodata=0)
-    clipped_treatment_mask = clipped_treatment[0]
+        # Transform and reproject TS shape/feature to match UCSRB data bin files
+        tfm = partial(pyproj.transform, pyproj.Proj("epsg:3857"), pyproj.Proj(PROJECTION))
+        ts_shape = shapely.ops.transform(tfm, feature_shape)
 
-    profile = treatment_veg_file.profile
+        # TERMINOLOGY:
+            # Mask - a shape/feature area of interest within a "larger area"
+            # Clip - new dataset with bounds of original "larger area" that preserves only data that intersects the mask area of interest
 
-    with rasterio.open("%s/ts_clipped_layer" % ts_run_dir, 'w', **profile) as dst:
-        dst.write(clipped_treatment_mask)
+        # STEPS:
+            # Mask the files using the TS shape/feature
+            # Function mask() returns a tuple with 1 item which is the masked numpy.narray
+            # Save profile to use for writing new file
+            # Update new profile to use ascii instead of geotiff
+            # Write masked treatment layer
 
-    dst_open = rasterio.open('%s/ts_clipped_layer' % ts_run_dir, 'r+')
+        # Treatment Veg Layer
 
-    # t = treatment_veg_file.transform
-    #
-    # # rescale the metadata
-    # transform = Affine(t.a * scale, t.b, t.c, t.d, t.e * scale, t.f)
-    # height = int(treatment_veg_file.height / scale)
-    # width = int(treatment_veg_file.width / scale)
+        clipped_treatment = mask(treatment_veg_file, ts_shape, nodata=0)
+        clipped_treatment_mask = clipped_treatment[0]
 
-    # profile.update(transform=transform, driver='GTiff', height=height, width=width)
+        profile = treatment_veg_file.profile
+        profile['driver'] = 'AAIGrid'
+        profile['nodata'] = 0
 
-    # data = raster.read(
-    #         out_shape=(raster.count, height, width),
-    #         resampling=Resampling.bilinear,
-    #     )
+        with rasterio.open("%s/ts_clipped_treatment_layer.asc" % ts_run_dir_inputs, 'w', **profile) as dst:
+            dst.write(clipped_treatment_mask)
 
-    # with MemoryFile() as memfile:
-    #     with memfile.open(**profile) as dataset:  # Open as DatasetWriter
-    #         dataset.write(clipped_treatment_mask)
-    #
-    #     with memfile.open() as dataset:  # Reopen as DatasetReader
-    #         yield dataset  # Note yield not return
+        # Baseline Veg Layer
 
-    merged_veg = merge([dst_open, baseline_veg_file], nodata=0, dtype="uint8")
-    merged_veg_layer = merged_veg[0]
+        clipped_baseline = mask(baseline_veg_file, ts_shape, nodata=0)
+        clipped_baseline_mask = clipped_baseline[0]
 
-    ts_run_dir_inputs = os.path.join('%s/ts_inputs' % ts_run_dir)
-    ts_treated_veg_layer = os.path.join('%s/treated_veg_layer' % ts_run_dir_inputs)
+        baseline_profile = baseline_veg_file.profile
+        baseline_profile['driver'] = 'AAIGrid'
+        baseline_profile['nodata'] = 0
 
-    with rasterio.open(ts_treated_veg_layer, 'w', **profile) as dst:
-        dst.write(merged_veg_layer)
+        with rasterio.open("%s/treated_veg_layer.asc" % ts_run_dir_inputs, 'w', **baseline_profile) as dst:
+            dst.write(clipped_baseline_mask)
+
+    # dst_open = rasterio.open('%s/ts_clipped_layer' % ts_run_dir, 'r+')
+    # merged_veg = merge([dst_open, baseline_veg_file], nodata=0, dtype="uint8")
+    # merged_veg_layer = merged_veg[0]
+
+    # with rasterio.open(ts_treated_veg_layer, 'w', **profile) as dst:
+        # dst.write(merged_veg_layer)
 
     baseline_veg_file.close()
     treatment_veg_file.close()
-    dst_open.close()
+    # dst_open.close()
+
+    import ipdb; ipdb.set_trace()
 
     # Remove header if there
 
