@@ -1,8 +1,22 @@
-import sys, statistics, shutil, os
 from datetime import datetime
 from django.utils.timezone import get_current_timezone
-from ucsrb.models import PourPointBasin, StreamFlowReading, TreatmentScenario, FocusArea
-from .settings import FLOW_METRICS, TIMESTEP, ABSOLUTE_FLOW_METRIC, DELTA_FLOW_METRIC, BASINS_DIR, RUNS_DIR, SUPERBASINS
+from functools import partial
+import json
+import numpy
+import os
+import pyproj
+import rasterio
+from rasterio.mask import mask
+from rasterio.merge import merge
+import shapely
+from shapely.geometry import shape, GeometryCollection
+import shutil
+import statistics
+import sys
+from ucsrb.models import StreamFlowReading, TreatmentScenario, FocusArea
+
+from dhsvm_harness.settings import FLOW_METRICS, TIMESTEP, ABSOLUTE_FLOW_METRIC, DELTA_FLOW_METRIC, BASINS_DIR, RUNS_DIR, SUPERBASINS, DHSVM_BUILD
+
 
 def getSegmentIdList(inlines):
     segment_id = []
@@ -48,74 +62,159 @@ def cleanStreamFlowData(flow_file, out_file, segment_ids=None):
 
 def readStreamFlowData(flow_file, segment_ids=None, scenario=None, is_baseline=True):
 
+    print("Reading in flow data...")
     with open(flow_file, 'r') as f:
         inlines=f.readlines()
 
     segment_ids = check_stream_segment_ids(inlines, segment_ids)
 
+    # print("Cleaning inlines...")
+    # inlines = [x for x in inlines if x.split('"')[1] in segment_ids]
+
+    # print("Building basin table...")
+    # basins = {}
+    # for segment_name in segment_ids:
+    #     # TODO: Clean up Overlapping ppt layer so no dupes exist
+    #     # basins[segment_name] = FocusArea.objects.get(unit_type='PourPointOverlap', unit_id=segment_name)
+    #     try:
+    #         basins[segment_name] = FocusArea.objects.filter(unit_type='PourPointOverlap', unit_id=segment_name)[0]
+    #     except IndexError as e:
+    #         print("%s not a valid basin" % segment_name)
+    #         pass
+
     readings_per_day = 24/TIMESTEP
     tz = get_current_timezone()
 
-    for segment_name in segment_ids:
-        try:
-            basin = PourPointBasin.objects.get(segment_ID=segment_name)
-        except Exception as e:
-            print('No basin found for segment ID "%s"' % segment_name)
-            continue
+    print('Importing data...')
+    for line in inlines:
+        basin_name = line.split('"')[1]
+        if basin_name in segment_ids:
+            # basin = basins[basin_name]
+            data = line.split()
+            timestamp = data[0]
+            reading = data[4]
+            time = tz.localize(datetime.strptime(timestamp, "%m.%d.%Y-%H:%M:%S"))
 
-        segment_readings = {}
-        for metric_key in FLOW_METRICS.keys():
-            segment_readings[metric_key] = []
+            value = float(reading)/float(TIMESTEP)
 
-        for line in inlines:
-            if '"%s"' % segment_name in line:
-                data = line.split()
-                timestamp = data[0]
-                reading = data[4]
-                time = tz.localize(datetime.strptime(timestamp, "%m.%d.%Y-%H:%M:%S"))
+            try:
+                new_reading = StreamFlowReading.objects.get(
+                    timestamp=timestamp,
+                    time=time,
+                    segment_id=basin_name,
+                    metric=ABSOLUTE_FLOW_METRIC,
+                    is_baseline=is_baseline,
+                    treatment=scenario
+                )
+                new_reading.value = value
+            except StreamFlowReading.DoesNotExist:
+                new_reading = StreamFlowReading.objects.create(
+                    timestamp=timestamp,
+                    time=time,
+                    segment_id=basin_name,
+                    metric=ABSOLUTE_FLOW_METRIC,
+                    is_baseline=is_baseline,
+                    treatment=scenario,
+                    value=value
+                )
 
-                for metric_key in FLOW_METRICS.keys():
-                    if FLOW_METRICS[metric_key]['measure'] == 'abs':    # Establish abs flow rates/deltas for future reference
-                        if FLOW_METRICS[metric_key]['delta']:
-                            # Assumes 'Absolute Flow Rate' has already been addressed for this segment's timestep
-                            if len(segment_readings[ABSOLUTE_FLOW_METRIC]) > 1:
-                                value = segment_readings[ABSOLUTE_FLOW_METRIC][-1]['value'] - segment_readings[ABSOLUTE_FLOW_METRIC][-2]['value']
-                            else:
-                                value = 0
-                        else:
-                            value = float(reading)/float(TIMESTEP)
-                    else:
-                        relevant_readings = int(FLOW_METRICS[metric_key]['period']*readings_per_day)
-                        if not FLOW_METRICS[metric_key]['delta']:
-                            readings = [x['value'] for x in segment_readings[ABSOLUTE_FLOW_METRIC][-relevant_readings:]]
-                            if FLOW_METRICS[metric_key]['measure'] == 'mean':
-                                value = statistics.mean(readings)
-                            else:
-                                readings.sort()
-                                value = readings[0]
-                        else:
-                            source_metric = FLOW_METRICS[metric_key]['source_metric']
-                            try:
-                                previous_value = segment_readings[source_metric][-2]['value']
-                                latest_value = segment_readings[source_metric][-1]['value']
-                                value = latest_value - previous_value
-                            except IndexError:
-                                value = 0
+        # StreamFlowReading.objects.create(
+        #     timestamp=timestamp,
+        #     time=time,
+        #     basin=basin,
+        #     metric=ABSOLUTE_FLOW_METRIC,
+        #     is_baseline=is_baseline,
+        #     treatment=scenario,
+        #     value=value
+        # )
 
-                    segment_readings[metric_key].append({
-                        'timestep': timestamp,
-                        'value': value
-                    })
-
-                    StreamFlowReading.objects.create(
-                        timestamp=timestamp,
-                        time=time,
-                        basin=basin,
-                        metric=metric_key,
-                        is_baseline=is_baseline,
-                        treatment=scenario,
-                        value=value
-                    )
+    # for segment_name in segment_ids:
+    #     print("Loading data for segment %s..." % segment_name)
+    #     try:
+    #         basin = FocusArea.objects.get(unit_type='PourPointOverlap', unit_id=segment_name)
+    #     except Exception as e:
+    #         print('No basin found for segment ID "%s"' % segment_name)
+    #         continue
+    #
+    #     segment_readings = {}
+    #     for metric_key in FLOW_METRICS.keys():
+    #         segment_readings[metric_key] = []
+    #
+    #     for line in inlines:
+    #         if '"%s"' % segment_name in line:
+    #             data = line.split()
+    #             timestamp = data[0]
+    #             reading = data[4]
+    #             time = tz.localize(datetime.strptime(timestamp, "%m.%d.%Y-%H:%M:%S"))
+    #
+    #             value = float(reading)/float(TIMESTEP)
+    #
+    #             # segment_readings[metric_key].append({
+    #             #     'timestep': timestamp,
+    #             #     'value': value
+    #             # })
+    #
+    #             StreamFlowReading.objects.filter(
+    #                 timestamp=timestamp,
+    #                 time=time,
+    #                 basin=basin,
+    #                 metric=ABSOLUTE_FLOW_METRIC,
+    #                 is_baseline=is_baseline,
+    #                 treatment=scenario
+    #             ).delete()
+    #
+    #             StreamFlowReading.objects.create(
+    #                 timestamp=timestamp,
+    #                 time=time,
+    #                 basin=basin,
+    #                 metric=ABSOLUTE_FLOW_METRIC,
+    #                 is_baseline=is_baseline,
+    #                 treatment=scenario,
+    #                 value=value
+    #             )
+    #
+    #             # for metric_key in FLOW_METRICS.keys():
+    #             #     if FLOW_METRICS[metric_key]['measure'] == 'abs':    # Establish abs flow rates/deltas for future reference
+    #             #         if FLOW_METRICS[metric_key]['delta']:
+    #             #             # Assumes 'Absolute Flow Rate' has already been addressed for this segment's timestep
+    #             #             if len(segment_readings[ABSOLUTE_FLOW_METRIC]) > 1:
+    #             #                 value = segment_readings[ABSOLUTE_FLOW_METRIC][-1]['value'] - segment_readings[ABSOLUTE_FLOW_METRIC][-2]['value']
+    #             #             else:
+    #             #                 value = 0
+    #             #         else:
+    #             #             value = float(reading)/float(TIMESTEP)
+    #             #     else:
+    #             #         relevant_readings = int(FLOW_METRICS[metric_key]['period']*readings_per_day)
+    #             #         if not FLOW_METRICS[metric_key]['delta']:
+    #             #             readings = [x['value'] for x in segment_readings[ABSOLUTE_FLOW_METRIC][-relevant_readings:]]
+    #             #             if FLOW_METRICS[metric_key]['measure'] == 'mean':
+    #             #                 value = statistics.mean(readings)
+    #             #             else:
+    #             #                 readings.sort()
+    #             #                 value = readings[0]
+    #             #         else:
+    #             #             source_metric = FLOW_METRICS[metric_key]['source_metric']
+    #             #             try:
+    #             #                 previous_value = segment_readings[source_metric][-2]['value']
+    #             #                 latest_value = segment_readings[source_metric][-1]['value']
+    #             #                 value = latest_value - previous_value
+    #             #             except IndexError:
+    #             #                 value = 0
+    #             #
+    #             #     segment_readings[metric_key].append({
+    #             #         'timestep': timestamp,
+    #             #         'value': value
+    #             #     })
+    #             #
+    #             #     StreamFlowReading.objects.create(
+    #             #         timestamp=timestamp,
+    #             #         time=time,
+    #             #         basin=basin,
+    #             #         metric=metric_key,
+    #             #         is_baseline=is_baseline,
+    #             #         treatment=scenario,
+    #             #         value=value
+    #             #     )
 
 
 # ======================================
@@ -176,7 +275,10 @@ def getRunSuperBasinDir(treatment_scenario):
         sys.exit()
 
     # TreatmentScenario superbasin
-    ts_superbasin_code = treatment_scenario.focus_area_input.unit_id.split('_')[0]
+    if treatment_scenario.focus_area_input.unit_type == 'PourPointOverlap':
+        ts_superbasin_code = treatment_scenario.focus_area_input.unit_id.split('_')[0]
+    else:
+        ts_superbasin = FocusArea.objects.filter(unit_type='PourPointOverlap', geometry__contains=treatment_scenario.focus_area_input.geometry).order_by('geometry__area')[0].unit_id.split('_')[0]
 
     # Superbasin dir
     ts_superbasin_dir = SUPERBASINS[ts_superbasin_code]['inputs']
@@ -218,20 +320,6 @@ def getSuperBasinDetails():
 # ======================================
 
 def setVegLayers(treatment_scenario, ts_superbasin_dict, ts_run_dir):
-
-    import json
-    from rasterio.mask import mask
-    from rasterio.merge import merge
-    import rasterio
-    from rasterio import Affine
-    from rasterio.io import MemoryFile
-    from rasterio.enums import Resampling
-
-    from shapely.geometry import shape, GeometryCollection
-    from functools import partial
-    import shapely.ops
-    import pyproj
-    import numpy
 
     ts_superbasin_dir = ts_superbasin_dict['basin_dir']
     ts_superbasin_code = ts_superbasin_dict['basin_code']
@@ -350,7 +438,7 @@ def setVegLayers(treatment_scenario, ts_superbasin_dict, ts_run_dir):
     ######################
 
     # path to myconvert
-    myconvert = os.path.join(dhsvm_build_path, 'DHSVM', 'program', 'myconvert')
+    myconvert = os.path.join(DHSVM_BUILD, 'DHSVM', 'program', 'myconvert')
 
     for ts_run_input in ts_run_inputs_listdir:
         input_extension = os.path.splitext(ts_run_input)[-1]
