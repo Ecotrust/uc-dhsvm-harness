@@ -70,32 +70,20 @@ def importBasinLine(line, basin_name, is_baseline, scenario):
 
     value = float(reading)/float(TIMESTEP)
 
-    try:
-        new_reading = StreamFlowReading.objects.get(
-            timestamp=timestamp,
-            # time=time,
-            segment_id=basin_name,
-            metric=ABSOLUTE_FLOW_METRIC,
-            is_baseline=is_baseline,
-            treatment=scenario
-        )
-        if not new_reading.value == value:
-            new_reading.value = value
-            new_reading.save()
-    except StreamFlowReading.DoesNotExist:
-        new_reading = StreamFlowReading.objects.create(
-            timestamp=timestamp,
-            time=tz.localize(datetime.strptime(timestamp, "%m.%d.%Y-%H:%M:%S")),
-            segment_id=basin_name,
-            metric=ABSOLUTE_FLOW_METRIC,
-            is_baseline=is_baseline,
-            treatment=scenario,
-            value=value
-        )
+    new_reading = StreamFlowReading.objects.create(
+        timestamp=timestamp,
+        time=tz.localize(datetime.strptime(timestamp, "%m.%d.%Y-%H:%M:%S")),
+        segment_id=basin_name,
+        metric=ABSOLUTE_FLOW_METRIC,
+        is_baseline=is_baseline,
+        treatment=scenario,
+        value=value
+    )
 
 def readStreamFlowData(flow_file, segment_ids=None, scenario=None, is_baseline=True):
 
     # readings_per_day = 24/TIMESTEP
+    tz = get_current_timezone()
 
     print("Reading in flow data...")
     with open(flow_file, 'r') as f:
@@ -103,8 +91,16 @@ def readStreamFlowData(flow_file, segment_ids=None, scenario=None, is_baseline=T
 
     segment_ids = check_stream_segment_ids(inlines, segment_ids)
 
-    if len(inlines) < 10000:
+    start_timestamp = inlines[0].split()[0]
+    start_time = tz.localize(datetime.strptime(start_timestamp, "%m.%d.%Y-%H:%M:%S"))
+    end_timestamp = inlines[-1].split()[0]
+    end_time = tz.localize(datetime.strptime(end_timestamp, "%m.%d.%Y-%H:%M:%S"))
 
+    print('purging obsolete records...')
+    for segment_id in segment_ids:
+        StreamFlowReading.objects.filter(time__gte=start_time, time__lte=end_time, segment_id=segment_id, treatment=scenario).delete()
+
+    if len(inlines) < 10000:
         print('Importing data...')
         for line in inlines:
             basin_name = line.split('"')[1]
