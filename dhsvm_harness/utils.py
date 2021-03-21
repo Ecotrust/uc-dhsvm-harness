@@ -2,7 +2,7 @@ import sys, statistics, shutil, os
 from datetime import datetime
 from django.utils.timezone import get_current_timezone
 from ucsrb.models import PourPointBasin, StreamFlowReading, TreatmentScenario, FocusArea
-from .settings import FLOW_METRICS, TIMESTEP, ABSOLUTE_FLOW_METRIC, DELTA_FLOW_METRIC, BASINS_DIR, RUNS_DIR, SUPERBASINS
+from .settings import FLOW_METRICS, TIMESTEP, ABSOLUTE_FLOW_METRIC, DELTA_FLOW_METRIC, BASINS_DIR, RUNS_DIR, SUPERBASINS, DHSVM_BUILD
 
 def getSegmentIdList(inlines):
     segment_id = []
@@ -148,11 +148,11 @@ def getRunDir(treatment_scenario, ts_superbasin_dict):
     os.system("ln -s %s/inputs %s/inputs" % (ts_superbasin_dict['basin_dir'], ts_run_dir))
 
     # Current location:
-    os.system("ln -s %s/../met_data %s/inputs/met_data" % (ts_superbasin_dict['basin_dir'], ts_run_dir))
+    # os.system("ln -s %s/../met_data %s/inputs/met_data" % (ts_superbasin_dict['basin_dir'], ts_run_dir))
     # Future location:
     # os.system("ln -s %s/../met_data /usr/local/apps/marineplanner-core/runs/%s/inputs/met_data" % (ts_superbasin_dir, ts_run_dir))
 
-    os.system("ln -s %s/shadows %s/inputs/shadows" % (ts_superbasin_dict['basin_dir'], ts_run_dir))
+    # os.system("ln -s %s/shadows %s/inputs/shadows" % (ts_superbasin_dict['basin_dir'], ts_run_dir))
 
     # Create output dir
     ts_run_output_dir = os.path.join(ts_run_dir, "output")
@@ -324,6 +324,7 @@ def setVegLayers(treatment_scenario, ts_superbasin_dict, ts_run_dir):
         sys.exit()
 
     # Off with their heads!
+    # Save some info for later too
     for ts_run_input in ts_run_inputs_listdir:
         input_extension = os.path.splitext(ts_run_input)[-1]
         if input_extension == '.asc':
@@ -332,18 +333,52 @@ def setVegLayers(treatment_scenario, ts_superbasin_dict, ts_run_dir):
             content_lines = ascii_file.readlines()
             ascii_file.seek(0,0)
             count = 0
+
             for l in content_lines:
+
                 if count > 5:
                     ascii_file.write(l)
+                else:
+                    # 4 of the first 5 lines have info we need
+                    # removing extra white space then split into [name, value]
+                    line = l.strip().split()
+
+                    # Cols
+                    if (line[0] == 'ncols'):
+                        ncols = int(line[1])
+                    # else:
+                        # print("desired number of columns not found in veg ascii header")
+
+                    # Rows
+                    if (line[0] == 'nrows'):
+                        nrows = int(line[1])
+                    # else:
+                        # print("desired number of rows not found in veg ascii header")
+
+                    # xllcorner
+                    if (line[0] == 'xllcorner'):
+                        xllcorner = line[1]
+                    # else:
+                        # print("desired xllcorner not found in veg ascii header")
+
+                    # yllcorner
+                    if (line[0] == 'yllcorner'):
+                        yllcorner = line[1]
+                    # else:
+                        # print("desired yllcorner not found in veg ascii header")
+
                 count += 1
+
+            # end loop for ascii header and close ascii file
             ascii_file.close()
 
+    # end loop of input files
 
     # Convert ascii to bin
     ######################
 
-    # DHSVM path
-    dhsvm_build_path = settings.DHSVM_BUILD
+    # DHSVM path from settings
+    dhsvm_build_path = DHSVM_BUILD
 
     # path to myconvert
     myconvert = os.path.join(dhsvm_build_path, 'DHSVM', 'program', 'myconvert')
@@ -357,18 +392,19 @@ def setVegLayers(treatment_scenario, ts_superbasin_dict, ts_run_dir):
             use_type = "character"
             os.system(
                 "%s ascii %s %s %s %s %s"
-                % (myconvert, use_type, ascii_file_path, bin_file_path, mask_nrows, mask_ncols)
+                % (myconvert, use_type, ascii_file_path, bin_file_path, nrows, ncols)
             )
 
 
 # ======================================
-# Identify basin/LCD segment
+# Identify basin
 # ======================================
 
 def getTargetBasin(treatment_scenario):
 
     target_basin = None
 
+    import ipdb; ipdb.set_trace()
     # Basin will have 1 field which is cat name of superbasin_segmentId
     # Query run against overlapping_pourpoint_basin
     if treatment_scenario.focus_area_input:
@@ -424,7 +460,7 @@ def runHarnessConfig(treatment_scenario):
     # Create mask
     # ts_mask = createBasinMask(treatment_scenario, ts_run_dir)
 
-    # Get sub LCD basins
+    # Get target stream segments basins
     if ts_target_basin:
         ts_target_streams = getTargetStreamSegments(ts_target_basin)
     else:
