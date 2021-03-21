@@ -60,7 +60,42 @@ def cleanStreamFlowData(flow_file, out_file, segment_ids=None):
                         f.write(line)
         return True
 
+def importBasinLine(line, basin_name, is_baseline, scenario):
+    tz = get_current_timezone()
+    # basin = basins[basin_name]
+    data = line.split()
+    timestamp = data[0]
+    reading = data[4]
+    # time = tz.localize(datetime.strptime(timestamp, "%m.%d.%Y-%H:%M:%S"))
+
+    value = float(reading)/float(TIMESTEP)
+
+    try:
+        new_reading = StreamFlowReading.objects.get(
+            timestamp=timestamp,
+            # time=time,
+            segment_id=basin_name,
+            metric=ABSOLUTE_FLOW_METRIC,
+            is_baseline=is_baseline,
+            treatment=scenario
+        )
+        if not new_reading.value == value:
+            new_reading.value = value
+            new_reading.save()
+    except StreamFlowReading.DoesNotExist:
+        new_reading = StreamFlowReading.objects.create(
+            timestamp=timestamp,
+            time=tz.localize(datetime.strptime(timestamp, "%m.%d.%Y-%H:%M:%S")),
+            segment_id=basin_name,
+            metric=ABSOLUTE_FLOW_METRIC,
+            is_baseline=is_baseline,
+            treatment=scenario,
+            value=value
+        )
+
 def readStreamFlowData(flow_file, segment_ids=None, scenario=None, is_baseline=True):
+
+    # readings_per_day = 24/TIMESTEP
 
     print("Reading in flow data...")
     with open(flow_file, 'r') as f:
@@ -68,55 +103,39 @@ def readStreamFlowData(flow_file, segment_ids=None, scenario=None, is_baseline=T
 
     segment_ids = check_stream_segment_ids(inlines, segment_ids)
 
-    # print("Cleaning inlines...")
-    # inlines = [x for x in inlines if x.split('"')[1] in segment_ids]
+    if len(inlines) < 10000:
 
-    # print("Building basin table...")
-    # basins = {}
-    # for segment_name in segment_ids:
-    #     # TODO: Clean up Overlapping ppt layer so no dupes exist
-    #     # basins[segment_name] = FocusArea.objects.get(unit_type='PourPointOverlap', unit_id=segment_name)
-    #     try:
-    #         basins[segment_name] = FocusArea.objects.filter(unit_type='PourPointOverlap', unit_id=segment_name)[0]
-    #     except IndexError as e:
-    #         print("%s not a valid basin" % segment_name)
-    #         pass
+        print('Importing data...')
+        for line in inlines:
+            basin_name = line.split('"')[1]
+            if basin_name in segment_ids:
+                importBasinLine(line, basin_name, is_baseline, scenario)
 
-    readings_per_day = 24/TIMESTEP
-    tz = get_current_timezone()
+    else:
+        # release memory
+        inlines = []
+        # create split dir
+        parent_dir = os.path.dirname(flow_file)
+        split_dir = os.path.join(parent_dir, 'flow_split_%s' % datetime.now().timestamp())
+        if os.path.isdir(split_dir):
+            shutil.rmtree(split_dir)
+        os.mkdir(split_dir)
+        os.system('split -l 10000 %s %s/' % (flow_file, split_dir))
+        filecount = 1
+        split_files = os.listdir(split_dir)
+        for filename in split_files:
+            file_slice = os.path.join(split_dir, filename)
+            print('Reading %d (of %d) "%s" at %s' % (filecount, len(split_files), file_slice, str(datetime.now())))
+            with open(file_slice, 'r') as f:
+                inlines=f.readlines()
 
-    print('Importing data...')
-    for line in inlines:
-        basin_name = line.split('"')[1]
-        if basin_name in segment_ids:
-            # basin = basins[basin_name]
-            data = line.split()
-            timestamp = data[0]
-            reading = data[4]
-            time = tz.localize(datetime.strptime(timestamp, "%m.%d.%Y-%H:%M:%S"))
+            for line in inlines:
+                basin_name = line.split('"')[1]
+                if basin_name in segment_ids:
+                    importBasinLine(line, basin_name, is_baseline, scenario)
+            filecount +=1
 
-            value = float(reading)/float(TIMESTEP)
-
-            try:
-                new_reading = StreamFlowReading.objects.get(
-                    timestamp=timestamp,
-                    time=time,
-                    segment_id=basin_name,
-                    metric=ABSOLUTE_FLOW_METRIC,
-                    is_baseline=is_baseline,
-                    treatment=scenario
-                )
-                new_reading.value = value
-            except StreamFlowReading.DoesNotExist:
-                new_reading = StreamFlowReading.objects.create(
-                    timestamp=timestamp,
-                    time=time,
-                    segment_id=basin_name,
-                    metric=ABSOLUTE_FLOW_METRIC,
-                    is_baseline=is_baseline,
-                    treatment=scenario,
-                    value=value
-                )
+        shutil.rmtree(split_dir)
 
         # StreamFlowReading.objects.create(
         #     timestamp=timestamp,
