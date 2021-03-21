@@ -6,6 +6,7 @@ BASINS = ['entiat', 'methow', 'okan', 'wena']
 DEFAULT_BASIN_NAME = 'entiat'
 BASINS_DIR='/usr/local/apps/marineplanner-core/apps/uc-dhsvm-harness/basins'
 RUNS_DIR='/usr/local/apps/marineplanner-core/apps/uc-dhsvm-harness/runs'
+DHSVM_BUILD = '/usr/local/apps/marineplanner-core/apps/PNNL-DHSVM/build'
 SUPERBASINS = {
     'enti': {
         'name': 'Entiat',

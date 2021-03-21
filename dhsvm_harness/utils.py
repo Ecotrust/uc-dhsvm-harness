@@ -220,14 +220,14 @@ def getSuperBasinDetails():
 def setVegLayers(treatment_scenario, ts_superbasin_dict, ts_run_dir):
 
     import json
+    import tempfile
+    import rasterio
     from rasterio.mask import mask
     from rasterio.merge import merge
-    import rasterio
     from rasterio import Affine
     from rasterio.io import MemoryFile
     from rasterio.enums import Resampling
-
-    from shapely.geometry import shape, GeometryCollection
+    from shapely.geometry import shape
     from functools import partial
     import shapely.ops
     import pyproj
@@ -273,50 +273,43 @@ def setVegLayers(treatment_scenario, ts_superbasin_dict, ts_run_dir):
             # Mask - a shape/feature area of interest within a "larger area"
             # Clip - new dataset with bounds of original "larger area" that preserves only data that intersects the mask area of interest
 
-        # STEPS:
-            # Mask the files using the TS shape/feature
-            # Function mask() returns a tuple with 1 item which is the masked numpy.narray
-            # Save profile to use for writing new file
-            # Update new profile to use ascii instead of geotiff
-            # Write masked treatment layer
-
         # Treatment Veg Layer
 
         clipped_treatment = mask(treatment_veg_file, ts_shape, nodata=0)
         clipped_treatment_mask = clipped_treatment[0]
 
         profile = treatment_veg_file.profile
-        profile['nodata'] = 0
 
-        with rasterio.open("%s/ts_clipped_treatment_layer.tif" % ts_run_dir, 'w', **profile) as dst:
-            dst.write(clipped_treatment_mask)
+        with tempfile.NamedTemporaryFile() as tmpfile:
+            with rasterio.open(tmpfile, 'w', **profile) as dataset:
+                tmpfile.write(clipped_treatment_mask)
+
+            # with memfile.open( **profile) as treatment_memfile:
+                # treatment_memfile.write(clipped_treatment_mask)
+
+                merged_veg = merge([dataset, baseline_veg_file], nodata=0, dtype="uint8")
+                merged_veg_layer = merged_veg[0]
+
+        profile['driver'] = 'AAIGrid'
+        # profile['nodata'] = 0
+
+        with rasterio.open("%s/ts_clipped_treatment_layer.asc" % ts_run_dir_inputs, 'w', **profile) as dst:
+            dst.write(merged_veg_layer)
 
         # Baseline Veg Layer
 
         # clipped_baseline = mask(baseline_veg_file, ts_shape, nodata=0)
         # clipped_baseline_mask = clipped_baseline[0]
         #
-        # baseline_profile = baseline_veg_file.profile
-        # baseline_profile['driver'] = 'AAIGrid'
-        # baseline_profile['nodata'] = 0
-        #
         # with rasterio.open("%s/baseline_veg_layer.asc" % ts_run_dir_inputs, 'w', **baseline_profile) as dst:
         #     dst.write(clipped_baseline_mask)
 
-        ts_treated_veg_layer = rasterio.open('%s/ts_clipped_treatment_layer.tif' % ts_run_dir, 'r+')
-        merged_veg = merge([ts_treated_veg_layer, baseline_veg_file], nodata=0, dtype="uint8")
-        merged_veg_layer = merged_veg[0]
-
-        profile['driver'] = 'AAIGrid'
-
-        with rasterio.open("%s/ts_clipped_treatment_layer.asc" % ts_run_dir_inputs, 'w', **profile) as dst:
-            dst.write(merged_veg_layer)
+        # ts_treated_veg_layer = rasterio.open('%s/ts_clipped_treatment_layer.tif' % ts_run_dir, 'r+')
 
         baseline_veg_file.close()
         treatment_veg_file.close()
 
         # dst_open.close()
-
 
     # Remove header from ascii
     ##########################
@@ -348,6 +341,9 @@ def setVegLayers(treatment_scenario, ts_superbasin_dict, ts_run_dir):
 
     # Convert ascii to bin
     ######################
+
+    # DHSVM path
+    dhsvm_build_path = settings.DHSVM_BUILD
 
     # path to myconvert
     myconvert = os.path.join(dhsvm_build_path, 'DHSVM', 'program', 'myconvert')
