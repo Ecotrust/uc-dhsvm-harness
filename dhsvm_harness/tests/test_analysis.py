@@ -3,7 +3,7 @@ import json, datetime, statistics
 from django.test import TestCase
 from django.contrib.gis.geos import GEOSGeometry
 
-from ucsrb.models import StreamFlowReading, PourPointBasin
+from ucsrb.models import StreamFlowReading, FocusArea
 
 from dhsvm_harness import settings as harness_settings
 from dhsvm_harness.tests import testing_settings as settings
@@ -18,24 +18,28 @@ class ImportTestCase(TestCase):
         with open(settings.BASIN_JSON_1) as f:
             basin_1_json = json.load(f)
         basin_1_geom = GEOSGeometry(json.dumps(basin_1_json['features'][0]['geometry']))
+        basin_1_geom.srid = 3857
 
-        basin1 = PourPointBasin.objects.create(
-            ppt_ID=1,
-            segment_ID=settings.BASIN_1_ID,
-            area=basin_1_json['features'][0]['properties']['acres'],
-            superbasin=settings.BASIN_1_ID.split('_')[0]
+        basin1 = FocusArea.objects.create(
+            unit_type='PourPointOverlap',
+            unit_id=settings.BASIN_1_ID,
+            geometry=basin_1_geom
+            # area=basin_1_json['features'][0]['properties']['acres'],
+            # superbasin=settings.BASIN_1_ID.split('_')[0]
         )
         basin1.save()
 
         with open(settings.BASIN_JSON_2) as f:
             basin_2_json = json.load(f)
         basin_2_geom = GEOSGeometry(json.dumps(basin_2_json['features'][0]['geometry']))
+        basin_2_geom.srid = 3857
 
-        basin2 = PourPointBasin.objects.create(
-            ppt_ID=2,
-            segment_ID=settings.BASIN_2_ID,
-            area=basin_2_json['features'][0]['properties']['acres'],
-            superbasin=settings.BASIN_2_ID.split('_')[0]
+        basin2 = FocusArea.objects.create(
+            unit_type='PourPointOverlap',
+            unit_id=settings.BASIN_2_ID,
+            geometry=basin_2_geom
+            # area=basin_2_json['features'][0]['properties']['acres'],
+            # superbasin=settings.BASIN_2_ID.split('_')[0]
         )
         basin2.save()
 
@@ -73,7 +77,7 @@ class ImportTestCase(TestCase):
         # read in flow data to DB
         readStreamFlowData(settings.FLOW_FILE, segment_ids=BASINS)
         print("Added %d records to StreamFlow Data!" % StreamFlowReading.objects.all().count())
-        self.assertTrue(StreamFlowReading.objects.all().count() == 10*2*BASIN_READINGS_COUNT) # metrics*basins*BASIN_READINGS_COUNT
+        self.assertTrue(StreamFlowReading.objects.all().count() == 2*BASIN_READINGS_COUNT) # basins*BASIN_READINGS_COUNT
 
         # Test metrics are stored correctly (values)
         random_index = random.randrange(SEVEN_DAY_READINGS_COUNT-1, BASIN_READINGS_COUNT-1)
@@ -84,8 +88,8 @@ class ImportTestCase(TestCase):
                 print("--------------------------------------------------")
                 print("Testing Basin ID %s during %s Time" % (basin, time_type))
                 print("--------------------------------------------------")
-                basin_obj = PourPointBasin.objects.get(segment_ID=basin)
-                basin_readings = StreamFlowReading.objects.filter(basin=basin_obj)
+                # basin_obj = FocusArea.objects.get(unit_id=basin, unit_type='PourPointOverlap')
+                basin_readings = StreamFlowReading.objects.filter(segment_id=basin)
                 abs_readings = basin_readings.filter(metric=harness_settings.ABSOLUTE_FLOW_METRIC)
 
                 flow_readings = basin_readings.filter(metric=harness_settings.ABSOLUTE_FLOW_METRIC).order_by('time')[reading_index-(SEVEN_DAY_READINGS_COUNT):reading_index+1]
@@ -126,43 +130,43 @@ class ImportTestCase(TestCase):
                 flow_values = [x.value for x in flow_readings]
                 prior_reading = flow_values.pop(0)
 
-                # Test Change In Flow Rate reading
-                self.assertTrue(basin_readings.get(metric=harness_settings.DELTA_FLOW_METRIC,time=last_time).value, flow_values[-1]-flow_values[-2])
-
-                # seven_low = basin_readings.get(metric='Seven Day Low Flow', time=last_time)
-                seven_low = sorted(flow_values)[0]
-                # Test Seven Day Low Flow reading
-                self.assertTrue(basin_readings.get(metric='Seven Day Low Flow',time=last_time).value, seven_low)
-
-                # Test Change in Seven Day Low Flow Rate reading
-                seven_low_diff = seven_low - basin_readings.get(metric='Seven Day Low Flow',time=previous_time).value
-                self.assertEqual(seven_low_diff, basin_readings.get(metric='Change in 7 Day Low Flow Rate', time=last_time).value)
-
-                # Test Seven Day Mean Flow reading
-                seven_mean = statistics.mean(flow_values)
-                self.assertEqual(seven_mean, basin_readings.get(metric='Seven Day Mean Flow',time=last_time).value)
-
-                # Test Change in Seven Day Mean Flow Rate reading
-                seven_mean_diff = seven_mean - basin_readings.get(metric='Seven Day Mean Flow',time=previous_time).value
-                self.assertEqual(seven_mean_diff, basin_readings.get(metric='Change in 7 Day Mean Flow Rate',time=last_time).value)
-
-                # Test One Day Low Flow reading
-                one_day_start_index = 0-ONE_DAY_READINGS_COUNT
-                one_day_flow_values = flow_values[one_day_start_index:]
-                one_low = sorted(one_day_flow_values)[0]
-                self.assertEqual(one_low, basin_readings.get(metric='One Day Low Flow',time=last_time).value)
-
-                # Test Change in One Day Low Flow Rate reading
-                one_low_diff = one_low - basin_readings.get(metric='One Day Low Flow',time=previous_time).value
-                self.assertEqual(one_low_diff, basin_readings.get(metric='Change in 1 Day Low Flow Rate', time=last_time).value)
-
-                # Test One Day Mean Flow reading
-                one_mean = statistics.mean(one_day_flow_values)
-                self.assertEqual(one_mean, basin_readings.get(metric='One Day Mean Flow',time=last_time).value)
-
-                # Test Change in One Day Mean Flow Rate reading
-                one_mean_diff = one_mean - basin_readings.get(metric='One Day Mean Flow',time=previous_time).value
-                self.assertEqual(one_mean_diff, basin_readings.get(metric='Change in 1 Day Mean Flow Rate',time=last_time).value)
+                # # Test Change In Flow Rate reading
+                # self.assertTrue(basin_readings.get(metric=harness_settings.DELTA_FLOW_METRIC,time=last_time).value, flow_values[-1]-flow_values[-2])
+                #
+                # # seven_low = basin_readings.get(metric='Seven Day Low Flow', time=last_time)
+                # seven_low = sorted(flow_values)[0]
+                # # Test Seven Day Low Flow reading
+                # self.assertTrue(basin_readings.get(metric='Seven Day Low Flow',time=last_time).value, seven_low)
+                #
+                # # Test Change in Seven Day Low Flow Rate reading
+                # seven_low_diff = seven_low - basin_readings.get(metric='Seven Day Low Flow',time=previous_time).value
+                # self.assertEqual(seven_low_diff, basin_readings.get(metric='Change in 7 Day Low Flow Rate', time=last_time).value)
+                #
+                # # Test Seven Day Mean Flow reading
+                # seven_mean = statistics.mean(flow_values)
+                # self.assertEqual(seven_mean, basin_readings.get(metric='Seven Day Mean Flow',time=last_time).value)
+                #
+                # # Test Change in Seven Day Mean Flow Rate reading
+                # seven_mean_diff = seven_mean - basin_readings.get(metric='Seven Day Mean Flow',time=previous_time).value
+                # self.assertEqual(seven_mean_diff, basin_readings.get(metric='Change in 7 Day Mean Flow Rate',time=last_time).value)
+                #
+                # # Test One Day Low Flow reading
+                # one_day_start_index = 0-ONE_DAY_READINGS_COUNT
+                # one_day_flow_values = flow_values[one_day_start_index:]
+                # one_low = sorted(one_day_flow_values)[0]
+                # self.assertEqual(one_low, basin_readings.get(metric='One Day Low Flow',time=last_time).value)
+                #
+                # # Test Change in One Day Low Flow Rate reading
+                # one_low_diff = one_low - basin_readings.get(metric='One Day Low Flow',time=previous_time).value
+                # self.assertEqual(one_low_diff, basin_readings.get(metric='Change in 1 Day Low Flow Rate', time=last_time).value)
+                #
+                # # Test One Day Mean Flow reading
+                # one_mean = statistics.mean(one_day_flow_values)
+                # self.assertEqual(one_mean, basin_readings.get(metric='One Day Mean Flow',time=last_time).value)
+                #
+                # # Test Change in One Day Mean Flow Rate reading
+                # one_mean_diff = one_mean - basin_readings.get(metric='One Day Mean Flow',time=previous_time).value
+                # self.assertEqual(one_mean_diff, basin_readings.get(metric='Change in 1 Day Mean Flow Rate',time=last_time).value)
 
         # Test all 3726 flows are greater than 3729 flows
 
