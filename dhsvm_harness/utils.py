@@ -423,13 +423,7 @@ def getTargetBasin(treatment_scenario):
     # Query run against overlapping_pourpoint_basin
     if treatment_scenario.focus_area_input:
         target_basins =  FocusArea.objects.filter(unit_type="PourPointOverlap", geometry__contains=treatment_scenario.focus_area_input.geometry)
-        lcd_basin_area = 0
-        for tb in target_basins:
-            tb_area = tb.geometry.area
-            if tb_area > lcd_basin_area:
-                target_basin = tb
-        # The below would work if FocusArea had a field for area
-        # basin =  FocusArea.objects.filter(unit_type="PourPointOverlap", geometry__contains=treatment_scenario.focus_area_input.geometry).order_by('area')
+        target_basin = sorted(target_basins, key=lambda x: x.geometry.area)[0]
     else:
         print("No TreatmentScenario focus area provided")
 
@@ -509,11 +503,6 @@ def runHarnessConfig(treatment_scenario):
     # Get LCD basin
     ts_target_basin = getTargetBasin(treatment_scenario)
 
-    # Name for mask
-    # ts_mask_name = ts_superbasin_dict['basin_dir'].unit_type + '_' + ts_superbasin_dict['basin_dir'].unit_id
-    # Create mask
-    # ts_mask = createBasinMask(treatment_scenario, ts_run_dir)
-
     # Get target stream segments basins
     if ts_target_basin:
         ts_target_streams = getTargetStreamSegments(ts_target_basin)
@@ -526,7 +515,7 @@ def runHarnessConfig(treatment_scenario):
     dhsvm_run_path = os.path.join(DHSVM_BUILD, 'DHSVM', 'sourcecode', 'DHSVM')
     num_cores = 2
     command = "mpiexec -n %s %s %s" % (num_cores, dhsvm_run_path, ts_run_input_file)
-    print('Running command: %s' % command)
+    # print('Running command: %s' % command)
     os.system(command)
 
     print("TODO: Populate DB")
