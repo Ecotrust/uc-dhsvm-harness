@@ -383,6 +383,8 @@ def setVegLayers(treatment_scenario, ts_superbasin_dict, ts_run_dir):
     # path to myconvert
     myconvert = os.path.join(dhsvm_build_path, 'DHSVM', 'program', 'myconvert')
 
+    ascii_file_path = None
+
     for ts_run_input in ts_run_inputs_listdir:
         input_extension = os.path.splitext(ts_run_input)[-1]
         if input_extension == '.asc':
@@ -395,6 +397,8 @@ def setVegLayers(treatment_scenario, ts_superbasin_dict, ts_run_dir):
                 % (myconvert, use_type, ascii_file_path, bin_file_path, nrows, ncols)
             )
 
+    return ascii_file_path
+
 
 # ======================================
 # Identify basin
@@ -404,7 +408,6 @@ def getTargetBasin(treatment_scenario):
 
     target_basin = None
 
-    import ipdb; ipdb.set_trace()
     # Basin will have 1 field which is cat name of superbasin_segmentId
     # Query run against overlapping_pourpoint_basin
     if treatment_scenario.focus_area_input:
@@ -429,7 +432,7 @@ def getTargetBasin(treatment_scenario):
 def getTargetStreamSegments(basin):
 
     try:
-        basin_stream_segments = FocusArea.objects.filter(geom__within=basin.geometry)
+        basin_stream_segments = FocusArea.objects.filter(geometry__within=basin.geometry)
     except Exception as e:
         basin_stream_segments = None
         print('No sub basins found within "%s"' % basin)
@@ -437,56 +440,17 @@ def getTargetStreamSegments(basin):
     return basin_stream_segments
 
 
-# ======================================
-# CONFIGURE TREATMENT SCENARIO RUN
-# ======================================
-
-def runHarnessConfig(treatment_scenario):
-
-    # identify super dir to copy original files from
-    ts_superbasin_dict = getRunSuperBasinDir(treatment_scenario)
-
-    # TreatmentScenario run directory
-    ts_run_dir = getRunDir(treatment_scenario, ts_superbasin_dict)
-
-    # Create run layer
-    ts_layers = setVegLayers(treatment_scenario, ts_superbasin_dict, ts_run_dir)
-
-    # Get LCD basin
-    ts_target_basin = getTargetBasin(treatment_scenario)
-
-    # Name for mask
-    # ts_mask_name = ts_superbasin_dict['basin_dir'].unit_type + '_' + ts_superbasin_dict['basin_dir'].unit_id
-    # Create mask
-    # ts_mask = createBasinMask(treatment_scenario, ts_run_dir)
-
-    # Get target stream segments basins
-    if ts_target_basin:
-        ts_target_streams = getTargetStreamSegments(ts_target_basin)
-    else:
-        ts_target_streams = None
-
-
-    createInputConfig(ts_superbasin_dict, ts_run_dir, ts_layers, ts_target_basin)
-
-    # TODO: run DHSVM
-
-    # TODO: Populate DB
-
-    # TODO: delte run dir
-
-
 
 # ======================================
 # CREATE INPUT CONFIG FILE
 # ======================================
 
-def createInputConfig(ts_superbasin_dict, ts_run_dir, ts_layers, ts_target_basin):
+def createInputConfig(ts_superbasin_dict, ts_run_dir, ts_run_dir_inputs):
 
     import configparser
 
-    ts_superbasin_code = ts_superbasin_dict['basin_code']
     # SUPERBASINS = settings.SUPERBASINS
+    ts_superbasin_code = ts_superbasin_dict['basin_code']
     ts_superbasin_name = SUPERBASINS[ts_superbasin_code]['name'].lower()
 
     # Get superbasin input config file
@@ -523,6 +487,52 @@ def createInputConfig(ts_superbasin_dict, ts_run_dir, ts_layers, ts_target_basin
     # input_config.set("TERRAIN", "DEM File", "./inputs/dem.asc.bin")
 
     # Stream
-    input_config.set("ROUTING", "Stream Map File", "./inputs/stream.map.dat")
-    input_config.set("ROUTING", "Stream Network File", "./inputs/stream.network.dat")
-    input_config.set("ROUTING", "Stream Class File", "./inputs/stream_property.class")
+    # input_config.set("ROUTING", "Stream Map File", "./inputs/stream.map.dat")
+    # input_config.set("ROUTING", "Stream Network File", "./inputs/stream.network.dat")
+    # input_config.set("ROUTING", "Stream Class File", "./inputs/stream_property.class")
+
+    # Veg
+    input_config.set("VEGETATION", "Vegetation Map File", ts_veg_layer_file)
+
+    return ts_run_input_file
+
+
+# ======================================
+# CONFIGURE TREATMENT SCENARIO RUN
+# ======================================
+
+def runHarnessConfig(treatment_scenario):
+
+    # identify super dir to copy original files from
+    ts_superbasin_dict = getRunSuperBasinDir(treatment_scenario)
+
+    # TreatmentScenario run directory
+    ts_run_dir = getRunDir(treatment_scenario, ts_superbasin_dict)
+
+    # Create run layer
+    ts_veg_layer_file = setVegLayers(treatment_scenario, ts_superbasin_dict, ts_run_dir)
+
+    # Get LCD basin
+    ts_target_basin = getTargetBasin(treatment_scenario)
+
+    # Name for mask
+    # ts_mask_name = ts_superbasin_dict['basin_dir'].unit_type + '_' + ts_superbasin_dict['basin_dir'].unit_id
+    # Create mask
+    # ts_mask = createBasinMask(treatment_scenario, ts_run_dir)
+
+    # Get target stream segments basins
+    if ts_target_basin:
+        ts_target_streams = getTargetStreamSegments(ts_target_basin)
+    else:
+        ts_target_streams = None
+
+    ts_run_input_file = createInputConfig(ts_superbasin_dict, ts_run_dir, ts_veg_layer_file)
+
+    # Run DHSVM
+    dhsvm_path = DHSVM_BUILD
+    num_cores = 2
+    os.system("mpiexec -n %s %s %s" % (num_cores, dhsvm_path, ts_run_input_file))
+
+    # TODO: Populate DB
+
+    # TODO: delte run dir
