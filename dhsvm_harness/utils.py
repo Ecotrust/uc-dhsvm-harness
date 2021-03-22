@@ -243,8 +243,9 @@ def setVegLayers(treatment_scenario, ts_superbasin_dict, ts_run_dir):
     rx_id = treatment_scenario.prescription_treatment_selection
 
     if rx_id == 'notr':
-        # TODO: copy baseline veg bin file to ts_run_dir inputs (not tif)
-        return True
+        # Just return baseline veg file
+        baseline_veg_file = os.path.join("%s/inputs/veg_files/%s_notr.tif" % (ts_superbasin_dir, ts_superbasin_code))
+        return baseline_veg_file
 
     # Projection assigned for later use
     # TODO: add to settings
@@ -445,7 +446,7 @@ def getTargetStreamSegments(basin):
 # CREATE INPUT CONFIG FILE
 # ======================================
 
-def createInputConfig(ts_superbasin_dict, ts_run_dir, ts_run_dir_inputs):
+def createInputConfig(ts_superbasin_dict, ts_run_dir, ts_veg_layer_file):
 
     import configparser
 
@@ -476,7 +477,6 @@ def createInputConfig(ts_superbasin_dict, ts_run_dir, ts_run_dir_inputs):
     # input_config.set("TIME", "Model End", MODELEND)
 
     # Location of mask
-    # TODO
     # input_config.set("TERRAIN", "Basin Mask File", ts_mask)
 
     # Output
