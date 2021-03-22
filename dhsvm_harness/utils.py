@@ -1,4 +1,7 @@
+# import configparser
 from datetime import datetime
+from django.conf import settings as ucsrb_settings
+from django.template import Template, Context
 from django.utils.timezone import get_current_timezone
 from functools import partial
 import json
@@ -453,9 +456,7 @@ def getTargetStreamSegments(basin):
 # CREATE INPUT CONFIG FILE
 # ======================================
 
-def createInputConfig(ts_superbasin_dict, ts_run_dir, ts_veg_layer_file):
-
-    import configparser
+def createInputConfig(ts_target_basin, ts_superbasin_dict, ts_run_dir, ts_veg_layer_file, model_year='baseline'):
 
     # SUPERBASINS = settings.SUPERBASINS
     ts_superbasin_code = ts_superbasin_dict['basin_code']
@@ -468,38 +469,24 @@ def createInputConfig(ts_superbasin_dict, ts_run_dir, ts_veg_layer_file):
     # Location for new run input config file
     ts_run_input_file = os.path.join(ts_run_dir, 'INPUT.UCSRB.run')
 
+    mask_file = os.path.join(ts_superbasin_dict['basin_dir'], 'masks', "%s.asc.bin" % ts_target_basin.unit_id)
+
     # Create new input from superbasin
-    shutil.copyfile(ts_superbasin_input_template, ts_run_input_file)
-
-    # Read new input file using configparser so we can replace some info
-    input_config = configparser.ConfigParser()
-    input_config.optionxform=str
-    input_config.read(ts_run_input_file)
-
-    # set timestep
-    # input_config.set("TIME", "Time Step", TIMESTEP)
-
-    #  TODO post 3.25
-    # input_config.set("TIME", "Model Start", MODELSTART)
-    # input_config.set("TIME", "Model End", MODELEND)
-
-    # Location of mask
-    # input_config.set("TERRAIN", "Basin Mask File", ts_mask)
-
-    # Output
-    ts_output_dir = ts_run_dir + 'output'
-    input_config.set("OUTPUT", "Output Directory", ts_output_dir)
-
-    # DEM file
-    # input_config.set("TERRAIN", "DEM File", "./inputs/dem.asc.bin")
-
-    # Stream
-    # input_config.set("ROUTING", "Stream Map File", "./inputs/stream.map.dat")
-    # input_config.set("ROUTING", "Stream Network File", "./inputs/stream.network.dat")
-    # input_config.set("ROUTING", "Stream Class File", "./inputs/stream_property.class")
-
-    # Veg
-    input_config.set("VEGETATION", "Vegetation Map File", ts_veg_layer_file)
+    with open(ts_superbasin_input_template, 'r') as file_contents:
+        contents = file_contents.read()
+    t = Template(contents)
+    c = Context({
+        'RUN_DIR': ts_run_dir,
+        'BASIN_DIR': ts_superbasin_dict['basin_dir'],
+        'START': datetime.strftime(ucsrb_settings.MODEL_YEARS[model_year]['start'], "%m/%d/%Y-%H"),
+        'STOP': datetime.strftime(ucsrb_settings.MODEL_YEARS[model_year]['end'], "%m/%d/%Y-%H"),
+        'VEG_FILE': ts_veg_layer_file,
+        'MASK': mask_file,
+        'TIMESTEP': TIMESTEP
+    })
+    out_contents = t.render(c)
+    with open(ts_run_input_file, 'w') as outfile:
+        outfile.write(out_contents)
 
     return ts_run_input_file
 
@@ -533,15 +520,15 @@ def runHarnessConfig(treatment_scenario):
     else:
         ts_target_streams = None
 
-    ts_run_input_file = createInputConfig(ts_superbasin_dict, ts_run_dir, ts_veg_layer_file)
+    ts_run_input_file = createInputConfig(ts_target_basin, ts_superbasin_dict, ts_run_dir, ts_veg_layer_file, model_year='baseline')
 
     # Run DHSVM
-    dhsvm_path = DHSVM_BUILD
-    # path to myconvert
     dhsvm_run_path = os.path.join(DHSVM_BUILD, 'DHSVM', 'sourcecode', 'DHSVM')
     num_cores = 2
-    os.system("mpiexec -n %s %s %s" % (num_cores, dhsvm_run_path, ts_run_input_file))
+    command = "mpiexec -n %s %s %s" % (num_cores, dhsvm_run_path, ts_run_input_file)
+    print('Running command: %s' % command)
+    os.system(command)
 
-    # TODO: Populate DB
+    print("TODO: Populate DB")
 
-    # TODO: delte run dir
+    print("TODO: delte run dir")
