@@ -134,4 +134,3 @@ dmypy.json
 local_settings.py
 basins/basins.tar.gz
 basins/livneh_met_data_full.7z
-basins/met_data

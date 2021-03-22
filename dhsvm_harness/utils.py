@@ -146,7 +146,8 @@ def getRunDir(treatment_scenario, ts_superbasin_dict):
 
     # Runs directory
     try:
-        os.path.isdir(RUNS_DIR)
+        if not os.path.isdir(RUNS_DIR):
+            os.mkdir(RUNS_DIR)
     except OSError:
         print("Runs dir not found. Add RUNS_DIR to settings")
 
@@ -200,7 +201,10 @@ def getRunSuperBasinDir(treatment_scenario):
         ts_superbasin_code = treatment_scenario.focus_area_input.unit_id.split('_')[0]
     else:
         overlapping_basins = FocusArea.objects.filter(unit_type='PourPointOverlap', geometry__contains=treatment_scenario.focus_area_input.geometry)
-        ts_superbasin_code = sorted(overlapping_basins, key=lambda x: x.geometry.area)[0].unit_id.split('_')[0]
+        if len(overlapping_basins) > 1:
+            ts_superbasin_code = sorted(overlapping_basins, key=lambda x: x.geometry.area)[1].unit_id.split('_')[0]
+        else:
+            ts_superbasin_code = overlapping_basins[0].unit_id.split('_')[0]
 
     # Superbasin dir
     ts_superbasin_dir = SUPERBASINS[ts_superbasin_code]['inputs']
@@ -209,33 +213,6 @@ def getRunSuperBasinDir(treatment_scenario):
         'basin_dir': ts_superbasin_dir,
         'basin_code': ts_superbasin_code
     }
-
-# ======================================
-# CREATE MASK RASTER
-# ======================================
-
-def createBasinMask(ts, ts_run_dir):
-
-    ts_run_mask_dir = os.path.join(ts_run_mask_dir, 'masked')
-    if os.path.isdir(ts_run_mask_dir):
-        shutil.rmtree(ts_run_mask_dir)
-    os.mkdir(ts_run_mask_dir)
-
-    mask_geom = ts.focus_area_input
-    mask_feature = os.path.join(masked_dir, "basin.geojson")
-
-    # make basin mask
-    # os.system("rio shapes --projected %s > %s" % (mask, mask_feature))
-
-
-def getSuperBasinDetails():
-    #  xll
-    #  yll
-    #  cellsize
-    #  rows
-    #  cols
-    print()
-
 
 # ======================================
 # CREATE TREATED VEG LAYER
@@ -408,7 +385,7 @@ def setVegLayers(treatment_scenario, ts_superbasin_dict, ts_run_dir):
                 % (myconvert, use_type, ascii_file_path, bin_file_path, nrows, ncols)
             )
 
-    return ascii_file_path
+    return bin_file_path
 
 
 # ======================================
@@ -423,13 +400,10 @@ def getTargetBasin(treatment_scenario):
     # Query run against overlapping_pourpoint_basin
     if treatment_scenario.focus_area_input:
         target_basins =  FocusArea.objects.filter(unit_type="PourPointOverlap", geometry__contains=treatment_scenario.focus_area_input.geometry)
-        lcd_basin_area = 0
-        for tb in target_basins:
-            tb_area = tb.geometry.area
-            if tb_area > lcd_basin_area:
-                target_basin = tb
-        # The below would work if FocusArea had a field for area
-        # basin =  FocusArea.objects.filter(unit_type="PourPointOverlap", geometry__contains=treatment_scenario.focus_area_input.geometry).order_by('area')
+        if len(target_basins) > 1:
+            target_basin = sorted(target_basins, key=lambda x: x.geometry.area)[1]
+        else:
+            target_basin = target_basins[0]
     else:
         print("No TreatmentScenario focus area provided")
 
@@ -443,7 +417,7 @@ def getTargetBasin(treatment_scenario):
 def getTargetStreamSegments(basin):
 
     try:
-        basin_stream_segments = FocusArea.objects.filter(geometry__within=basin.geometry)
+        basin_stream_segments = FocusArea.objects.filter(unit_type='PourPointDiscrete', geometry__within=basin.geometry)
     except Exception as e:
         basin_stream_segments = None
         print('No sub basins found within "%s"' % basin)
@@ -509,11 +483,6 @@ def runHarnessConfig(treatment_scenario):
     # Get LCD basin
     ts_target_basin = getTargetBasin(treatment_scenario)
 
-    # Name for mask
-    # ts_mask_name = ts_superbasin_dict['basin_dir'].unit_type + '_' + ts_superbasin_dict['basin_dir'].unit_id
-    # Create mask
-    # ts_mask = createBasinMask(treatment_scenario, ts_run_dir)
-
     # Get target stream segments basins
     if ts_target_basin:
         ts_target_streams = getTargetStreamSegments(ts_target_basin)
@@ -526,9 +495,12 @@ def runHarnessConfig(treatment_scenario):
     dhsvm_run_path = os.path.join(DHSVM_BUILD, 'DHSVM', 'sourcecode', 'DHSVM')
     num_cores = 2
     command = "mpiexec -n %s %s %s" % (num_cores, dhsvm_run_path, ts_run_input_file)
-    print('Running command: %s' % command)
+    # print('Running command: %s' % command)
+    print("Running the Model... %s" % datetime.now().timestamp())
     os.system(command)
 
-    print("TODO: Populate DB")
+    print("Populating the DB... %s" % datetime.now().timestamp())
+    segment_ids = [x.unit_id for x in ts_target_streams]
+    readStreamFlowData(os.path.join(readStreamFlowData, 'output', 'Stream.Flow'), segment_ids=segment_ids, scenario=treatment_scenario, is_baseline=False)
 
-    print("TODO: delte run dir")
+    print("TODO: delte run dir... %s" % datetime.now().timestamp())

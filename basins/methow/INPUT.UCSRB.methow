@@ -44,9 +44,9 @@ PRISM data extension =                    # file extension for PRISM files
 Gridded Met data     = FALSE               # TRUE or FALSE
 Canopy radiation attenuation mode = FIXED # FIXED or VARIABLE
 Shading              = TRUE   	          # TRUE or FALSE
-Shading data path    = {{ BASIN_DIR }}/inputs/shadows/Shadow  	  # path for shading files
+Shading data path    = {{ RUN_DIR }}/inputs/shadows/Shadow  	  # path for shading files
 Shading data extension = bin              # file extension for shading files
-Skyview data path    = {{ BASIN_DIR }}/inputs/shadows/SkyView.bin	  # skyview file
+Skyview data path    = {{ RUN_DIR }}/inputs/shadows/SkyView.bin	  # skyview file
 Snotel               = FALSE              # TRUE or FALSE
 Outside              = TRUE    	      # TRUE or FALSE
 Rhoverride           = FALSE              # TRUE or FALSE
@@ -128,8 +128,8 @@ Precipitation Multiplier Map =                         # no correction be made i
 ################################################################################
 
 [TERRAIN]                                 # Terrain information
-DEM File    	  = {{ BASIN_DIR }}/inputs/methow_dem_filflat.asc.bin
-#Basin Mask File = {{ BASIN_DIR }}/inputs/methow_mask.asc.bin
+DEM File    	  = {{ RUN_DIR }}/inputs/methow_dem_filflat.asc.bin
+#Basin Mask File = {{ RUN_DIR }}/inputs/methow_mask.asc.bin
 Basin Mask File = {{ MASK }}
 
 ################################################################################
@@ -142,9 +142,11 @@ Basin Mask File = {{ MASK }}
 ################ STREAM NETWORK ################################################
 
 # The following three fields are only used if Flow Routing = NETWORK
-Stream Map File      = {{ BASIN_DIR }}/inputs/stream.map.dat
-Stream Network File  = {{ BASIN_DIR }}/inputs/methow_stream.network_v2.added.dat
-Stream Class File    = {{ BASIN_DIR }}/inputs/methow_class.txt
+Stream Map File      = {{ RUN_DIR }}/inputs/stream.map.dat
+# Stream Network File  = {{ RUN_DIR }}/inputs/methow_stream.network_v2.added.dat
+Stream Network File  = {{ RUN_DIR }}/inputs/methow_stream.network_v2.dat
+# Stream Class File    = {{ RUN_DIR }}/inputs/methow_class.txt
+Stream Class File    = {{ RUN_DIR }}/inputs/stream_property.class
 
 ################ ROAD NETWORK ##################################################
 
@@ -173,2305 +175,2305 @@ Station Name     1= data_48.96875_-120.46875
 North Coordinate 1= 1656384.31775
 East Coordinate  1= 565647.293177
 Elevation        1= 1807.62
-Station File     1= {{ BASIN_DIR }}/inputs/met_data/data_48.96875_-120.46875
+Station File     1= {{ RUN_DIR }}/inputs/met_data/data_48.96875_-120.46875
 
 Station Name     2= data_48.96875_-120.28125
 North Coordinate 2= 1656320.23185
 East Coordinate  2= 579388.301185
 Elevation        2= 1983.23
-Station File     2= {{ BASIN_DIR }}/inputs/met_data/data_48.96875_-120.28125
+Station File     2= {{ RUN_DIR }}/inputs/met_data/data_48.96875_-120.28125
 
 Station Name     3= data_48.96875_-120.21875
 North Coordinate 3= 1656305.9905
 East Coordinate  3= 583968.665784
 Elevation        3= 2059.09
-Station File     3= {{ BASIN_DIR }}/inputs/met_data/data_48.96875_-120.21875
+Station File     3= {{ RUN_DIR }}/inputs/met_data/data_48.96875_-120.21875
 
 Station Name     4= data_48.96875_-120.15625
 North Coordinate 4= 1656295.30949
 East Coordinate  4= 588549.04007
 Elevation        4= 2036.84
-Station File     4= {{ BASIN_DIR }}/inputs/met_data/data_48.96875_-120.15625
+Station File     4= {{ RUN_DIR }}/inputs/met_data/data_48.96875_-120.15625
 
 Station Name     5= data_48.96875_-120.09375
 North Coordinate 5= 1656288.18881
 East Coordinate  5= 593129.421275
 Elevation        5= 1916.47
-Station File     5= {{ BASIN_DIR }}/inputs/met_data/data_48.96875_-120.09375
+Station File     5= {{ RUN_DIR }}/inputs/met_data/data_48.96875_-120.09375
 
 Station Name     6= data_48.96875_-120.03125
 North Coordinate 6= 1656284.62847
 East Coordinate  6= 597709.80663
 Elevation        6= 1888.89
-Station File     6= {{ BASIN_DIR }}/inputs/met_data/data_48.96875_-120.03125
+Station File     6= {{ RUN_DIR }}/inputs/met_data/data_48.96875_-120.03125
 
 Station Name     7= data_48.96875_-119.96875
 North Coordinate 7= 1656284.62847
 East Coordinate  7= 602290.19337
 Elevation        7= 1954.11
-Station File     7= {{ BASIN_DIR }}/inputs/met_data/data_48.96875_-119.96875
+Station File     7= {{ RUN_DIR }}/inputs/met_data/data_48.96875_-119.96875
 
 Station Name     8= data_48.96875_-119.90625
 North Coordinate 8= 1656288.18881
 East Coordinate  8= 606870.578725
 Elevation        8= 1915.89
-Station File     8= {{ BASIN_DIR }}/inputs/met_data/data_48.96875_-119.90625
+Station File     8= {{ RUN_DIR }}/inputs/met_data/data_48.96875_-119.90625
 
 Station Name     9= data_48.96875_-119.84375
 North Coordinate 9= 1656295.30949
 East Coordinate  9= 611450.95993
 Elevation        9= 1774.23
-Station File     9= {{ BASIN_DIR }}/inputs/met_data/data_48.96875_-119.84375
+Station File     9= {{ RUN_DIR }}/inputs/met_data/data_48.96875_-119.84375
 
 Station Name     10= data_48.96875_-119.65625
 North Coordinate 10= 1656338.03351
 East Coordinate  10= 625192.050961
 Elevation        10= 778.58
-Station File     10= {{ BASIN_DIR }}/inputs/met_data/data_48.96875_-119.65625
+Station File     10= {{ RUN_DIR }}/inputs/met_data/data_48.96875_-119.65625
 
 Station Name     11= data_48.96875_-119.59375
 North Coordinate 11= 1656359.39548
 East Coordinate  11= 629772.387887
 Elevation        11= 745.86
-Station File     11= {{ BASIN_DIR }}/inputs/met_data/data_48.96875_-119.59375
+Station File     11= {{ RUN_DIR }}/inputs/met_data/data_48.96875_-119.59375
 
 Station Name     12= data_48.96875_-119.53125
 North Coordinate 12= 1656384.31775
 East Coordinate  12= 634352.706823
 Elevation        12= 685.51
-Station File     12= {{ BASIN_DIR }}/inputs/met_data/data_48.96875_-119.53125
+Station File     12= {{ RUN_DIR }}/inputs/met_data/data_48.96875_-119.53125
 
 Station Name     13= data_48.96875_-119.46875
 North Coordinate 13= 1656412.8003
 East Coordinate  13= 638933.005004
 Elevation        13= 597.53
-Station File     13= {{ BASIN_DIR }}/inputs/met_data/data_48.96875_-119.46875
+Station File     13= {{ RUN_DIR }}/inputs/met_data/data_48.96875_-119.46875
 
 Station Name     14= data_48.90625_-120.59375
 North Coordinate 14= 1649500.76213
 East Coordinate  14= 556435.44178
 Elevation        14= 1701.71
-Station File     14= {{ BASIN_DIR }}/inputs/met_data/data_48.90625_-120.59375
+Station File     14= {{ RUN_DIR }}/inputs/met_data/data_48.90625_-120.59375
 
 Station Name     15= data_48.90625_-120.53125
 North Coordinate 15= 1649468.68156
 East Coordinate  15= 561021.114098
 Elevation        15= 1732.05
-Station File     15= {{ BASIN_DIR }}/inputs/met_data/data_48.90625_-120.53125
+Station File     15= {{ RUN_DIR }}/inputs/met_data/data_48.90625_-120.53125
 
 Station Name     16= data_48.90625_-120.46875
 North Coordinate 16= 1649440.16544
 East Coordinate  16= 565606.809966
 Elevation        16= 1806.31
-Station File     16= {{ BASIN_DIR }}/inputs/met_data/data_48.90625_-120.46875
+Station File     16= {{ RUN_DIR }}/inputs/met_data/data_48.90625_-120.46875
 
 Station Name     17= data_48.90625_-120.40625
 North Coordinate 17= 1649415.21381
 East Coordinate  17= 570192.526615
 Elevation        17= 1879.39
-Station File     17= {{ BASIN_DIR }}/inputs/met_data/data_48.90625_-120.40625
+Station File     17= {{ RUN_DIR }}/inputs/met_data/data_48.90625_-120.40625
 
 Station Name     18= data_48.90625_-120.34375
 North Coordinate 18= 1649393.82666
 East Coordinate  18= 574778.261273
 Elevation        18= 1951.29
-Station File     18= {{ BASIN_DIR }}/inputs/met_data/data_48.90625_-120.34375
+Station File     18= {{ RUN_DIR }}/inputs/met_data/data_48.90625_-120.34375
 
 Station Name     19= data_48.90625_-120.28125
 North Coordinate 19= 1649376.00402
 East Coordinate  19= 579364.01117
 Elevation        19= 1989.63
-Station File     19= {{ BASIN_DIR }}/inputs/met_data/data_48.90625_-120.28125
+Station File     19= {{ RUN_DIR }}/inputs/met_data/data_48.90625_-120.28125
 
 Station Name     20= data_48.90625_-120.21875
 North Coordinate 20= 1649361.74589
 East Coordinate  20= 583949.773536
 Elevation        20= 1994.41
-Station File     20= {{ BASIN_DIR }}/inputs/met_data/data_48.90625_-120.21875
+Station File     20= {{ RUN_DIR }}/inputs/met_data/data_48.90625_-120.21875
 
 Station Name     21= data_48.90625_-120.15625
 North Coordinate 21= 1649351.05229
 East Coordinate  21= 588535.545599
 Elevation        21= 1956.31
-Station File     21= {{ BASIN_DIR }}/inputs/met_data/data_48.90625_-120.15625
+Station File     21= {{ RUN_DIR }}/inputs/met_data/data_48.90625_-120.15625
 
 Station Name     22= data_48.90625_-120.09375
 North Coordinate 22= 1649343.92322
 East Coordinate  22= 593121.324589
 Elevation        22= 1875.32
-Station File     22= {{ BASIN_DIR }}/inputs/met_data/data_48.90625_-120.09375
+Station File     22= {{ RUN_DIR }}/inputs/met_data/data_48.90625_-120.09375
 
 Station Name     23= data_48.90625_-120.03125
 North Coordinate 23= 1649340.35868
 East Coordinate  23= 597707.107734
 Elevation        23= 1857.99
-Station File     23= {{ BASIN_DIR }}/inputs/met_data/data_48.90625_-120.03125
+Station File     23= {{ RUN_DIR }}/inputs/met_data/data_48.90625_-120.03125
 
 Station Name     24= data_48.90625_-119.96875
 North Coordinate 24= 1649340.35868
 East Coordinate  24= 602292.892266
 Elevation        24= 1904.31
-Station File     24= {{ BASIN_DIR }}/inputs/met_data/data_48.90625_-119.96875
+Station File     24= {{ RUN_DIR }}/inputs/met_data/data_48.90625_-119.96875
 
 Station Name     25= data_48.90625_-119.90625
 North Coordinate 25= 1649343.92322
 East Coordinate  25= 606878.675411
 Elevation        25= 1867.38
-Station File     25= {{ BASIN_DIR }}/inputs/met_data/data_48.90625_-119.90625
+Station File     25= {{ RUN_DIR }}/inputs/met_data/data_48.90625_-119.90625
 
 Station Name     26= data_48.90625_-119.65625
 North Coordinate 26= 1649393.82666
 East Coordinate  26= 625221.738727
 Elevation        26= 799.74
-Station File     26= {{ BASIN_DIR }}/inputs/met_data/data_48.90625_-119.65625
+Station File     26= {{ RUN_DIR }}/inputs/met_data/data_48.90625_-119.65625
 
 Station Name     27= data_48.90625_-119.59375
 North Coordinate 27= 1649415.21381
 East Coordinate  27= 629807.473385
 Elevation        27= 755.62
-Station File     27= {{ BASIN_DIR }}/inputs/met_data/data_48.90625_-119.59375
+Station File     27= {{ RUN_DIR }}/inputs/met_data/data_48.90625_-119.59375
 
 Station Name     28= data_48.90625_-119.53125
 North Coordinate 28= 1649440.16544
 East Coordinate  28= 634393.190034
 Elevation        28= 671.37
-Station File     28= {{ BASIN_DIR }}/inputs/met_data/data_48.90625_-119.53125
+Station File     28= {{ RUN_DIR }}/inputs/met_data/data_48.90625_-119.53125
 
 Station Name     29= data_48.90625_-119.46875
 North Coordinate 29= 1649468.68156
 East Coordinate  29= 638978.885902
 Elevation        29= 546.98
-Station File     29= {{ BASIN_DIR }}/inputs/met_data/data_48.90625_-119.46875
+Station File     29= {{ RUN_DIR }}/inputs/met_data/data_48.90625_-119.46875
 
 Station Name     30= data_48.90625_-119.40625
 North Coordinate 30= 1649500.76213
 East Coordinate  30= 643564.55822
 Elevation        30= 601.39
-Station File     30= {{ BASIN_DIR }}/inputs/met_data/data_48.90625_-119.40625
+Station File     30= {{ RUN_DIR }}/inputs/met_data/data_48.90625_-119.40625
 
 Station Name     31= data_48.90625_-119.34375
 North Coordinate 31= 1649536.40715
 East Coordinate  31= 648150.204216
 Elevation        31= 834.61
-Station File     31= {{ BASIN_DIR }}/inputs/met_data/data_48.90625_-119.34375
+Station File     31= {{ RUN_DIR }}/inputs/met_data/data_48.90625_-119.34375
 
 Station Name     32= data_48.90625_-119.28125
 North Coordinate 32= 1649575.61658
 East Coordinate  32= 652735.821119
 Elevation        32= 1026.4
-Station File     32= {{ BASIN_DIR }}/inputs/met_data/data_48.90625_-119.28125
+Station File     32= {{ RUN_DIR }}/inputs/met_data/data_48.90625_-119.28125
 
 Station Name     33= data_48.90625_-119.21875
 North Coordinate 33= 1649618.39041
 East Coordinate  33= 657321.40616
 Elevation        33= 1176.78
-Station File     33= {{ BASIN_DIR }}/inputs/met_data/data_48.90625_-119.21875
+Station File     33= {{ RUN_DIR }}/inputs/met_data/data_48.90625_-119.21875
 
 Station Name     34= data_48.90625_-119.15625
 North Coordinate 34= 1649664.72861
 East Coordinate  34= 661906.956567
 Elevation        34= 1234.57
-Station File     34= {{ BASIN_DIR }}/inputs/met_data/data_48.90625_-119.15625
+Station File     34= {{ RUN_DIR }}/inputs/met_data/data_48.90625_-119.15625
 
 Station Name     35= data_48.84375_-120.65625
 North Coordinate 35= 1642591.9578
 East Coordinate  35= 551793.116249
 Elevation        35= 1786.63
-Station File     35= {{ BASIN_DIR }}/inputs/met_data/data_48.84375_-120.65625
+Station File     35= {{ RUN_DIR }}/inputs/met_data/data_48.84375_-120.65625
 
 Station Name     36= data_48.84375_-120.59375
 North Coordinate 36= 1642556.27082
 East Coordinate  36= 556384.160192
 Elevation        36= 1827.96
-Station File     36= {{ BASIN_DIR }}/inputs/met_data/data_48.84375_-120.59375
+Station File     36= {{ RUN_DIR }}/inputs/met_data/data_48.84375_-120.59375
 
 Station Name     37= data_48.84375_-120.53125
 North Coordinate 37= 1642524.15249
 East Coordinate  37= 560975.230489
 Elevation        37= 1831.96
-Station File     37= {{ BASIN_DIR }}/inputs/met_data/data_48.84375_-120.53125
+Station File     37= {{ RUN_DIR }}/inputs/met_data/data_48.84375_-120.53125
 
 Station Name     38= data_48.84375_-120.46875
 North Coordinate 38= 1642495.6028
 East Coordinate  38= 565566.324363
 Elevation        38= 1798.61
-Station File     38= {{ BASIN_DIR }}/inputs/met_data/data_48.84375_-120.46875
+Station File     38= {{ RUN_DIR }}/inputs/met_data/data_48.84375_-120.46875
 
 Station Name     39= data_48.84375_-120.40625
 North Coordinate 39= 1642470.62179
 East Coordinate  39= 570157.439043
 Elevation        39= 1821.98
-Station File     39= {{ BASIN_DIR }}/inputs/met_data/data_48.84375_-120.40625
+Station File     39= {{ RUN_DIR }}/inputs/met_data/data_48.84375_-120.40625
 
 Station Name     40= data_48.84375_-120.34375
 North Coordinate 40= 1642449.20947
 East Coordinate  40= 574748.571753
 Elevation        40= 1902.06
-Station File     40= {{ BASIN_DIR }}/inputs/met_data/data_48.84375_-120.34375
+Station File     40= {{ RUN_DIR }}/inputs/met_data/data_48.84375_-120.34375
 
 Station Name     41= data_48.84375_-120.28125
 North Coordinate 41= 1642431.36585
 East Coordinate  41= 579339.719721
 Elevation        41= 1904.5
-Station File     41= {{ BASIN_DIR }}/inputs/met_data/data_48.84375_-120.28125
+Station File     41= {{ RUN_DIR }}/inputs/met_data/data_48.84375_-120.28125
 
 Station Name     42= data_48.84375_-120.21875
 North Coordinate 42= 1642417.09094
 East Coordinate  42= 583930.880171
 Elevation        42= 1829.28
-Station File     42= {{ BASIN_DIR }}/inputs/met_data/data_48.84375_-120.21875
+Station File     42= {{ RUN_DIR }}/inputs/met_data/data_48.84375_-120.21875
 
 Station Name     43= data_48.84375_-120.15625
 North Coordinate 43= 1642406.38475
 East Coordinate  43= 588522.05033
 Elevation        43= 1778.88
-Station File     43= {{ BASIN_DIR }}/inputs/met_data/data_48.84375_-120.15625
+Station File     43= {{ RUN_DIR }}/inputs/met_data/data_48.84375_-120.15625
 
 Station Name     44= data_48.84375_-120.09375
 North Coordinate 44= 1642399.24729
 East Coordinate  44= 593113.227424
 Elevation        44= 1753.29
-Station File     44= {{ BASIN_DIR }}/inputs/met_data/data_48.84375_-120.09375
+Station File     44= {{ RUN_DIR }}/inputs/met_data/data_48.84375_-120.09375
 
 Station Name     45= data_48.84375_-120.03125
 North Coordinate 45= 1642395.67855
 East Coordinate  45= 597704.408679
 Elevation        45= 1760.95
-Station File     45= {{ BASIN_DIR }}/inputs/met_data/data_48.84375_-120.03125
+Station File     45= {{ RUN_DIR }}/inputs/met_data/data_48.84375_-120.03125
 
 Station Name     46= data_48.84375_-119.96875
 North Coordinate 46= 1642395.67855
 East Coordinate  46= 602295.591321
 Elevation        46= 1801.85
-Station File     46= {{ BASIN_DIR }}/inputs/met_data/data_48.84375_-119.96875
+Station File     46= {{ RUN_DIR }}/inputs/met_data/data_48.84375_-119.96875
 
 Station Name     47= data_48.84375_-119.90625
 North Coordinate 47= 1642399.24729
 East Coordinate  47= 606886.772576
 Elevation        47= 1761.17
-Station File     47= {{ BASIN_DIR }}/inputs/met_data/data_48.84375_-119.90625
+Station File     47= {{ RUN_DIR }}/inputs/met_data/data_48.84375_-119.90625
 
 Station Name     48= data_48.84375_-119.65625
 North Coordinate 48= 1642449.20947
 East Coordinate  48= 625251.428247
 Elevation        48= 842.99
-Station File     48= {{ BASIN_DIR }}/inputs/met_data/data_48.84375_-119.65625
+Station File     48= {{ RUN_DIR }}/inputs/met_data/data_48.84375_-119.65625
 
 Station Name     49= data_48.84375_-119.59375
 North Coordinate 49= 1642470.62179
 East Coordinate  49= 629842.560957
 Elevation        49= 757.29
-Station File     49= {{ BASIN_DIR }}/inputs/met_data/data_48.84375_-119.59375
+Station File     49= {{ RUN_DIR }}/inputs/met_data/data_48.84375_-119.59375
 
 Station Name     50= data_48.84375_-119.53125
 North Coordinate 50= 1642495.6028
 East Coordinate  50= 634433.675637
 Elevation        50= 654.32
-Station File     50= {{ BASIN_DIR }}/inputs/met_data/data_48.84375_-119.53125
+Station File     50= {{ RUN_DIR }}/inputs/met_data/data_48.84375_-119.53125
 
 Station Name     51= data_48.84375_-119.46875
 North Coordinate 51= 1642524.15249
 East Coordinate  51= 639024.769511
 Elevation        51= 534.08
-Station File     51= {{ BASIN_DIR }}/inputs/met_data/data_48.84375_-119.46875
+Station File     51= {{ RUN_DIR }}/inputs/met_data/data_48.84375_-119.46875
 
 Station Name     52= data_48.84375_-119.40625
 North Coordinate 52= 1642556.27082
 East Coordinate  52= 643615.839808
 Elevation        52= 582.51
-Station File     52= {{ BASIN_DIR }}/inputs/met_data/data_48.84375_-119.40625
+Station File     52= {{ RUN_DIR }}/inputs/met_data/data_48.84375_-119.40625
 
 Station Name     53= data_48.84375_-119.34375
 North Coordinate 53= 1642591.9578
 East Coordinate  53= 648206.883751
 Elevation        53= 799.6
-Station File     53= {{ BASIN_DIR }}/inputs/met_data/data_48.84375_-119.34375
+Station File     53= {{ RUN_DIR }}/inputs/met_data/data_48.84375_-119.34375
 
 Station Name     54= data_48.84375_-119.28125
 North Coordinate 54= 1642631.21339
 East Coordinate  54= 652797.898568
 Elevation        54= 1008.45
-Station File     54= {{ BASIN_DIR }}/inputs/met_data/data_48.84375_-119.28125
+Station File     54= {{ RUN_DIR }}/inputs/met_data/data_48.84375_-119.28125
 
 Station Name     55= data_48.84375_-119.21875
 North Coordinate 55= 1642674.03756
 East Coordinate  55= 657388.881485
 Elevation        55= 1209.03
-Station File     55= {{ BASIN_DIR }}/inputs/met_data/data_48.84375_-119.21875
+Station File     55= {{ RUN_DIR }}/inputs/met_data/data_48.84375_-119.21875
 
 Station Name     56= data_48.84375_-119.15625
 North Coordinate 56= 1642720.43031
 East Coordinate  56= 661979.829728
 Elevation        56= 1300.08
-Station File     56= {{ BASIN_DIR }}/inputs/met_data/data_48.84375_-119.15625
+Station File     56= {{ RUN_DIR }}/inputs/met_data/data_48.84375_-119.15625
 
 Station Name     57= data_48.84375_-119.09375
 North Coordinate 57= 1642770.39159
 East Coordinate  57= 666570.740522
 Elevation        57= 1281.59
-Station File     57= {{ BASIN_DIR }}/inputs/met_data/data_48.84375_-119.09375
+Station File     57= {{ RUN_DIR }}/inputs/met_data/data_48.84375_-119.09375
 
 Station Name     58= data_48.84375_-119.03125
 North Coordinate 58= 1642823.92138
 East Coordinate  58= 671161.611095
 Elevation        58= 1231.85
-Station File     58= {{ BASIN_DIR }}/inputs/met_data/data_48.84375_-119.03125
+Station File     58= {{ RUN_DIR }}/inputs/met_data/data_48.84375_-119.03125
 
 Station Name     59= data_48.84375_-118.96875
 North Coordinate 59= 1642881.01964
 East Coordinate  59= 675752.438672
 Elevation        59= 1150.88
-Station File     59= {{ BASIN_DIR }}/inputs/met_data/data_48.84375_-118.96875
+Station File     59= {{ RUN_DIR }}/inputs/met_data/data_48.84375_-118.96875
 
 Station Name     60= data_48.78125_-120.65625
 North Coordinate 60= 1635647.1081
 East Coordinate  60= 551736.433446
 Elevation        60= 1786.74
-Station File     60= {{ BASIN_DIR }}/inputs/met_data/data_48.78125_-120.65625
+Station File     60= {{ RUN_DIR }}/inputs/met_data/data_48.78125_-120.65625
 
 Station Name     61= data_48.78125_-120.59375
 North Coordinate 61= 1635611.37916
 East Coordinate  61= 556332.875648
 Elevation        61= 1819.43
-Station File     61= {{ BASIN_DIR }}/inputs/met_data/data_48.78125_-120.59375
+Station File     61= {{ RUN_DIR }}/inputs/met_data/data_48.78125_-120.59375
 
 Station Name     62= data_48.78125_-120.53125
 North Coordinate 62= 1635579.22306
 East Coordinate  62= 560929.344234
 Elevation        62= 1800.33
-Station File     62= {{ BASIN_DIR }}/inputs/met_data/data_48.78125_-120.53125
+Station File     62= {{ RUN_DIR }}/inputs/met_data/data_48.78125_-120.53125
 
 Station Name     63= data_48.78125_-120.46875
 North Coordinate 63= 1635550.6398
 East Coordinate  63= 565525.836427
 Elevation        63= 1729.43
-Station File     63= {{ BASIN_DIR }}/inputs/met_data/data_48.78125_-120.46875
+Station File     63= {{ RUN_DIR }}/inputs/met_data/data_48.78125_-120.46875
 
 Station Name     64= data_48.78125_-120.40625
 North Coordinate 64= 1635525.62942
 East Coordinate  64= 570122.349448
 Elevation        64= 1727.71
-Station File     64= {{ BASIN_DIR }}/inputs/met_data/data_48.78125_-120.40625
+Station File     64= {{ RUN_DIR }}/inputs/met_data/data_48.78125_-120.40625
 
 Station Name     65= data_48.78125_-120.34375
 North Coordinate 65= 1635504.19192
 East Coordinate  65= 574718.880522
 Elevation        65= 1795.16
-Station File     65= {{ BASIN_DIR }}/inputs/met_data/data_48.78125_-120.34375
+Station File     65= {{ RUN_DIR }}/inputs/met_data/data_48.78125_-120.34375
 
 Station Name     66= data_48.78125_-120.28125
 North Coordinate 66= 1635486.32732
 East Coordinate  66= 579315.426871
 Elevation        66= 1767.53
-Station File     66= {{ BASIN_DIR }}/inputs/met_data/data_48.78125_-120.28125
+Station File     66= {{ RUN_DIR }}/inputs/met_data/data_48.78125_-120.28125
 
 Station Name     67= data_48.78125_-120.21875
 North Coordinate 67= 1635472.03562
 East Coordinate  67= 583911.985717
 Elevation        67= 1644.82
-Station File     67= {{ BASIN_DIR }}/inputs/met_data/data_48.78125_-120.21875
+Station File     67= {{ RUN_DIR }}/inputs/met_data/data_48.78125_-120.21875
 
 Station Name     68= data_48.78125_-120.15625
 North Coordinate 68= 1635461.31685
 East Coordinate  68= 588508.554283
 Elevation        68= 1603.1
-Station File     68= {{ BASIN_DIR }}/inputs/met_data/data_48.78125_-120.15625
+Station File     68= {{ RUN_DIR }}/inputs/met_data/data_48.78125_-120.15625
 
 Station Name     69= data_48.78125_-120.09375
 North Coordinate 69= 1635454.17099
 East Coordinate  69= 593105.129793
 Elevation        69= 1642.37
-Station File     69= {{ BASIN_DIR }}/inputs/met_data/data_48.78125_-120.09375
+Station File     69= {{ RUN_DIR }}/inputs/met_data/data_48.78125_-120.09375
 
 Station Name     70= data_48.78125_-120.03125
 North Coordinate 70= 1635450.59806
 East Coordinate  70= 597701.709468
 Elevation        70= 1698.02
-Station File     70= {{ BASIN_DIR }}/inputs/met_data/data_48.78125_-120.03125
+Station File     70= {{ RUN_DIR }}/inputs/met_data/data_48.78125_-120.03125
 
 Station Name     71= data_48.78125_-119.96875
 North Coordinate 71= 1635450.59806
 East Coordinate  71= 602298.290532
 Elevation        71= 1770.03
-Station File     71= {{ BASIN_DIR }}/inputs/met_data/data_48.78125_-119.96875
+Station File     71= {{ RUN_DIR }}/inputs/met_data/data_48.78125_-119.96875
 
 Station Name     72= data_48.78125_-119.90625
 North Coordinate 72= 1635454.17099
 East Coordinate  72= 606894.870207
 Elevation        72= 1731.38
-Station File     72= {{ BASIN_DIR }}/inputs/met_data/data_48.78125_-119.90625
+Station File     72= {{ RUN_DIR }}/inputs/met_data/data_48.78125_-119.90625
 
 Station Name     73= data_48.78125_-119.84375
 North Coordinate 73= 1635461.31685
 East Coordinate  73= 611491.445717
 Elevation        73= 1582.09
-Station File     73= {{ BASIN_DIR }}/inputs/met_data/data_48.78125_-119.84375
+Station File     73= {{ RUN_DIR }}/inputs/met_data/data_48.78125_-119.84375
 
 Station Name     74= data_48.78125_-119.65625
 North Coordinate 74= 1635504.19192
 East Coordinate  74= 625281.119478
 Elevation        74= 880.87
-Station File     74= {{ BASIN_DIR }}/inputs/met_data/data_48.78125_-119.65625
+Station File     74= {{ RUN_DIR }}/inputs/met_data/data_48.78125_-119.65625
 
 Station Name     75= data_48.78125_-119.59375
 North Coordinate 75= 1635525.62942
 East Coordinate  75= 629877.650552
 Elevation        75= 764.47
-Station File     75= {{ BASIN_DIR }}/inputs/met_data/data_48.78125_-119.59375
+Station File     75= {{ RUN_DIR }}/inputs/met_data/data_48.78125_-119.59375
 
 Station Name     76= data_48.78125_-119.53125
 North Coordinate 76= 1635550.6398
 East Coordinate  76= 634474.163573
 Elevation        76= 648.67
-Station File     76= {{ BASIN_DIR }}/inputs/met_data/data_48.78125_-119.53125
+Station File     76= {{ RUN_DIR }}/inputs/met_data/data_48.78125_-119.53125
 
 Station Name     77= data_48.78125_-119.46875
 North Coordinate 77= 1635579.22306
 East Coordinate  77= 639070.655766
 Elevation        77= 533.49
-Station File     77= {{ BASIN_DIR }}/inputs/met_data/data_48.78125_-119.46875
+Station File     77= {{ RUN_DIR }}/inputs/met_data/data_48.78125_-119.46875
 
 Station Name     78= data_48.78125_-119.40625
 North Coordinate 78= 1635611.37916
 East Coordinate  78= 643667.124352
 Elevation        78= 573.14
-Station File     78= {{ BASIN_DIR }}/inputs/met_data/data_48.78125_-119.40625
+Station File     78= {{ RUN_DIR }}/inputs/met_data/data_48.78125_-119.40625
 
 Station Name     79= data_48.78125_-119.34375
 North Coordinate 79= 1635647.1081
 East Coordinate  79= 648263.566554
 Elevation        79= 767.61
-Station File     79= {{ BASIN_DIR }}/inputs/met_data/data_48.78125_-119.34375
+Station File     79= {{ RUN_DIR }}/inputs/met_data/data_48.78125_-119.34375
 
 Station Name     80= data_48.78125_-119.28125
 North Coordinate 80= 1635686.40984
 East Coordinate  80= 652859.979596
 Elevation        80= 965.9
-Station File     80= {{ BASIN_DIR }}/inputs/met_data/data_48.78125_-119.28125
+Station File     80= {{ RUN_DIR }}/inputs/met_data/data_48.78125_-119.28125
 
 Station Name     81= data_48.78125_-119.21875
 North Coordinate 81= 1635729.28437
 East Coordinate  81= 657456.3607
 Elevation        81= 1168.03
-Station File     81= {{ BASIN_DIR }}/inputs/met_data/data_48.78125_-119.21875
+Station File     81= {{ RUN_DIR }}/inputs/met_data/data_48.78125_-119.21875
 
 Station Name     82= data_48.78125_-119.15625
 North Coordinate 82= 1635775.73167
 East Coordinate  82= 662052.707089
 Elevation        82= 1275.12
-Station File     82= {{ BASIN_DIR }}/inputs/met_data/data_48.78125_-119.15625
+Station File     82= {{ RUN_DIR }}/inputs/met_data/data_48.78125_-119.15625
 
 Station Name     83= data_48.78125_-119.09375
 North Coordinate 83= 1635825.75169
 East Coordinate  83= 666649.015986
 Elevation        83= 1287.17
-Station File     83= {{ BASIN_DIR }}/inputs/met_data/data_48.78125_-119.09375
+Station File     83= {{ RUN_DIR }}/inputs/met_data/data_48.78125_-119.09375
 
 Station Name     84= data_48.78125_-119.03125
 North Coordinate 84= 1635879.34442
 East Coordinate  84= 671245.284613
 Elevation        84= 1257.82
-Station File     84= {{ BASIN_DIR }}/inputs/met_data/data_48.78125_-119.03125
+Station File     84= {{ RUN_DIR }}/inputs/met_data/data_48.78125_-119.03125
 
 Station Name     85= data_48.78125_-118.96875
 North Coordinate 85= 1635936.50982
 East Coordinate  85= 675841.510195
 Elevation        85= 1187.04
-Station File     85= {{ BASIN_DIR }}/inputs/met_data/data_48.78125_-118.96875
+Station File     85= {{ RUN_DIR }}/inputs/met_data/data_48.78125_-118.96875
 
 Station Name     86= data_48.71875_-120.71875
 North Coordinate 86= 1628741.21588
 East Coordinate  86= 547077.935886
 Elevation        86= 1696.46
-Station File     86= {{ BASIN_DIR }}/inputs/met_data/data_48.71875_-120.71875
+Station File     86= {{ RUN_DIR }}/inputs/met_data/data_48.71875_-120.71875
 
 Station Name     87= data_48.71875_-120.65625
 North Coordinate 87= 1628701.86798
 East Coordinate  87= 551679.747456
 Elevation        87= 1715.63
-Station File     87= {{ BASIN_DIR }}/inputs/met_data/data_48.71875_-120.65625
+Station File     87= {{ RUN_DIR }}/inputs/met_data/data_48.71875_-120.65625
 
 Station Name     88= data_48.71875_-120.59375
 North Coordinate 88= 1628666.09708
 East Coordinate  88= 556281.588221
 Elevation        88= 1676.11
-Station File     88= {{ BASIN_DIR }}/inputs/met_data/data_48.71875_-120.59375
+Station File     88= {{ RUN_DIR }}/inputs/met_data/data_48.71875_-120.59375
 
 Station Name     89= data_48.71875_-120.53125
 North Coordinate 89= 1628633.90321
 East Coordinate  89= 560883.4554
 Elevation        89= 1637.15
-Station File     89= {{ BASIN_DIR }}/inputs/met_data/data_48.71875_-120.53125
+Station File     89= {{ RUN_DIR }}/inputs/met_data/data_48.71875_-120.53125
 
 Station Name     90= data_48.71875_-120.46875
 North Coordinate 90= 1628605.28639
 East Coordinate  90= 565485.346214
 Elevation        90= 1598.77
-Station File     90= {{ BASIN_DIR }}/inputs/met_data/data_48.71875_-120.46875
+Station File     90= {{ RUN_DIR }}/inputs/met_data/data_48.71875_-120.46875
 
 Station Name     91= data_48.71875_-120.40625
 North Coordinate 91= 1628580.24663
 East Coordinate  91= 570087.257881
 Elevation        91= 1596.58
-Station File     91= {{ BASIN_DIR }}/inputs/met_data/data_48.71875_-120.40625
+Station File     91= {{ RUN_DIR }}/inputs/met_data/data_48.71875_-120.40625
 
 Station Name     92= data_48.71875_-120.34375
 North Coordinate 92= 1628558.78395
 East Coordinate  92= 574689.187622
 Elevation        92= 1630.58
-Station File     92= {{ BASIN_DIR }}/inputs/met_data/data_48.71875_-120.34375
+Station File     92= {{ RUN_DIR }}/inputs/met_data/data_48.71875_-120.34375
 
 Station Name     93= data_48.71875_-120.28125
 North Coordinate 93= 1628540.89836
 East Coordinate  93= 579291.132655
 Elevation        93= 1578.73
-Station File     93= {{ BASIN_DIR }}/inputs/met_data/data_48.71875_-120.28125
+Station File     93= {{ RUN_DIR }}/inputs/met_data/data_48.71875_-120.28125
 
 Station Name     94= data_48.71875_-120.21875
 North Coordinate 94= 1628526.58988
 East Coordinate  94= 583893.0902
 Elevation        94= 1441.03
-Station File     94= {{ BASIN_DIR }}/inputs/met_data/data_48.71875_-120.21875
+Station File     94= {{ RUN_DIR }}/inputs/met_data/data_48.71875_-120.21875
 
 Station Name     95= data_48.71875_-120.15625
 North Coordinate 95= 1628515.85852
 East Coordinate  95= 588495.057478
 Elevation        95= 1428.97
-Station File     95= {{ BASIN_DIR }}/inputs/met_data/data_48.71875_-120.15625
+Station File     95= {{ RUN_DIR }}/inputs/met_data/data_48.71875_-120.15625
 
 Station Name     96= data_48.71875_-120.09375
 North Coordinate 96= 1628508.70427
 East Coordinate  96= 593097.031706
 Elevation        96= 1542.56
-Station File     96= {{ BASIN_DIR }}/inputs/met_data/data_48.71875_-120.09375
+Station File     96= {{ RUN_DIR }}/inputs/met_data/data_48.71875_-120.09375
 
 Station Name     97= data_48.71875_-120.03125
 North Coordinate 97= 1628505.12714
 East Coordinate  97= 597699.010105
 Elevation        97= 1669.18
-Station File     97= {{ BASIN_DIR }}/inputs/met_data/data_48.71875_-120.03125
+Station File     97= {{ RUN_DIR }}/inputs/met_data/data_48.71875_-120.03125
 
 Station Name     98= data_48.71875_-119.96875
 North Coordinate 98= 1628505.12714
 East Coordinate  98= 602300.989895
 Elevation        98= 1808.84
-Station File     98= {{ BASIN_DIR }}/inputs/met_data/data_48.71875_-119.96875
+Station File     98= {{ RUN_DIR }}/inputs/met_data/data_48.71875_-119.96875
 
 Station Name     99= data_48.71875_-119.90625
 North Coordinate 99= 1628508.70427
 East Coordinate  99= 606902.968294
 Elevation        99= 1778.03
-Station File     99= {{ BASIN_DIR }}/inputs/met_data/data_48.71875_-119.90625
+Station File     99= {{ RUN_DIR }}/inputs/met_data/data_48.71875_-119.90625
 
 Station Name     100= data_48.71875_-119.84375
 North Coordinate 100= 1628515.85852
 East Coordinate  100= 611504.942522
 Elevation        100= 1576.74
-Station File     100= {{ BASIN_DIR }}/inputs/met_data/data_48.71875_-119.84375
+Station File     100= {{ RUN_DIR }}/inputs/met_data/data_48.71875_-119.84375
 
 Station Name     101= data_48.71875_-119.78125
 North Coordinate 101= 1628526.58988
 East Coordinate  101= 616106.9098
 Elevation        101= 1352.45
-Station File     101= {{ BASIN_DIR }}/inputs/met_data/data_48.71875_-119.78125
+Station File     101= {{ RUN_DIR }}/inputs/met_data/data_48.71875_-119.78125
 
 Station Name     102= data_48.71875_-119.71875
 North Coordinate 102= 1628540.89836
 East Coordinate  102= 620708.867345
 Elevation        102= 1105.14
-Station File     102= {{ BASIN_DIR }}/inputs/met_data/data_48.71875_-119.71875
+Station File     102= {{ RUN_DIR }}/inputs/met_data/data_48.71875_-119.71875
 
 Station Name     103= data_48.71875_-119.65625
 North Coordinate 103= 1628558.78395
 East Coordinate  103= 625310.812378
 Elevation        103= 913.37
-Station File     103= {{ BASIN_DIR }}/inputs/met_data/data_48.71875_-119.65625
+Station File     103= {{ RUN_DIR }}/inputs/met_data/data_48.71875_-119.65625
 
 Station Name     104= data_48.71875_-119.59375
 North Coordinate 104= 1628580.24663
 East Coordinate  104= 629912.742119
 Elevation        104= 777.14
-Station File     104= {{ BASIN_DIR }}/inputs/met_data/data_48.71875_-119.59375
+Station File     104= {{ RUN_DIR }}/inputs/met_data/data_48.71875_-119.59375
 
 Station Name     105= data_48.71875_-119.53125
 North Coordinate 105= 1628605.28639
 East Coordinate  105= 634514.653786
 Elevation        105= 654.42
-Station File     105= {{ BASIN_DIR }}/inputs/met_data/data_48.71875_-119.53125
+Station File     105= {{ RUN_DIR }}/inputs/met_data/data_48.71875_-119.53125
 
 Station Name     106= data_48.71875_-119.46875
 North Coordinate 106= 1628633.90321
 East Coordinate  106= 639116.5446
 Elevation        106= 545.21
-Station File     106= {{ BASIN_DIR }}/inputs/met_data/data_48.71875_-119.46875
+Station File     106= {{ RUN_DIR }}/inputs/met_data/data_48.71875_-119.46875
 
 Station Name     107= data_48.71875_-119.40625
 North Coordinate 107= 1628666.09708
 East Coordinate  107= 643718.411779
 Elevation        107= 573.27
-Station File     107= {{ BASIN_DIR }}/inputs/met_data/data_48.71875_-119.40625
+Station File     107= {{ RUN_DIR }}/inputs/met_data/data_48.71875_-119.40625
 
 Station Name     108= data_48.71875_-119.34375
 North Coordinate 108= 1628701.86798
 East Coordinate  108= 648320.252544
 Elevation        108= 738.62
-Station File     108= {{ BASIN_DIR }}/inputs/met_data/data_48.71875_-119.34375
+Station File     108= {{ RUN_DIR }}/inputs/met_data/data_48.71875_-119.34375
 
 Station Name     109= data_48.71875_-119.28125
 North Coordinate 109= 1628741.21588
 East Coordinate  109= 652922.064114
 Elevation        109= 898.78
-Station File     109= {{ BASIN_DIR }}/inputs/met_data/data_48.71875_-119.28125
+Station File     109= {{ RUN_DIR }}/inputs/met_data/data_48.71875_-119.28125
 
 Station Name     110= data_48.71875_-119.21875
 North Coordinate 110= 1628784.14077
 East Coordinate  110= 657523.843708
 Elevation        110= 1053.77
-Station File     110= {{ BASIN_DIR }}/inputs/met_data/data_48.71875_-119.21875
+Station File     110= {{ RUN_DIR }}/inputs/met_data/data_48.71875_-119.21875
 
 Station Name     111= data_48.71875_-119.15625
 North Coordinate 111= 1628830.64262
 East Coordinate  111= 662125.588547
 Elevation        111= 1159.68
-Station File     111= {{ BASIN_DIR }}/inputs/met_data/data_48.71875_-119.15625
+Station File     111= {{ RUN_DIR }}/inputs/met_data/data_48.71875_-119.15625
 
 Station Name     112= data_48.71875_-119.09375
 North Coordinate 112= 1628880.72139
 East Coordinate  112= 666727.29585
 Elevation        112= 1216.55
-Station File     112= {{ BASIN_DIR }}/inputs/met_data/data_48.71875_-119.09375
+Station File     112= {{ RUN_DIR }}/inputs/met_data/data_48.71875_-119.09375
 
 Station Name     113= data_48.71875_-119.03125
 North Coordinate 113= 1628934.37707
 East Coordinate  113= 671328.962836
 Elevation        113= 1247.79
-Station File     113= {{ BASIN_DIR }}/inputs/met_data/data_48.71875_-119.03125
+Station File     113= {{ RUN_DIR }}/inputs/met_data/data_48.71875_-119.03125
 
 Station Name     114= data_48.71875_-118.96875
 North Coordinate 114= 1628991.60961
 East Coordinate  114= 675930.586725
 Elevation        114= 1253.4
-Station File     114= {{ BASIN_DIR }}/inputs/met_data/data_48.71875_-118.96875
+Station File     114= {{ RUN_DIR }}/inputs/met_data/data_48.71875_-118.96875
 
 Station Name     115= data_48.65625_-120.84375
 North Coordinate 115= 1621885.17307
 East Coordinate  115= 537801.526001
 Elevation        115= 1568.84
-Station File     115= {{ BASIN_DIR }}/inputs/met_data/data_48.65625_-120.84375
+Station File     115= {{ RUN_DIR }}/inputs/met_data/data_48.65625_-120.84375
 
 Station Name     116= data_48.65625_-120.78125
 North Coordinate 116= 1621838.61666
 East Coordinate  116= 542408.669586
 Elevation        116= 1632.22
-Station File     116= {{ BASIN_DIR }}/inputs/met_data/data_48.65625_-120.78125
+Station File     116= {{ RUN_DIR }}/inputs/met_data/data_48.65625_-120.78125
 
 Station Name     117= data_48.65625_-120.71875
 North Coordinate 117= 1621795.64142
 East Coordinate  117= 547015.847967
 Elevation        117= 1705.84
-Station File     117= {{ BASIN_DIR }}/inputs/met_data/data_48.65625_-120.71875
+Station File     117= {{ RUN_DIR }}/inputs/met_data/data_48.65625_-120.71875
 
 Station Name     118= data_48.65625_-120.65625
 North Coordinate 118= 1621756.24735
 East Coordinate  118= 551623.058361
 Elevation        118= 1707.34
-Station File     118= {{ BASIN_DIR }}/inputs/met_data/data_48.65625_-120.65625
+Station File     118= {{ RUN_DIR }}/inputs/met_data/data_48.65625_-120.65625
 
 Station Name     119= data_48.65625_-120.59375
 North Coordinate 119= 1621720.43448
 East Coordinate  119= 556230.297984
 Elevation        119= 1636.72
-Station File     119= {{ BASIN_DIR }}/inputs/met_data/data_48.65625_-120.59375
+Station File     119= {{ RUN_DIR }}/inputs/met_data/data_48.65625_-120.59375
 
 Station Name     120= data_48.65625_-120.53125
 North Coordinate 120= 1621688.20284
 East Coordinate  120= 560837.564052
 Elevation        120= 1570.28
-Station File     120= {{ BASIN_DIR }}/inputs/met_data/data_48.65625_-120.53125
+Station File     120= {{ RUN_DIR }}/inputs/met_data/data_48.65625_-120.53125
 
 Station Name     121= data_48.65625_-120.46875
 North Coordinate 121= 1621659.55244
 East Coordinate  121= 565444.853783
 Elevation        121= 1507.99
-Station File     121= {{ BASIN_DIR }}/inputs/met_data/data_48.65625_-120.46875
+Station File     121= {{ RUN_DIR }}/inputs/met_data/data_48.65625_-120.46875
 
 Station Name     122= data_48.65625_-120.40625
 North Coordinate 122= 1621634.48331
 East Coordinate  122= 570052.164391
 Elevation        122= 1465.64
-Station File     122= {{ BASIN_DIR }}/inputs/met_data/data_48.65625_-120.40625
+Station File     122= {{ RUN_DIR }}/inputs/met_data/data_48.65625_-120.40625
 
 Station Name     123= data_48.65625_-120.34375
 North Coordinate 123= 1621612.99545
 East Coordinate  123= 574659.493094
 Elevation        123= 1443.2
-Station File     123= {{ BASIN_DIR }}/inputs/met_data/data_48.65625_-120.34375
+Station File     123= {{ RUN_DIR }}/inputs/met_data/data_48.65625_-120.34375
 
 Station Name     124= data_48.65625_-120.28125
 North Coordinate 124= 1621595.08888
 East Coordinate  124= 579266.837108
 Elevation        124= 1367.39
-Station File     124= {{ BASIN_DIR }}/inputs/met_data/data_48.65625_-120.28125
+Station File     124= {{ RUN_DIR }}/inputs/met_data/data_48.65625_-120.28125
 
 Station Name     125= data_48.65625_-120.21875
 North Coordinate 125= 1621580.76362
 East Coordinate  125= 583874.193649
 Elevation        125= 1238.22
-Station File     125= {{ BASIN_DIR }}/inputs/met_data/data_48.65625_-120.21875
+Station File     125= {{ RUN_DIR }}/inputs/met_data/data_48.65625_-120.21875
 
 Station Name     126= data_48.65625_-120.15625
 North Coordinate 126= 1621570.01966
 East Coordinate  126= 588481.559933
 Elevation        126= 1264.38
-Station File     126= {{ BASIN_DIR }}/inputs/met_data/data_48.65625_-120.15625
+Station File     126= {{ RUN_DIR }}/inputs/met_data/data_48.65625_-120.15625
 
 Station Name     127= data_48.65625_-120.09375
 North Coordinate 127= 1621562.85702
 East Coordinate  127= 593088.933176
 Elevation        127= 1445.86
-Station File     127= {{ BASIN_DIR }}/inputs/met_data/data_48.65625_-120.09375
+Station File     127= {{ RUN_DIR }}/inputs/met_data/data_48.65625_-120.09375
 
 Station Name     128= data_48.65625_-120.03125
 North Coordinate 128= 1621559.27569
 East Coordinate  128= 597696.310595
 Elevation        128= 1615.96
-Station File     128= {{ BASIN_DIR }}/inputs/met_data/data_48.65625_-120.03125
+Station File     128= {{ RUN_DIR }}/inputs/met_data/data_48.65625_-120.03125
 
 Station Name     129= data_48.65625_-119.96875
 North Coordinate 129= 1621559.27569
 East Coordinate  129= 602303.689405
 Elevation        129= 1774.68
-Station File     129= {{ BASIN_DIR }}/inputs/met_data/data_48.65625_-119.96875
+Station File     129= {{ RUN_DIR }}/inputs/met_data/data_48.65625_-119.96875
 
 Station Name     130= data_48.65625_-119.90625
 North Coordinate 130= 1621562.85702
 East Coordinate  130= 606911.066824
 Elevation        130= 1736.69
-Station File     130= {{ BASIN_DIR }}/inputs/met_data/data_48.65625_-119.90625
+Station File     130= {{ RUN_DIR }}/inputs/met_data/data_48.65625_-119.90625
 
 Station Name     131= data_48.65625_-119.84375
 North Coordinate 131= 1621570.01966
 East Coordinate  131= 611518.440067
 Elevation        131= 1501.99
-Station File     131= {{ BASIN_DIR }}/inputs/met_data/data_48.65625_-119.84375
+Station File     131= {{ RUN_DIR }}/inputs/met_data/data_48.65625_-119.84375
 
 Station Name     132= data_48.65625_-119.78125
 North Coordinate 132= 1621580.76362
 East Coordinate  132= 616125.806351
 Elevation        132= 1275.63
-Station File     132= {{ BASIN_DIR }}/inputs/met_data/data_48.65625_-119.78125
+Station File     132= {{ RUN_DIR }}/inputs/met_data/data_48.65625_-119.78125
 
 Station Name     133= data_48.65625_-119.71875
 North Coordinate 133= 1621595.08888
 East Coordinate  133= 620733.162892
 Elevation        133= 1057.6
-Station File     133= {{ BASIN_DIR }}/inputs/met_data/data_48.65625_-119.71875
+Station File     133= {{ RUN_DIR }}/inputs/met_data/data_48.65625_-119.71875
 
 Station Name     134= data_48.65625_-119.65625
 North Coordinate 134= 1621612.99545
 East Coordinate  134= 625340.506906
 Elevation        134= 880.72
-Station File     134= {{ BASIN_DIR }}/inputs/met_data/data_48.65625_-119.65625
+Station File     134= {{ RUN_DIR }}/inputs/met_data/data_48.65625_-119.65625
 
 Station Name     135= data_48.65625_-119.59375
 North Coordinate 135= 1621634.48331
 East Coordinate  135= 629947.835609
 Elevation        135= 744.98
-Station File     135= {{ BASIN_DIR }}/inputs/met_data/data_48.65625_-119.59375
+Station File     135= {{ RUN_DIR }}/inputs/met_data/data_48.65625_-119.59375
 
 Station Name     136= data_48.65625_-119.53125
 North Coordinate 136= 1621659.55244
 East Coordinate  136= 634555.146217
 Elevation        136= 642.5
-Station File     136= {{ BASIN_DIR }}/inputs/met_data/data_48.65625_-119.53125
+Station File     136= {{ RUN_DIR }}/inputs/met_data/data_48.65625_-119.53125
 
 Station Name     137= data_48.65625_-119.46875
 North Coordinate 137= 1621688.20284
 East Coordinate  137= 639162.435948
 Elevation        137= 573.29
-Station File     137= {{ BASIN_DIR }}/inputs/met_data/data_48.65625_-119.46875
+Station File     137= {{ RUN_DIR }}/inputs/met_data/data_48.65625_-119.46875
 
 Station Name     138= data_48.65625_-119.40625
 North Coordinate 138= 1621720.43448
 East Coordinate  138= 643769.702016
 Elevation        138= 618.17
-Station File     138= {{ BASIN_DIR }}/inputs/met_data/data_48.65625_-119.40625
+Station File     138= {{ RUN_DIR }}/inputs/met_data/data_48.65625_-119.40625
 
 Station Name     139= data_48.65625_-119.34375
 North Coordinate 139= 1621756.24735
 East Coordinate  139= 648376.941639
 Elevation        139= 777.14
-Station File     139= {{ BASIN_DIR }}/inputs/met_data/data_48.65625_-119.34375
+Station File     139= {{ RUN_DIR }}/inputs/met_data/data_48.65625_-119.34375
 
 Station Name     140= data_48.65625_-119.28125
 North Coordinate 140= 1621795.64142
 East Coordinate  140= 652984.152033
 Elevation        140= 920.55
-Station File     140= {{ BASIN_DIR }}/inputs/met_data/data_48.65625_-119.28125
+Station File     140= {{ RUN_DIR }}/inputs/met_data/data_48.65625_-119.28125
 
 Station Name     141= data_48.65625_-119.21875
 North Coordinate 141= 1621838.61666
 East Coordinate  141= 657591.330414
 Elevation        141= 1048.4
-Station File     141= {{ BASIN_DIR }}/inputs/met_data/data_48.65625_-119.21875
+Station File     141= {{ RUN_DIR }}/inputs/met_data/data_48.65625_-119.21875
 
 Station Name     142= data_48.65625_-119.15625
 North Coordinate 142= 1621885.17307
 East Coordinate  142= 662198.473999
 Elevation        142= 1127.98
-Station File     142= {{ BASIN_DIR }}/inputs/met_data/data_48.65625_-119.15625
+Station File     142= {{ RUN_DIR }}/inputs/met_data/data_48.65625_-119.15625
 
 Station Name     143= data_48.65625_-119.09375
 North Coordinate 143= 1621935.31059
 East Coordinate  143= 666805.580003
 Elevation        143= 1159.31
-Station File     143= {{ BASIN_DIR }}/inputs/met_data/data_48.65625_-119.09375
+Station File     143= {{ RUN_DIR }}/inputs/met_data/data_48.65625_-119.09375
 
 Station Name     144= data_48.65625_-119.03125
 North Coordinate 144= 1621989.02921
 East Coordinate  144= 671412.645643
 Elevation        144= 1197.46
-Station File     144= {{ BASIN_DIR }}/inputs/met_data/data_48.65625_-119.03125
+Station File     144= {{ RUN_DIR }}/inputs/met_data/data_48.65625_-119.03125
 
 Station Name     145= data_48.65625_-118.96875
 North Coordinate 145= 1622046.3289
 East Coordinate  145= 676019.668136
 Elevation        145= 1242.43
-Station File     145= {{ BASIN_DIR }}/inputs/met_data/data_48.65625_-118.96875
+Station File     145= {{ RUN_DIR }}/inputs/met_data/data_48.65625_-118.96875
 
 Station Name     146= data_48.59375_-120.84375
 North Coordinate 146= 1614939.33287
 East Coordinate  146= 537728.636661
 Elevation        146= 1663.26
-Station File     146= {{ BASIN_DIR }}/inputs/met_data/data_48.59375_-120.84375
+Station File     146= {{ RUN_DIR }}/inputs/met_data/data_48.59375_-120.84375
 
 Station Name     147= data_48.59375_-120.78125
 North Coordinate 147= 1614892.72191
 East Coordinate  147= 542341.179279
 Elevation        147= 1695.82
-Station File     147= {{ BASIN_DIR }}/inputs/met_data/data_48.59375_-120.78125
+Station File     147= {{ RUN_DIR }}/inputs/met_data/data_48.59375_-120.78125
 
 Station Name     148= data_48.59375_-120.71875
 North Coordinate 148= 1614849.6963
 East Coordinate  148= 546953.756734
 Elevation        148= 1760.02
-Station File     148= {{ BASIN_DIR }}/inputs/met_data/data_48.59375_-120.71875
+Station File     148= {{ RUN_DIR }}/inputs/met_data/data_48.59375_-120.71875
 
 Station Name     149= data_48.59375_-120.65625
 North Coordinate 149= 1614810.25606
 East Coordinate  149= 551566.36624
 Elevation        149= 1761.84
-Station File     149= {{ BASIN_DIR }}/inputs/met_data/data_48.59375_-120.65625
+Station File     149= {{ RUN_DIR }}/inputs/met_data/data_48.59375_-120.65625
 
 Station Name     150= data_48.59375_-120.59375
 North Coordinate 150= 1614774.40123
 East Coordinate  150= 556179.005009
 Elevation        150= 1701.27
-Station File     150= {{ BASIN_DIR }}/inputs/met_data/data_48.59375_-120.59375
+Station File     150= {{ RUN_DIR }}/inputs/met_data/data_48.59375_-120.59375
 
 Station Name     151= data_48.59375_-120.53125
 North Coordinate 151= 1614742.13182
 East Coordinate  151= 560791.670255
 Elevation        151= 1599.69
-Station File     151= {{ BASIN_DIR }}/inputs/met_data/data_48.59375_-120.53125
+Station File     151= {{ RUN_DIR }}/inputs/met_data/data_48.59375_-120.53125
 
 Station Name     152= data_48.59375_-120.46875
 North Coordinate 152= 1614713.44784
 East Coordinate  152= 565404.359191
 Elevation        152= 1457.1
-Station File     152= {{ BASIN_DIR }}/inputs/met_data/data_48.59375_-120.46875
+Station File     152= {{ RUN_DIR }}/inputs/met_data/data_48.59375_-120.46875
 
 Station Name     153= data_48.59375_-120.40625
 North Coordinate 153= 1614688.34933
 East Coordinate  153= 570017.069029
 Elevation        153= 1334.87
-Station File     153= {{ BASIN_DIR }}/inputs/met_data/data_48.59375_-120.40625
+Station File     153= {{ RUN_DIR }}/inputs/met_data/data_48.59375_-120.40625
 
 Station Name     154= data_48.59375_-120.34375
 North Coordinate 154= 1614666.83629
 East Coordinate  154= 574629.796983
 Elevation        154= 1233.01
-Station File     154= {{ BASIN_DIR }}/inputs/met_data/data_48.59375_-120.34375
+Station File     154= {{ RUN_DIR }}/inputs/met_data/data_48.59375_-120.34375
 
 Station Name     155= data_48.59375_-120.28125
 North Coordinate 155= 1614648.90874
 East Coordinate  155= 579242.540265
 Elevation        155= 1133.52
-Station File     155= {{ BASIN_DIR }}/inputs/met_data/data_48.59375_-120.28125
+Station File     155= {{ RUN_DIR }}/inputs/met_data/data_48.59375_-120.28125
 
 Station Name     156= data_48.59375_-120.21875
 North Coordinate 156= 1614634.56668
 East Coordinate  156= 583855.296089
 Elevation        156= 1036.4
-Station File     156= {{ BASIN_DIR }}/inputs/met_data/data_48.59375_-120.21875
+Station File     156= {{ RUN_DIR }}/inputs/met_data/data_48.59375_-120.21875
 
 Station Name     157= data_48.59375_-120.15625
 North Coordinate 157= 1614623.81014
 East Coordinate  157= 588468.061667
 Elevation        157= 1109.32
-Station File     157= {{ BASIN_DIR }}/inputs/met_data/data_48.59375_-120.15625
+Station File     157= {{ RUN_DIR }}/inputs/met_data/data_48.59375_-120.15625
 
 Station Name     158= data_48.59375_-120.09375
 North Coordinate 158= 1614616.6391
 East Coordinate  158= 593080.834213
 Elevation        158= 1352.28
-Station File     158= {{ BASIN_DIR }}/inputs/met_data/data_48.59375_-120.09375
+Station File     158= {{ RUN_DIR }}/inputs/met_data/data_48.59375_-120.09375
 
 Station Name     159= data_48.59375_-120.03125
 North Coordinate 159= 1614613.05358
 East Coordinate  159= 597693.61094
 Elevation        159= 1538.35
-Station File     159= {{ BASIN_DIR }}/inputs/met_data/data_48.59375_-120.03125
+Station File     159= {{ RUN_DIR }}/inputs/met_data/data_48.59375_-120.03125
 
 Station Name     160= data_48.59375_-119.96875
 North Coordinate 160= 1614613.05358
 East Coordinate  160= 602306.38906
 Elevation        160= 1667.53
-Station File     160= {{ BASIN_DIR }}/inputs/met_data/data_48.59375_-119.96875
+Station File     160= {{ RUN_DIR }}/inputs/met_data/data_48.59375_-119.96875
 
 Station Name     161= data_48.59375_-119.90625
 North Coordinate 161= 1614616.6391
 East Coordinate  161= 606919.165787
 Elevation        161= 1607.36
-Station File     161= {{ BASIN_DIR }}/inputs/met_data/data_48.59375_-119.90625
+Station File     161= {{ RUN_DIR }}/inputs/met_data/data_48.59375_-119.90625
 
 Station Name     162= data_48.59375_-119.84375
 North Coordinate 162= 1614623.81014
 East Coordinate  162= 611531.938333
 Elevation        162= 1357.84
-Station File     162= {{ BASIN_DIR }}/inputs/met_data/data_48.59375_-119.84375
+Station File     162= {{ RUN_DIR }}/inputs/met_data/data_48.59375_-119.84375
 
 Station Name     163= data_48.59375_-119.78125
 North Coordinate 163= 1614634.56668
 East Coordinate  163= 616144.703911
 Elevation        163= 1134.9
-Station File     163= {{ BASIN_DIR }}/inputs/met_data/data_48.59375_-119.78125
+Station File     163= {{ RUN_DIR }}/inputs/met_data/data_48.59375_-119.78125
 
 Station Name     164= data_48.59375_-119.71875
 North Coordinate 164= 1614648.90874
 East Coordinate  164= 620757.459735
 Elevation        164= 938.56
-Station File     164= {{ BASIN_DIR }}/inputs/met_data/data_48.59375_-119.71875
+Station File     164= {{ RUN_DIR }}/inputs/met_data/data_48.59375_-119.71875
 
 Station Name     165= data_48.59375_-119.65625
 North Coordinate 165= 1614666.83629
 East Coordinate  165= 625370.203017
 Elevation        165= 782.91
-Station File     165= {{ BASIN_DIR }}/inputs/met_data/data_48.59375_-119.65625
+Station File     165= {{ RUN_DIR }}/inputs/met_data/data_48.59375_-119.65625
 
 Station Name     166= data_48.59375_-119.59375
 North Coordinate 166= 1614688.34933
 East Coordinate  166= 629982.930971
 Elevation        166= 667.98
-Station File     166= {{ BASIN_DIR }}/inputs/met_data/data_48.59375_-119.59375
+Station File     166= {{ RUN_DIR }}/inputs/met_data/data_48.59375_-119.59375
 
 Station Name     167= data_48.59375_-119.53125
 North Coordinate 167= 1614713.44784
 East Coordinate  167= 634595.640809
 Elevation        167= 612.92
-Station File     167= {{ BASIN_DIR }}/inputs/met_data/data_48.59375_-119.53125
+Station File     167= {{ RUN_DIR }}/inputs/met_data/data_48.59375_-119.53125
 
 Station Name     168= data_48.59375_-119.46875
 North Coordinate 168= 1614742.13182
 East Coordinate  168= 639208.329745
 Elevation        168= 617.75
-Station File     168= {{ BASIN_DIR }}/inputs/met_data/data_48.59375_-119.46875
+Station File     168= {{ RUN_DIR }}/inputs/met_data/data_48.59375_-119.46875
 
 Station Name     169= data_48.59375_-119.40625
 North Coordinate 169= 1614774.40123
 East Coordinate  169= 643820.994991
 Elevation        169= 707.83
-Station File     169= {{ BASIN_DIR }}/inputs/met_data/data_48.59375_-119.40625
+Station File     169= {{ RUN_DIR }}/inputs/met_data/data_48.59375_-119.40625
 
 Station Name     170= data_48.59375_-119.34375
 North Coordinate 170= 1614810.25606
 East Coordinate  170= 648433.63376
 Elevation        170= 883.17
-Station File     170= {{ BASIN_DIR }}/inputs/met_data/data_48.59375_-119.34375
+Station File     170= {{ RUN_DIR }}/inputs/met_data/data_48.59375_-119.34375
 
 Station Name     171= data_48.59375_-119.28125
 North Coordinate 171= 1614849.6963
 East Coordinate  171= 653046.243266
 Elevation        171= 1031.2
-Station File     171= {{ BASIN_DIR }}/inputs/met_data/data_48.59375_-119.28125
+Station File     171= {{ RUN_DIR }}/inputs/met_data/data_48.59375_-119.28125
 
 Station Name     172= data_48.59375_-119.21875
 North Coordinate 172= 1614892.72191
 East Coordinate  172= 657658.820721
 Elevation        172= 1151.92
-Station File     172= {{ BASIN_DIR }}/inputs/met_data/data_48.59375_-119.21875
+Station File     172= {{ RUN_DIR }}/inputs/met_data/data_48.59375_-119.21875
 
 Station Name     173= data_48.59375_-119.15625
 North Coordinate 173= 1614939.33287
 East Coordinate  173= 662271.363339
 Elevation        173= 1180.01
-Station File     173= {{ BASIN_DIR }}/inputs/met_data/data_48.59375_-119.15625
+Station File     173= {{ RUN_DIR }}/inputs/met_data/data_48.59375_-119.15625
 
 Station Name     174= data_48.59375_-119.09375
 North Coordinate 174= 1614989.52915
 East Coordinate  174= 666883.868333
 Elevation        174= 1115.48
-Station File     174= {{ BASIN_DIR }}/inputs/met_data/data_48.59375_-119.09375
+Station File     174= {{ RUN_DIR }}/inputs/met_data/data_48.59375_-119.09375
 
 Station Name     175= data_48.53125_-120.78125
 North Coordinate 175= 1607946.46633
 East Coordinate  175= 542273.685466
 Elevation        175= 1650.6
-Station File     175= {{ BASIN_DIR }}/inputs/met_data/data_48.53125_-120.78125
+Station File     175= {{ RUN_DIR }}/inputs/met_data/data_48.53125_-120.78125
 
 Station Name     176= data_48.53125_-120.71875
 North Coordinate 176= 1607903.39035
 East Coordinate  176= 546891.662276
 Elevation        176= 1748.66
-Station File     176= {{ BASIN_DIR }}/inputs/met_data/data_48.53125_-120.71875
+Station File     176= {{ RUN_DIR }}/inputs/met_data/data_48.53125_-120.71875
 
 Station Name     177= data_48.53125_-120.65625
 North Coordinate 177= 1607863.90395
 East Coordinate  177= 551509.671174
 Elevation        177= 1774.28
-Station File     177= {{ BASIN_DIR }}/inputs/met_data/data_48.53125_-120.65625
+Station File     177= {{ RUN_DIR }}/inputs/met_data/data_48.53125_-120.65625
 
 Station Name     178= data_48.53125_-120.59375
 North Coordinate 178= 1607828.00715
 East Coordinate  178= 556127.709371
 Elevation        178= 1727.44
-Station File     178= {{ BASIN_DIR }}/inputs/met_data/data_48.53125_-120.59375
+Station File     178= {{ RUN_DIR }}/inputs/met_data/data_48.53125_-120.59375
 
 Station Name     179= data_48.53125_-120.53125
 North Coordinate 179= 1607795.69996
 East Coordinate  179= 560745.774074
 Elevation        179= 1625.35
-Station File     179= {{ BASIN_DIR }}/inputs/met_data/data_48.53125_-120.53125
+Station File     179= {{ RUN_DIR }}/inputs/met_data/data_48.53125_-120.53125
 
 Station Name     180= data_48.53125_-120.46875
 North Coordinate 180= 1607766.98241
 East Coordinate  180= 565363.862495
 Elevation        180= 1467.99
-Station File     180= {{ BASIN_DIR }}/inputs/met_data/data_48.53125_-120.46875
+Station File     180= {{ RUN_DIR }}/inputs/met_data/data_48.53125_-120.46875
 
 Station Name     181= data_48.53125_-120.40625
 North Coordinate 181= 1607741.85452
 East Coordinate  181= 569981.971843
 Elevation        181= 1306.15
-Station File     181= {{ BASIN_DIR }}/inputs/met_data/data_48.53125_-120.40625
+Station File     181= {{ RUN_DIR }}/inputs/met_data/data_48.53125_-120.40625
 
 Station Name     182= data_48.53125_-120.34375
 North Coordinate 182= 1607720.3163
 East Coordinate  182= 574600.099328
 Elevation        182= 1139.83
-Station File     182= {{ BASIN_DIR }}/inputs/met_data/data_48.53125_-120.34375
+Station File     182= {{ RUN_DIR }}/inputs/met_data/data_48.53125_-120.34375
 
 Station Name     183= data_48.53125_-120.28125
 North Coordinate 183= 1607702.36776
 East Coordinate  183= 579218.242159
 Elevation        183= 1002.48
-Station File     183= {{ BASIN_DIR }}/inputs/met_data/data_48.53125_-120.28125
+Station File     183= {{ RUN_DIR }}/inputs/met_data/data_48.53125_-120.28125
 
 Station Name     184= data_48.53125_-120.21875
 North Coordinate 184= 1607688.00892
 East Coordinate  184= 583836.397547
 Elevation        184= 894.08
-Station File     184= {{ BASIN_DIR }}/inputs/met_data/data_48.53125_-120.21875
+Station File     184= {{ RUN_DIR }}/inputs/met_data/data_48.53125_-120.21875
 
 Station Name     185= data_48.53125_-120.15625
 North Coordinate 185= 1607677.23978
 East Coordinate  185= 588454.562701
 Elevation        185= 963.22
-Station File     185= {{ BASIN_DIR }}/inputs/met_data/data_48.53125_-120.15625
+Station File     185= {{ RUN_DIR }}/inputs/met_data/data_48.53125_-120.15625
 
 Station Name     186= data_48.53125_-120.09375
 North Coordinate 186= 1607670.06035
 East Coordinate  186= 593072.73483
 Elevation        186= 1209.9
-Station File     186= {{ BASIN_DIR }}/inputs/met_data/data_48.53125_-120.09375
+Station File     186= {{ RUN_DIR }}/inputs/met_data/data_48.53125_-120.09375
 
 Station Name     187= data_48.53125_-120.03125
 North Coordinate 187= 1607666.47063
 East Coordinate  187= 597690.911145
 Elevation        187= 1402.1
-Station File     187= {{ BASIN_DIR }}/inputs/met_data/data_48.53125_-120.03125
+Station File     187= {{ RUN_DIR }}/inputs/met_data/data_48.53125_-120.03125
 
 Station Name     188= data_48.53125_-119.96875
 North Coordinate 188= 1607666.47063
 East Coordinate  188= 602309.088855
 Elevation        188= 1539.82
-Station File     188= {{ BASIN_DIR }}/inputs/met_data/data_48.53125_-119.96875
+Station File     188= {{ RUN_DIR }}/inputs/met_data/data_48.53125_-119.96875
 
 Station Name     189= data_48.53125_-119.90625
 North Coordinate 189= 1607670.06035
 East Coordinate  189= 606927.26517
 Elevation        189= 1501.34
-Station File     189= {{ BASIN_DIR }}/inputs/met_data/data_48.53125_-119.90625
+Station File     189= {{ RUN_DIR }}/inputs/met_data/data_48.53125_-119.90625
 
 Station Name     190= data_48.53125_-119.84375
 North Coordinate 190= 1607677.23978
 East Coordinate  190= 611545.437299
 Elevation        190= 1286.65
-Station File     190= {{ BASIN_DIR }}/inputs/met_data/data_48.53125_-119.84375
+Station File     190= {{ RUN_DIR }}/inputs/met_data/data_48.53125_-119.84375
 
 Station Name     191= data_48.53125_-119.78125
 North Coordinate 191= 1607688.00892
 East Coordinate  191= 616163.602453
 Elevation        191= 1087.33
-Station File     191= {{ BASIN_DIR }}/inputs/met_data/data_48.53125_-119.78125
+Station File     191= {{ RUN_DIR }}/inputs/met_data/data_48.53125_-119.78125
 
 Station Name     192= data_48.53125_-119.71875
 North Coordinate 192= 1607702.36776
 East Coordinate  192= 620781.757841
 Elevation        192= 903.37
-Station File     192= {{ BASIN_DIR }}/inputs/met_data/data_48.53125_-119.71875
+Station File     192= {{ RUN_DIR }}/inputs/met_data/data_48.53125_-119.71875
 
 Station Name     193= data_48.53125_-119.65625
 North Coordinate 193= 1607720.3163
 East Coordinate  193= 625399.900672
 Elevation        193= 743.98
-Station File     193= {{ BASIN_DIR }}/inputs/met_data/data_48.53125_-119.65625
+Station File     193= {{ RUN_DIR }}/inputs/met_data/data_48.53125_-119.65625
 
 Station Name     194= data_48.53125_-119.59375
 North Coordinate 194= 1607741.85452
 East Coordinate  194= 630018.028157
 Elevation        194= 609.15
-Station File     194= {{ BASIN_DIR }}/inputs/met_data/data_48.53125_-119.59375
+Station File     194= {{ RUN_DIR }}/inputs/met_data/data_48.53125_-119.59375
 
 Station Name     195= data_48.53125_-119.53125
 North Coordinate 195= 1607766.98241
 East Coordinate  195= 634636.137505
 Elevation        195= 567.08
-Station File     195= {{ BASIN_DIR }}/inputs/met_data/data_48.53125_-119.53125
+Station File     195= {{ RUN_DIR }}/inputs/met_data/data_48.53125_-119.53125
 
 Station Name     196= data_48.53125_-119.46875
 North Coordinate 196= 1607795.69996
 East Coordinate  196= 639254.225926
 Elevation        196= 617.79
-Station File     196= {{ BASIN_DIR }}/inputs/met_data/data_48.53125_-119.46875
+Station File     196= {{ RUN_DIR }}/inputs/met_data/data_48.53125_-119.46875
 
 Station Name     197= data_48.53125_-119.40625
 North Coordinate 197= 1607828.00715
 East Coordinate  197= 643872.290629
 Elevation        197= 743.91
-Station File     197= {{ BASIN_DIR }}/inputs/met_data/data_48.53125_-119.40625
+Station File     197= {{ RUN_DIR }}/inputs/met_data/data_48.53125_-119.40625
 
 Station Name     198= data_48.53125_-119.34375
 North Coordinate 198= 1607863.90395
 East Coordinate  198= 648490.328826
 Elevation        198= 945.45
-Station File     198= {{ BASIN_DIR }}/inputs/met_data/data_48.53125_-119.34375
+Station File     198= {{ RUN_DIR }}/inputs/met_data/data_48.53125_-119.34375
 
 Station Name     199= data_48.53125_-119.28125
 North Coordinate 199= 1607903.39035
 East Coordinate  199= 653108.337724
 Elevation        199= 1101.4
-Station File     199= {{ BASIN_DIR }}/inputs/met_data/data_48.53125_-119.28125
+Station File     199= {{ RUN_DIR }}/inputs/met_data/data_48.53125_-119.28125
 
 Station Name     200= data_48.53125_-119.21875
 North Coordinate 200= 1607946.46633
 East Coordinate  200= 657726.314534
 Elevation        200= 1211.78
-Station File     200= {{ BASIN_DIR }}/inputs/met_data/data_48.53125_-119.21875
+Station File     200= {{ RUN_DIR }}/inputs/met_data/data_48.53125_-119.21875
 
 Station Name     201= data_48.53125_-119.15625
 North Coordinate 201= 1607993.13185
 East Coordinate  201= 662344.256467
 Elevation        201= 1222.1
-Station File     201= {{ BASIN_DIR }}/inputs/met_data/data_48.53125_-119.15625
+Station File     201= {{ RUN_DIR }}/inputs/met_data/data_48.53125_-119.15625
 
 Station Name     202= data_48.46875_-120.71875
 North Coordinate 202= 1600956.73337
 East Coordinate  202= 546829.56468
 Elevation        202= 1671.76
-Station File     202= {{ BASIN_DIR }}/inputs/met_data/data_48.46875_-120.71875
+Station File     202= {{ RUN_DIR }}/inputs/met_data/data_48.46875_-120.71875
 
 Station Name     203= data_48.46875_-120.65625
 North Coordinate 203= 1600917.2008
 East Coordinate  203= 551452.973244
 Elevation        203= 1744.65
-Station File     203= {{ BASIN_DIR }}/inputs/met_data/data_48.46875_-120.65625
+Station File     203= {{ RUN_DIR }}/inputs/met_data/data_48.46875_-120.65625
 
 Station Name     204= data_48.46875_-120.59375
 North Coordinate 204= 1600881.26203
 East Coordinate  204= 556076.41114
 Elevation        204= 1715.24
-Station File     204= {{ BASIN_DIR }}/inputs/met_data/data_48.46875_-120.59375
+Station File     204= {{ RUN_DIR }}/inputs/met_data/data_48.46875_-120.59375
 
 Station Name     205= data_48.46875_-120.53125
 North Coordinate 205= 1600848.91706
 East Coordinate  205= 560699.875574
 Elevation        205= 1647.25
-Station File     205= {{ BASIN_DIR }}/inputs/met_data/data_48.46875_-120.53125
+Station File     205= {{ RUN_DIR }}/inputs/met_data/data_48.46875_-120.53125
 
 Station Name     206= data_48.46875_-120.46875
 North Coordinate 206= 1600820.16594
 East Coordinate  206= 565323.363753
 Elevation        206= 1540.67
-Station File     206= {{ BASIN_DIR }}/inputs/met_data/data_48.46875_-120.46875
+Station File     206= {{ RUN_DIR }}/inputs/met_data/data_48.46875_-120.46875
 
 Station Name     207= data_48.46875_-120.40625
 North Coordinate 207= 1600795.00866
 East Coordinate  207= 569946.872884
 Elevation        207= 1379.47
-Station File     207= {{ BASIN_DIR }}/inputs/met_data/data_48.46875_-120.40625
+Station File     207= {{ RUN_DIR }}/inputs/met_data/data_48.46875_-120.40625
 
 Station Name     208= data_48.46875_-120.34375
 North Coordinate 208= 1600773.44526
 East Coordinate  208= 574570.400173
 Elevation        208= 1163.66
-Station File     208= {{ BASIN_DIR }}/inputs/met_data/data_48.46875_-120.34375
+Station File     208= {{ RUN_DIR }}/inputs/met_data/data_48.46875_-120.34375
 
 Station Name     209= data_48.46875_-120.28125
 North Coordinate 209= 1600755.47573
 East Coordinate  209= 579193.942826
 Elevation        209= 974.26
-Station File     209= {{ BASIN_DIR }}/inputs/met_data/data_48.46875_-120.28125
+Station File     209= {{ RUN_DIR }}/inputs/met_data/data_48.46875_-120.28125
 
 Station Name     210= data_48.46875_-120.21875
 North Coordinate 210= 1600741.1001
 East Coordinate  210= 583817.49805
 Elevation        210= 811.26
-Station File     210= {{ BASIN_DIR }}/inputs/met_data/data_48.46875_-120.21875
+Station File     210= {{ RUN_DIR }}/inputs/met_data/data_48.46875_-120.21875
 
 Station Name     211= data_48.46875_-120.15625
 North Coordinate 211= 1600730.31837
 East Coordinate  211= 588441.063052
 Elevation        211= 826.08
-Station File     211= {{ BASIN_DIR }}/inputs/met_data/data_48.46875_-120.15625
+Station File     211= {{ RUN_DIR }}/inputs/met_data/data_48.46875_-120.15625
 
 Station Name     212= data_48.46875_-120.09375
 North Coordinate 212= 1600723.13054
 East Coordinate  212= 593064.635038
 Elevation        212= 1018.71
-Station File     212= {{ BASIN_DIR }}/inputs/met_data/data_48.46875_-120.09375
+Station File     212= {{ RUN_DIR }}/inputs/met_data/data_48.46875_-120.09375
 
 Station Name     213= data_48.46875_-120.03125
 North Coordinate 213= 1600719.53663
 East Coordinate  213= 597688.211214
 Elevation        213= 1207.19
-Station File     213= {{ BASIN_DIR }}/inputs/met_data/data_48.46875_-120.03125
+Station File     213= {{ RUN_DIR }}/inputs/met_data/data_48.46875_-120.03125
 
 Station Name     214= data_48.46875_-119.96875
 North Coordinate 214= 1600719.53663
 East Coordinate  214= 602311.788786
 Elevation        214= 1391.53
-Station File     214= {{ BASIN_DIR }}/inputs/met_data/data_48.46875_-119.96875
+Station File     214= {{ RUN_DIR }}/inputs/met_data/data_48.46875_-119.96875
 
 Station Name     215= data_48.46875_-119.90625
 North Coordinate 215= 1600723.13054
 East Coordinate  215= 606935.364962
 Elevation        215= 1418.61
-Station File     215= {{ BASIN_DIR }}/inputs/met_data/data_48.46875_-119.90625
+Station File     215= {{ RUN_DIR }}/inputs/met_data/data_48.46875_-119.90625
 
 Station Name     216= data_48.46875_-119.84375
 North Coordinate 216= 1600730.31837
 East Coordinate  216= 611558.936948
 Elevation        216= 1288.44
-Station File     216= {{ BASIN_DIR }}/inputs/met_data/data_48.46875_-119.84375
+Station File     216= {{ RUN_DIR }}/inputs/met_data/data_48.46875_-119.84375
 
 Station Name     217= data_48.46875_-119.78125
 North Coordinate 217= 1600741.1001
 East Coordinate  217= 616182.50195
 Elevation        217= 1132.92
-Station File     217= {{ BASIN_DIR }}/inputs/met_data/data_48.46875_-119.78125
+Station File     217= {{ RUN_DIR }}/inputs/met_data/data_48.46875_-119.78125
 
 Station Name     218= data_48.46875_-119.71875
 North Coordinate 218= 1600755.47573
 East Coordinate  218= 620806.057174
 Elevation        218= 952.05
-Station File     218= {{ BASIN_DIR }}/inputs/met_data/data_48.46875_-119.71875
+Station File     218= {{ RUN_DIR }}/inputs/met_data/data_48.46875_-119.71875
 
 Station Name     219= data_48.46875_-119.65625
 North Coordinate 219= 1600773.44526
 East Coordinate  219= 625429.599827
 Elevation        219= 763.91
-Station File     219= {{ BASIN_DIR }}/inputs/met_data/data_48.46875_-119.65625
+Station File     219= {{ RUN_DIR }}/inputs/met_data/data_48.46875_-119.65625
 
 Station Name     220= data_48.46875_-119.59375
 North Coordinate 220= 1600795.00866
 East Coordinate  220= 630053.127116
 Elevation        220= 568.48
-Station File     220= {{ BASIN_DIR }}/inputs/met_data/data_48.46875_-119.59375
+Station File     220= {{ RUN_DIR }}/inputs/met_data/data_48.46875_-119.59375
 
 Station Name     221= data_48.46875_-119.53125
 North Coordinate 221= 1600820.16594
 East Coordinate  221= 634676.636247
 Elevation        221= 504.98
-Station File     221= {{ BASIN_DIR }}/inputs/met_data/data_48.46875_-119.53125
+Station File     221= {{ RUN_DIR }}/inputs/met_data/data_48.46875_-119.53125
 
 Station Name     222= data_48.46875_-119.46875
 North Coordinate 222= 1600848.91706
 East Coordinate  222= 639300.124426
 Elevation        222= 573.41
-Station File     222= {{ BASIN_DIR }}/inputs/met_data/data_48.46875_-119.46875
+Station File     222= {{ RUN_DIR }}/inputs/met_data/data_48.46875_-119.46875
 
 Station Name     223= data_48.46875_-119.40625
 North Coordinate 223= 1600881.26203
 East Coordinate  223= 643923.58886
 Elevation        223= 726.4
-Station File     223= {{ BASIN_DIR }}/inputs/met_data/data_48.46875_-119.40625
+Station File     223= {{ RUN_DIR }}/inputs/met_data/data_48.46875_-119.40625
 
 Station Name     224= data_48.46875_-119.34375
 North Coordinate 224= 1600917.2008
 East Coordinate  224= 648547.026756
 Elevation        224= 963.96
-Station File     224= {{ BASIN_DIR }}/inputs/met_data/data_48.46875_-119.34375
+Station File     224= {{ RUN_DIR }}/inputs/met_data/data_48.46875_-119.34375
 
 Station Name     225= data_48.46875_-119.28125
 North Coordinate 225= 1600956.73337
 East Coordinate  225= 653170.43532
 Elevation        225= 1131.16
-Station File     225= {{ BASIN_DIR }}/inputs/met_data/data_48.46875_-119.28125
+Station File     225= {{ RUN_DIR }}/inputs/met_data/data_48.46875_-119.28125
 
 Station Name     226= data_48.46875_-119.21875
 North Coordinate 226= 1600999.85972
 East Coordinate  226= 657793.811758
 Elevation        226= 1227.98
-Station File     226= {{ BASIN_DIR }}/inputs/met_data/data_48.46875_-119.21875
+Station File     226= {{ RUN_DIR }}/inputs/met_data/data_48.46875_-119.21875
 
 Station Name     227= data_48.46875_-119.15625
 North Coordinate 227= 1601046.5798
 East Coordinate  227= 662417.153278
 Elevation        227= 1254.24
-Station File     227= {{ BASIN_DIR }}/inputs/met_data/data_48.46875_-119.15625
+Station File     227= {{ RUN_DIR }}/inputs/met_data/data_48.46875_-119.15625
 
 Station Name     228= data_48.40625_-120.71875
 North Coordinate 228= 1594009.73512
 East Coordinate  228= 546767.464033
 Elevation        228= 1533.26
-Station File     228= {{ BASIN_DIR }}/inputs/met_data/data_48.40625_-120.71875
+Station File     228= {{ RUN_DIR }}/inputs/met_data/data_48.40625_-120.71875
 
 Station Name     229= data_48.40625_-120.65625
 North Coordinate 229= 1593970.15637
 East Coordinate  229= 551396.272528
 Elevation        229= 1612.87
-Station File     229= {{ BASIN_DIR }}/inputs/met_data/data_48.40625_-120.65625
+Station File     229= {{ RUN_DIR }}/inputs/met_data/data_48.40625_-120.65625
 
 Station Name     230= data_48.40625_-120.59375
 North Coordinate 230= 1593934.17562
 East Coordinate  230= 556025.110388
 Elevation        230= 1665.04
-Station File     230= {{ BASIN_DIR }}/inputs/met_data/data_48.40625_-120.59375
+Station File     230= {{ RUN_DIR }}/inputs/met_data/data_48.40625_-120.59375
 
 Station Name     231= data_48.40625_-120.53125
 North Coordinate 231= 1593901.79288
 East Coordinate  231= 560653.974818
 Elevation        231= 1666.84
-Station File     231= {{ BASIN_DIR }}/inputs/met_data/data_48.40625_-120.53125
+Station File     231= {{ RUN_DIR }}/inputs/met_data/data_48.40625_-120.53125
 
 Station Name     232= data_48.40625_-120.46875
 North Coordinate 232= 1593873.00817
 East Coordinate  232= 565282.863021
 Elevation        232= 1618.26
-Station File     232= {{ BASIN_DIR }}/inputs/met_data/data_48.40625_-120.46875
+Station File     232= {{ RUN_DIR }}/inputs/met_data/data_48.40625_-120.46875
 
 Station Name     233= data_48.40625_-120.40625
 North Coordinate 233= 1593847.82152
 East Coordinate  233= 569911.7722
 Elevation        233= 1477.49
-Station File     233= {{ BASIN_DIR }}/inputs/met_data/data_48.40625_-120.40625
+Station File     233= {{ RUN_DIR }}/inputs/met_data/data_48.40625_-120.40625
 
 Station Name     234= data_48.40625_-120.34375
 North Coordinate 234= 1593826.23293
 East Coordinate  234= 574540.699558
 Elevation        234= 1244.51
-Station File     234= {{ BASIN_DIR }}/inputs/met_data/data_48.40625_-120.34375
+Station File     234= {{ RUN_DIR }}/inputs/met_data/data_48.40625_-120.34375
 
 Station Name     235= data_48.40625_-120.28125
 North Coordinate 235= 1593808.24242
 East Coordinate  235= 579169.642299
 Elevation        235= 1034.34
-Station File     235= {{ BASIN_DIR }}/inputs/met_data/data_48.40625_-120.28125
+Station File     235= {{ RUN_DIR }}/inputs/met_data/data_48.40625_-120.28125
 
 Station Name     236= data_48.40625_-120.21875
 North Coordinate 236= 1593793.84999
 East Coordinate  236= 583798.597625
 Elevation        236= 846.97
-Station File     236= {{ BASIN_DIR }}/inputs/met_data/data_48.40625_-120.21875
+Station File     236= {{ RUN_DIR }}/inputs/met_data/data_48.40625_-120.21875
 
 Station Name     237= data_48.40625_-120.15625
 North Coordinate 237= 1593783.05567
 East Coordinate  237= 588427.56274
 Elevation        237= 796.97
-Station File     237= {{ BASIN_DIR }}/inputs/met_data/data_48.40625_-120.15625
+Station File     237= {{ RUN_DIR }}/inputs/met_data/data_48.40625_-120.15625
 
 Station Name     238= data_48.40625_-120.09375
 North Coordinate 238= 1593775.85945
 East Coordinate  238= 593056.534847
 Elevation        238= 884.37
-Station File     238= {{ BASIN_DIR }}/inputs/met_data/data_48.40625_-120.09375
+Station File     238= {{ RUN_DIR }}/inputs/met_data/data_48.40625_-120.09375
 
 Station Name     239= data_48.40625_-120.03125
 North Coordinate 239= 1593772.26134
 East Coordinate  239= 597685.51115
 Elevation        239= 1029.72
-Station File     239= {{ BASIN_DIR }}/inputs/met_data/data_48.40625_-120.03125
+Station File     239= {{ RUN_DIR }}/inputs/met_data/data_48.40625_-120.03125
 
 Station Name     240= data_48.40625_-119.96875
 North Coordinate 240= 1593772.26134
 East Coordinate  240= 602314.48885
 Elevation        240= 1233.02
-Station File     240= {{ BASIN_DIR }}/inputs/met_data/data_48.40625_-119.96875
+Station File     240= {{ RUN_DIR }}/inputs/met_data/data_48.40625_-119.96875
 
 Station Name     241= data_48.40625_-119.90625
 North Coordinate 241= 1593775.85945
 East Coordinate  241= 606943.465153
 Elevation        241= 1286.09
-Station File     241= {{ BASIN_DIR }}/inputs/met_data/data_48.40625_-119.90625
+Station File     241= {{ RUN_DIR }}/inputs/met_data/data_48.40625_-119.90625
 
 Station Name     242= data_48.40625_-119.84375
 North Coordinate 242= 1593783.05567
 East Coordinate  242= 611572.43726
 Elevation        242= 1188.92
-Station File     242= {{ BASIN_DIR }}/inputs/met_data/data_48.40625_-119.84375
+Station File     242= {{ RUN_DIR }}/inputs/met_data/data_48.40625_-119.84375
 
 Station Name     243= data_48.40625_-119.78125
 North Coordinate 243= 1593793.84999
 East Coordinate  243= 616201.402375
 Elevation        243= 1054.08
-Station File     243= {{ BASIN_DIR }}/inputs/met_data/data_48.40625_-119.78125
+Station File     243= {{ RUN_DIR }}/inputs/met_data/data_48.40625_-119.78125
 
 Station Name     244= data_48.40625_-119.71875
 North Coordinate 244= 1593808.24242
 East Coordinate  244= 620830.357701
 Elevation        244= 881.59
-Station File     244= {{ BASIN_DIR }}/inputs/met_data/data_48.40625_-119.71875
+Station File     244= {{ RUN_DIR }}/inputs/met_data/data_48.40625_-119.71875
 
 Station Name     245= data_48.40625_-119.65625
 North Coordinate 245= 1593826.23293
 East Coordinate  245= 625459.300442
 Elevation        245= 716.52
-Station File     245= {{ BASIN_DIR }}/inputs/met_data/data_48.40625_-119.65625
+Station File     245= {{ RUN_DIR }}/inputs/met_data/data_48.40625_-119.65625
 
 Station Name     246= data_48.40625_-119.59375
 North Coordinate 246= 1593847.82152
 East Coordinate  246= 630088.2278
 Elevation        246= 558.86
-Station File     246= {{ BASIN_DIR }}/inputs/met_data/data_48.40625_-119.59375
+Station File     246= {{ RUN_DIR }}/inputs/met_data/data_48.40625_-119.59375
 
 Station Name     247= data_48.40625_-119.53125
 North Coordinate 247= 1593873.00817
 East Coordinate  247= 634717.136979
 Elevation        247= 509.62
-Station File     247= {{ BASIN_DIR }}/inputs/met_data/data_48.40625_-119.53125
+Station File     247= {{ RUN_DIR }}/inputs/met_data/data_48.40625_-119.53125
 
 Station Name     248= data_48.40625_-119.46875
 North Coordinate 248= 1593901.79288
 East Coordinate  248= 639346.025182
 Elevation        248= 568.79
-Station File     248= {{ BASIN_DIR }}/inputs/met_data/data_48.40625_-119.46875
+Station File     248= {{ RUN_DIR }}/inputs/met_data/data_48.40625_-119.46875
 
 Station Name     249= data_48.40625_-119.40625
 North Coordinate 249= 1593934.17562
 East Coordinate  249= 643974.889612
 Elevation        249= 706.82
-Station File     249= {{ BASIN_DIR }}/inputs/met_data/data_48.40625_-119.40625
+Station File     249= {{ RUN_DIR }}/inputs/met_data/data_48.40625_-119.40625
 
 Station Name     250= data_48.40625_-119.34375
 North Coordinate 250= 1593970.15637
 East Coordinate  250= 648603.727472
 Elevation        250= 923.7
-Station File     250= {{ BASIN_DIR }}/inputs/met_data/data_48.40625_-119.34375
+Station File     250= {{ RUN_DIR }}/inputs/met_data/data_48.40625_-119.34375
 
 Station Name     251= data_48.40625_-119.28125
 North Coordinate 251= 1594009.73512
 East Coordinate  251= 653232.535967
 Elevation        251= 1075.54
-Station File     251= {{ BASIN_DIR }}/inputs/met_data/data_48.40625_-119.28125
+Station File     251= {{ RUN_DIR }}/inputs/met_data/data_48.40625_-119.28125
 
 Station Name     252= data_48.40625_-119.21875
 North Coordinate 252= 1594052.91183
 East Coordinate  252= 657861.312298
 Elevation        252= 1162.34
-Station File     252= {{ BASIN_DIR }}/inputs/met_data/data_48.40625_-119.21875
+Station File     252= {{ RUN_DIR }}/inputs/met_data/data_48.40625_-119.21875
 
 Station Name     253= data_48.40625_-119.15625
 North Coordinate 253= 1594099.68648
 East Coordinate  253= 662490.05367
 Elevation        253= 1210.04
-Station File     253= {{ BASIN_DIR }}/inputs/met_data/data_48.40625_-119.15625
+Station File     253= {{ RUN_DIR }}/inputs/met_data/data_48.40625_-119.15625
 
 Station Name     254= data_48.40625_-119.09375
 North Coordinate 254= 1594150.05905
 East Coordinate  254= 667118.757285
 Elevation        254= 1218.63
-Station File     254= {{ BASIN_DIR }}/inputs/met_data/data_48.40625_-119.09375
+Station File     254= {{ RUN_DIR }}/inputs/met_data/data_48.40625_-119.09375
 
 Station Name     255= data_48.40625_-119.03125
 North Coordinate 255= 1594204.0295
 East Coordinate  255= 671747.420347
 Elevation        255= 1197.69
-Station File     255= {{ BASIN_DIR }}/inputs/met_data/data_48.40625_-119.03125
+Station File     255= {{ RUN_DIR }}/inputs/met_data/data_48.40625_-119.03125
 
 Station Name     256= data_48.34375_-120.65625
 North Coordinate 256= 1587022.78038
 East Coordinate  256= 551339.569105
 Elevation        256= 1378.95
-Station File     256= {{ BASIN_DIR }}/inputs/met_data/data_48.34375_-120.65625
+Station File     256= {{ RUN_DIR }}/inputs/met_data/data_48.34375_-120.65625
 
 Station Name     257= data_48.34375_-120.59375
 North Coordinate 257= 1586986.75765
 East Coordinate  257= 555973.807188
 Elevation        257= 1576.86
-Station File     257= {{ BASIN_DIR }}/inputs/met_data/data_48.34375_-120.59375
+Station File     257= {{ RUN_DIR }}/inputs/met_data/data_48.34375_-120.59375
 
 Station Name     258= data_48.34375_-120.53125
 North Coordinate 258= 1586954.33713
 East Coordinate  258= 560608.071872
 Elevation        258= 1684.13
-Station File     258= {{ BASIN_DIR }}/inputs/met_data/data_48.34375_-120.53125
+Station File     258= {{ RUN_DIR }}/inputs/met_data/data_48.34375_-120.53125
 
 Station Name     259= data_48.34375_-120.46875
 North Coordinate 259= 1586925.51884
 East Coordinate  259= 565242.360356
 Elevation        259= 1700.78
-Station File     259= {{ BASIN_DIR }}/inputs/met_data/data_48.34375_-120.46875
+Station File     259= {{ RUN_DIR }}/inputs/met_data/data_48.34375_-120.46875
 
 Station Name     260= data_48.34375_-120.40625
 North Coordinate 260= 1586900.3028
 East Coordinate  260= 569876.669841
 Elevation        260= 1600.19
-Station File     260= {{ BASIN_DIR }}/inputs/met_data/data_48.34375_-120.40625
+Station File     260= {{ RUN_DIR }}/inputs/met_data/data_48.34375_-120.40625
 
 Station Name     261= data_48.34375_-120.34375
 North Coordinate 261= 1586878.68902
 East Coordinate  261= 574510.997526
 Elevation        261= 1382.39
-Station File     261= {{ BASIN_DIR }}/inputs/met_data/data_48.34375_-120.34375
+Station File     261= {{ RUN_DIR }}/inputs/met_data/data_48.34375_-120.34375
 
 Station Name     262= data_48.34375_-120.28125
 North Coordinate 262= 1586860.67752
 East Coordinate  262= 579145.340612
 Elevation        262= 1182.71
-Station File     262= {{ BASIN_DIR }}/inputs/met_data/data_48.34375_-120.28125
+Station File     262= {{ RUN_DIR }}/inputs/met_data/data_48.34375_-120.28125
 
 Station Name     263= data_48.34375_-120.21875
 North Coordinate 263= 1586846.26831
 East Coordinate  263= 583779.696298
 Elevation        263= 1001.18
-Station File     263= {{ BASIN_DIR }}/inputs/met_data/data_48.34375_-120.21875
+Station File     263= {{ RUN_DIR }}/inputs/met_data/data_48.34375_-120.21875
 
 Station Name     264= data_48.34375_-120.15625
 North Coordinate 264= 1586835.46139
 East Coordinate  264= 588414.061784
 Elevation        264= 875.9
-Station File     264= {{ BASIN_DIR }}/inputs/met_data/data_48.34375_-120.15625
+Station File     264= {{ RUN_DIR }}/inputs/met_data/data_48.34375_-120.15625
 
 Station Name     265= data_48.34375_-120.09375
 North Coordinate 265= 1586828.25678
 East Coordinate  265= 593048.43427
 Elevation        265= 806.87
-Station File     265= {{ BASIN_DIR }}/inputs/met_data/data_48.34375_-120.09375
+Station File     265= {{ RUN_DIR }}/inputs/met_data/data_48.34375_-120.09375
 
 Station Name     266= data_48.34375_-120.03125
 North Coordinate 266= 1586824.65447
 East Coordinate  266= 597682.810957
 Elevation        266= 869.67
-Station File     266= {{ BASIN_DIR }}/inputs/met_data/data_48.34375_-120.03125
+Station File     266= {{ RUN_DIR }}/inputs/met_data/data_48.34375_-120.03125
 
 Station Name     267= data_48.34375_-119.96875
 North Coordinate 267= 1586824.65447
 East Coordinate  267= 602317.189043
 Elevation        267= 1064.31
-Station File     267= {{ BASIN_DIR }}/inputs/met_data/data_48.34375_-119.96875
+Station File     267= {{ RUN_DIR }}/inputs/met_data/data_48.34375_-119.96875
 
 Station Name     268= data_48.34375_-119.90625
 North Coordinate 268= 1586828.25678
 East Coordinate  268= 606951.56573
 Elevation        268= 1103.78
-Station File     268= {{ BASIN_DIR }}/inputs/met_data/data_48.34375_-119.90625
+Station File     268= {{ RUN_DIR }}/inputs/met_data/data_48.34375_-119.90625
 
 Station Name     269= data_48.34375_-119.84375
 North Coordinate 269= 1586835.46139
 East Coordinate  269= 611585.938216
 Elevation        269= 988.09
-Station File     269= {{ BASIN_DIR }}/inputs/met_data/data_48.34375_-119.84375
+Station File     269= {{ RUN_DIR }}/inputs/met_data/data_48.34375_-119.84375
 
 Station Name     270= data_48.34375_-119.78125
 North Coordinate 270= 1586846.26831
 East Coordinate  270= 616220.303702
 Elevation        270= 850.83
-Station File     270= {{ BASIN_DIR }}/inputs/met_data/data_48.34375_-119.78125
+Station File     270= {{ RUN_DIR }}/inputs/met_data/data_48.34375_-119.78125
 
 Station Name     271= data_48.34375_-119.71875
 North Coordinate 271= 1586860.67752
 East Coordinate  271= 620854.659388
 Elevation        271= 691.99
-Station File     271= {{ BASIN_DIR }}/inputs/met_data/data_48.34375_-119.71875
+Station File     271= {{ RUN_DIR }}/inputs/met_data/data_48.34375_-119.71875
 
 Station Name     272= data_48.34375_-119.65625
 North Coordinate 272= 1586878.68902
 East Coordinate  272= 625489.002474
 Elevation        272= 601.81
-Station File     272= {{ BASIN_DIR }}/inputs/met_data/data_48.34375_-119.65625
+Station File     272= {{ RUN_DIR }}/inputs/met_data/data_48.34375_-119.65625
 
 Station Name     273= data_48.34375_-119.59375
 North Coordinate 273= 1586900.3028
 East Coordinate  273= 630123.330159
 Elevation        273= 580.28
-Station File     273= {{ BASIN_DIR }}/inputs/met_data/data_48.34375_-119.59375
+Station File     273= {{ RUN_DIR }}/inputs/met_data/data_48.34375_-119.59375
 
 Station Name     274= data_48.34375_-119.53125
 North Coordinate 274= 1586925.51884
 East Coordinate  274= 634757.639644
 Elevation        274= 581.0
-Station File     274= {{ BASIN_DIR }}/inputs/met_data/data_48.34375_-119.53125
+Station File     274= {{ RUN_DIR }}/inputs/met_data/data_48.34375_-119.53125
 
 Station Name     275= data_48.34375_-119.46875
 North Coordinate 275= 1586954.33713
 East Coordinate  275= 639391.928128
 Elevation        275= 603.95
-Station File     275= {{ BASIN_DIR }}/inputs/met_data/data_48.34375_-119.46875
+Station File     275= {{ RUN_DIR }}/inputs/met_data/data_48.34375_-119.46875
 
 Station Name     276= data_48.34375_-119.40625
 North Coordinate 276= 1586986.75765
 East Coordinate  276= 644026.192812
 Elevation        276= 685.16
-Station File     276= {{ BASIN_DIR }}/inputs/met_data/data_48.34375_-119.40625
+Station File     276= {{ RUN_DIR }}/inputs/met_data/data_48.34375_-119.40625
 
 Station Name     277= data_48.34375_-119.34375
 North Coordinate 277= 1587022.78038
 East Coordinate  277= 648660.430895
 Elevation        277= 824.64
-Station File     277= {{ BASIN_DIR }}/inputs/met_data/data_48.34375_-119.34375
+Station File     277= {{ RUN_DIR }}/inputs/met_data/data_48.34375_-119.34375
 
 Station Name     278= data_48.34375_-119.28125
 North Coordinate 278= 1587062.40529
 East Coordinate  278= 653294.639577
 Elevation        278= 934.54
-Station File     278= {{ BASIN_DIR }}/inputs/met_data/data_48.34375_-119.28125
+Station File     278= {{ RUN_DIR }}/inputs/met_data/data_48.34375_-119.28125
 
 Station Name     279= data_48.34375_-119.21875
 North Coordinate 279= 1587105.63238
 East Coordinate  279= 657928.81606
 Elevation        279= 1014.88
-Station File     279= {{ BASIN_DIR }}/inputs/met_data/data_48.34375_-119.21875
+Station File     279= {{ RUN_DIR }}/inputs/met_data/data_48.34375_-119.21875
 
 Station Name     280= data_48.34375_-119.15625
 North Coordinate 280= 1587152.4616
 East Coordinate  280= 662562.957541
 Elevation        280= 1089.51
-Station File     280= {{ BASIN_DIR }}/inputs/met_data/data_48.34375_-119.15625
+Station File     280= {{ RUN_DIR }}/inputs/met_data/data_48.34375_-119.15625
 
 Station Name     281= data_48.34375_-119.09375
 North Coordinate 281= 1587202.89293
 East Coordinate  281= 667197.061223
 Elevation        281= 1158.46
-Station File     281= {{ BASIN_DIR }}/inputs/met_data/data_48.34375_-119.09375
+Station File     281= {{ RUN_DIR }}/inputs/met_data/data_48.34375_-119.09375
 
 Station Name     282= data_48.34375_-119.03125
 North Coordinate 282= 1587256.92635
 East Coordinate  282= 671831.124304
 Elevation        282= 1135.81
-Station File     282= {{ BASIN_DIR }}/inputs/met_data/data_48.34375_-119.03125
+Station File     282= {{ RUN_DIR }}/inputs/met_data/data_48.34375_-119.03125
 
 Station Name     283= data_48.28125_-120.59375
 North Coordinate 283= 1580039.01779
 East Coordinate  283= 555922.501612
 Elevation        283= 1424.91
-Station File     283= {{ BASIN_DIR }}/inputs/met_data/data_48.28125_-120.59375
+Station File     283= {{ RUN_DIR }}/inputs/met_data/data_48.28125_-120.59375
 
 Station Name     284= data_48.28125_-120.53125
 North Coordinate 284= 1580006.55949
 East Coordinate  284= 560562.166799
 Elevation        284= 1552.18
-Station File     284= {{ BASIN_DIR }}/inputs/met_data/data_48.28125_-120.53125
+Station File     284= {{ RUN_DIR }}/inputs/met_data/data_48.28125_-120.53125
 
 Station Name     285= data_48.28125_-120.46875
 North Coordinate 285= 1579977.70762
 East Coordinate  285= 565201.855815
 Elevation        285= 1689.0
-Station File     285= {{ BASIN_DIR }}/inputs/met_data/data_48.28125_-120.46875
+Station File     285= {{ RUN_DIR }}/inputs/met_data/data_48.28125_-120.46875
 
 Station Name     286= data_48.28125_-120.40625
 North Coordinate 286= 1579952.46219
 East Coordinate  286= 569841.565856
 Elevation        286= 1691.38
-Station File     286= {{ BASIN_DIR }}/inputs/met_data/data_48.28125_-120.40625
+Station File     286= {{ RUN_DIR }}/inputs/met_data/data_48.28125_-120.40625
 
 Station Name     287= data_48.28125_-120.34375
 North Coordinate 287= 1579930.82323
 East Coordinate  287= 574481.294118
 Elevation        287= 1559.31
-Station File     287= {{ BASIN_DIR }}/inputs/met_data/data_48.28125_-120.34375
+Station File     287= {{ RUN_DIR }}/inputs/met_data/data_48.28125_-120.34375
 
 Station Name     288= data_48.28125_-120.28125
 North Coordinate 288= 1579912.79074
 East Coordinate  288= 579121.037799
 Elevation        288= 1369.73
-Station File     288= {{ BASIN_DIR }}/inputs/met_data/data_48.28125_-120.28125
+Station File     288= {{ RUN_DIR }}/inputs/met_data/data_48.28125_-120.28125
 
 Station Name     289= data_48.28125_-120.21875
 North Coordinate 289= 1579898.36473
 East Coordinate  289= 583760.794095
 Elevation        289= 1122.65
-Station File     289= {{ BASIN_DIR }}/inputs/met_data/data_48.28125_-120.21875
+Station File     289= {{ RUN_DIR }}/inputs/met_data/data_48.28125_-120.21875
 
 Station Name     290= data_48.28125_-120.15625
 North Coordinate 290= 1579887.54522
 East Coordinate  290= 588400.560202
 Elevation        290= 924.62
-Station File     290= {{ BASIN_DIR }}/inputs/met_data/data_48.28125_-120.15625
+Station File     290= {{ RUN_DIR }}/inputs/met_data/data_48.28125_-120.15625
 
 Station Name     291= data_48.28125_-120.09375
 North Coordinate 291= 1579880.33221
 East Coordinate  291= 593040.333318
 Elevation        291= 775.66
-Station File     291= {{ BASIN_DIR }}/inputs/met_data/data_48.28125_-120.09375
+Station File     291= {{ RUN_DIR }}/inputs/met_data/data_48.28125_-120.09375
 
 Station Name     292= data_48.28125_-120.03125
 North Coordinate 292= 1579876.7257
 East Coordinate  292= 597680.110639
 Elevation        292= 784.64
-Station File     292= {{ BASIN_DIR }}/inputs/met_data/data_48.28125_-120.03125
+Station File     292= {{ RUN_DIR }}/inputs/met_data/data_48.28125_-120.03125
 
 Station Name     293= data_48.28125_-119.96875
 North Coordinate 293= 1579876.7257
 East Coordinate  293= 602319.889361
 Elevation        293= 951.56
-Station File     293= {{ BASIN_DIR }}/inputs/met_data/data_48.28125_-119.96875
+Station File     293= {{ RUN_DIR }}/inputs/met_data/data_48.28125_-119.96875
 
 Station Name     294= data_48.28125_-119.90625
 North Coordinate 294= 1579880.33221
 East Coordinate  294= 606959.666682
 Elevation        294= 975.63
-Station File     294= {{ BASIN_DIR }}/inputs/met_data/data_48.28125_-119.90625
+Station File     294= {{ RUN_DIR }}/inputs/met_data/data_48.28125_-119.90625
 
 Station Name     295= data_48.28125_-119.84375
 North Coordinate 295= 1579887.54522
 East Coordinate  295= 611599.439798
 Elevation        295= 856.85
-Station File     295= {{ BASIN_DIR }}/inputs/met_data/data_48.28125_-119.84375
+Station File     295= {{ RUN_DIR }}/inputs/met_data/data_48.28125_-119.84375
 
 Station Name     296= data_48.28125_-119.78125
 North Coordinate 296= 1579898.36473
 East Coordinate  296= 616239.205905
 Elevation        296= 720.64
-Station File     296= {{ BASIN_DIR }}/inputs/met_data/data_48.28125_-119.78125
+Station File     296= {{ RUN_DIR }}/inputs/met_data/data_48.28125_-119.78125
 
 Station Name     297= data_48.28125_-119.71875
 North Coordinate 297= 1579912.79074
 East Coordinate  297= 620878.962201
 Elevation        297= 566.99
-Station File     297= {{ BASIN_DIR }}/inputs/met_data/data_48.28125_-119.71875
+Station File     297= {{ RUN_DIR }}/inputs/met_data/data_48.28125_-119.71875
 
 Station Name     298= data_48.28125_-119.65625
 North Coordinate 298= 1579930.82323
 East Coordinate  298= 625518.705882
 Elevation        298= 527.37
-Station File     298= {{ BASIN_DIR }}/inputs/met_data/data_48.28125_-119.65625
+Station File     298= {{ RUN_DIR }}/inputs/met_data/data_48.28125_-119.65625
 
 Station Name     299= data_48.28125_-119.59375
 North Coordinate 299= 1579952.46219
 East Coordinate  299= 630158.434144
 Elevation        299= 601.78
-Station File     299= {{ BASIN_DIR }}/inputs/met_data/data_48.28125_-119.59375
+Station File     299= {{ RUN_DIR }}/inputs/met_data/data_48.28125_-119.59375
 
 Station Name     300= data_48.28125_-119.53125
 North Coordinate 300= 1579977.70762
 East Coordinate  300= 634798.144185
 Elevation        300= 643.79
-Station File     300= {{ BASIN_DIR }}/inputs/met_data/data_48.28125_-119.53125
+Station File     300= {{ RUN_DIR }}/inputs/met_data/data_48.28125_-119.53125
 
 Station Name     301= data_48.28125_-119.46875
 North Coordinate 301= 1580006.55949
 East Coordinate  301= 639437.833201
 Elevation        301= 653.41
-Station File     301= {{ BASIN_DIR }}/inputs/met_data/data_48.28125_-119.46875
+Station File     301= {{ RUN_DIR }}/inputs/met_data/data_48.28125_-119.46875
 
 Station Name     302= data_48.28125_-119.40625
 North Coordinate 302= 1580039.01779
 East Coordinate  302= 644077.498388
 Elevation        302= 682.51
-Station File     302= {{ BASIN_DIR }}/inputs/met_data/data_48.28125_-119.40625
+Station File     302= {{ RUN_DIR }}/inputs/met_data/data_48.28125_-119.40625
 
 Station Name     303= data_48.28125_-119.34375
 North Coordinate 303= 1580075.0825
 East Coordinate  303= 648717.136944
 Elevation        303= 731.09
-Station File     303= {{ BASIN_DIR }}/inputs/met_data/data_48.28125_-119.34375
+Station File     303= {{ RUN_DIR }}/inputs/met_data/data_48.28125_-119.34375
 
 Station Name     304= data_48.28125_-119.28125
 North Coordinate 304= 1580114.75359
 East Coordinate  304= 653356.746066
 Elevation        304= 792.61
-Station File     304= {{ BASIN_DIR }}/inputs/met_data/data_48.28125_-119.28125
+Station File     304= {{ RUN_DIR }}/inputs/met_data/data_48.28125_-119.28125
 
 Station Name     305= data_48.28125_-119.21875
 North Coordinate 305= 1580158.03105
 East Coordinate  305= 657996.322949
 Elevation        305= 867.07
-Station File     305= {{ BASIN_DIR }}/inputs/met_data/data_48.28125_-119.21875
+Station File     305= {{ RUN_DIR }}/inputs/met_data/data_48.28125_-119.21875
 
 Station Name     306= data_48.28125_-119.15625
 North Coordinate 306= 1580204.91484
 East Coordinate  306= 662635.864791
 Elevation        306= 942.05
-Station File     306= {{ BASIN_DIR }}/inputs/met_data/data_48.28125_-119.15625
+Station File     306= {{ RUN_DIR }}/inputs/met_data/data_48.28125_-119.15625
 
 Station Name     307= data_48.28125_-119.09375
 North Coordinate 307= 1580255.40495
 East Coordinate  307= 667275.368788
 Elevation        307= 1017.58
-Station File     307= {{ BASIN_DIR }}/inputs/met_data/data_48.28125_-119.09375
+Station File     307= {{ RUN_DIR }}/inputs/met_data/data_48.28125_-119.09375
 
 Station Name     308= data_48.28125_-119.03125
 North Coordinate 308= 1580309.50133
 East Coordinate  308= 671914.832138
 Elevation        308= 1001.47
-Station File     308= {{ BASIN_DIR }}/inputs/met_data/data_48.28125_-119.03125
+Station File     308= {{ RUN_DIR }}/inputs/met_data/data_48.28125_-119.03125
 
 Station Name     309= data_48.21875_-120.46875
 North Coordinate 309= 1573029.58415
 East Coordinate  309= 565161.349453
 Elevation        309= 1582.95
-Station File     309= {{ BASIN_DIR }}/inputs/met_data/data_48.21875_-120.46875
+Station File     309= {{ RUN_DIR }}/inputs/met_data/data_48.21875_-120.46875
 
 Station Name     310= data_48.21875_-120.40625
 North Coordinate 310= 1573004.30934
 East Coordinate  310= 569806.460293
 Elevation        310= 1751.05
-Station File     310= {{ BASIN_DIR }}/inputs/met_data/data_48.21875_-120.40625
+Station File     310= {{ RUN_DIR }}/inputs/met_data/data_48.21875_-120.40625
 
 Station Name     311= data_48.21875_-120.34375
 North Coordinate 311= 1572982.64519
 East Coordinate  311= 574451.589375
 Elevation        311= 1775.28
-Station File     311= {{ BASIN_DIR }}/inputs/met_data/data_48.21875_-120.34375
+Station File     311= {{ RUN_DIR }}/inputs/met_data/data_48.21875_-120.34375
 
 Station Name     312= data_48.21875_-120.28125
 North Coordinate 312= 1572964.59171
 East Coordinate  312= 579096.733894
 Elevation        312= 1595.38
-Station File     312= {{ BASIN_DIR }}/inputs/met_data/data_48.21875_-120.28125
+Station File     312= {{ RUN_DIR }}/inputs/met_data/data_48.21875_-120.28125
 
 Station Name     313= data_48.21875_-120.21875
 North Coordinate 313= 1572950.14891
 East Coordinate  313= 583741.891042
 Elevation        313= 1211.36
-Station File     313= {{ BASIN_DIR }}/inputs/met_data/data_48.21875_-120.21875
+Station File     313= {{ RUN_DIR }}/inputs/met_data/data_48.21875_-120.21875
 
 Station Name     314= data_48.21875_-120.15625
 North Coordinate 314= 1572939.3168
 East Coordinate  314= 588387.058014
 Elevation        314= 943.15
-Station File     314= {{ BASIN_DIR }}/inputs/met_data/data_48.21875_-120.15625
+Station File     314= {{ RUN_DIR }}/inputs/met_data/data_48.21875_-120.15625
 
 Station Name     315= data_48.21875_-120.09375
 North Coordinate 315= 1572932.0954
 East Coordinate  315= 593032.232002
 Elevation        315= 790.75
-Station File     315= {{ BASIN_DIR }}/inputs/met_data/data_48.21875_-120.09375
+Station File     315= {{ RUN_DIR }}/inputs/met_data/data_48.21875_-120.09375
 
 Station Name     316= data_48.21875_-120.03125
 North Coordinate 316= 1572928.48469
 East Coordinate  316= 597677.410199
 Elevation        316= 774.62
-Station File     316= {{ BASIN_DIR }}/inputs/met_data/data_48.21875_-120.03125
+Station File     316= {{ RUN_DIR }}/inputs/met_data/data_48.21875_-120.03125
 
 Station Name     317= data_48.21875_-119.96875
 North Coordinate 317= 1572928.48469
 East Coordinate  317= 602322.589801
 Elevation        317= 894.78
-Station File     317= {{ BASIN_DIR }}/inputs/met_data/data_48.21875_-119.96875
+Station File     317= {{ RUN_DIR }}/inputs/met_data/data_48.21875_-119.96875
 
 Station Name     318= data_48.21875_-119.90625
 North Coordinate 318= 1572932.0954
 East Coordinate  318= 606967.767998
 Elevation        318= 901.63
-Station File     318= {{ BASIN_DIR }}/inputs/met_data/data_48.21875_-119.90625
+Station File     318= {{ RUN_DIR }}/inputs/met_data/data_48.21875_-119.90625
 
 Station Name     319= data_48.21875_-119.84375
 North Coordinate 319= 1572939.3168
 East Coordinate  319= 611612.941986
 Elevation        319= 795.19
-Station File     319= {{ BASIN_DIR }}/inputs/met_data/data_48.21875_-119.84375
+Station File     319= {{ RUN_DIR }}/inputs/met_data/data_48.21875_-119.84375
 
 Station Name     320= data_48.21875_-119.78125
 North Coordinate 320= 1572950.14891
 East Coordinate  320= 616258.108958
 Elevation        320= 663.5
-Station File     320= {{ BASIN_DIR }}/inputs/met_data/data_48.21875_-119.78125
+Station File     320= {{ RUN_DIR }}/inputs/met_data/data_48.21875_-119.78125
 
 Station Name     321= data_48.21875_-119.71875
 North Coordinate 321= 1572964.59171
 East Coordinate  321= 620903.266106
 Elevation        321= 506.57
-Station File     321= {{ BASIN_DIR }}/inputs/met_data/data_48.21875_-119.71875
+Station File     321= {{ RUN_DIR }}/inputs/met_data/data_48.21875_-119.71875
 
 Station Name     322= data_48.21875_-119.65625
 North Coordinate 322= 1572982.64519
 East Coordinate  322= 625548.410625
 Elevation        322= 493.19
-Station File     322= {{ BASIN_DIR }}/inputs/met_data/data_48.21875_-119.65625
+Station File     322= {{ RUN_DIR }}/inputs/met_data/data_48.21875_-119.65625
 
 Station Name     323= data_48.21875_-119.59375
 North Coordinate 323= 1573004.30934
 East Coordinate  323= 630193.539707
 Elevation        323= 623.35
-Station File     323= {{ BASIN_DIR }}/inputs/met_data/data_48.21875_-119.59375
+Station File     323= {{ RUN_DIR }}/inputs/met_data/data_48.21875_-119.59375
 
 Station Name     324= data_48.21875_-119.53125
 North Coordinate 324= 1573029.58415
 East Coordinate  324= 634838.650547
 Elevation        324= 698.01
-Station File     324= {{ BASIN_DIR }}/inputs/met_data/data_48.21875_-119.53125
+Station File     324= {{ RUN_DIR }}/inputs/met_data/data_48.21875_-119.53125
 
 Station Name     325= data_48.21875_-119.46875
 North Coordinate 325= 1573058.46961
 East Coordinate  325= 639483.740337
 Elevation        325= 717.17
-Station File     325= {{ BASIN_DIR }}/inputs/met_data/data_48.21875_-119.46875
+Station File     325= {{ RUN_DIR }}/inputs/met_data/data_48.21875_-119.46875
 
 Station Name     326= data_48.21875_-119.40625
 North Coordinate 326= 1573090.96569
 East Coordinate  326= 644128.806271
 Elevation        326= 698.85
-Station File     326= {{ BASIN_DIR }}/inputs/met_data/data_48.21875_-119.40625
+Station File     326= {{ RUN_DIR }}/inputs/met_data/data_48.21875_-119.40625
 
 Station Name     327= data_48.21875_-119.34375
 North Coordinate 327= 1573127.07238
 East Coordinate  327= 648773.845542
 Elevation        327= 643.05
-Station File     327= {{ BASIN_DIR }}/inputs/met_data/data_48.21875_-119.34375
+Station File     327= {{ RUN_DIR }}/inputs/met_data/data_48.21875_-119.34375
 
 Station Name     328= data_48.21875_-119.28125
 North Coordinate 328= 1573166.78965
 East Coordinate  328= 653418.855345
 Elevation        328= 649.74
-Station File     328= {{ BASIN_DIR }}/inputs/met_data/data_48.21875_-119.28125
+Station File     328= {{ RUN_DIR }}/inputs/met_data/data_48.21875_-119.28125
 
 Station Name     329= data_48.21875_-119.21875
 North Coordinate 329= 1573210.11749
 East Coordinate  329= 658063.832872
 Elevation        329= 718.91
-Station File     329= {{ BASIN_DIR }}/inputs/met_data/data_48.21875_-119.21875
+Station File     329= {{ RUN_DIR }}/inputs/met_data/data_48.21875_-119.21875
 
 Station Name     330= data_48.21875_-119.15625
 North Coordinate 330= 1573257.05586
 East Coordinate  330= 662708.775317
 Elevation        330= 767.66
-Station File     330= {{ BASIN_DIR }}/inputs/met_data/data_48.21875_-119.15625
+Station File     330= {{ RUN_DIR }}/inputs/met_data/data_48.21875_-119.15625
 
 Station Name     331= data_48.21875_-119.09375
 North Coordinate 331= 1573307.60473
 East Coordinate  331= 667353.679873
 Elevation        331= 795.99
-Station File     331= {{ BASIN_DIR }}/inputs/met_data/data_48.21875_-119.09375
+Station File     331= {{ RUN_DIR }}/inputs/met_data/data_48.21875_-119.09375
 
 Station Name     332= data_48.15625_-120.40625
 North Coordinate 332= 1566055.85386
 East Coordinate  332= 569771.353201
 Elevation        332= 1620.33
-Station File     332= {{ BASIN_DIR }}/inputs/met_data/data_48.15625_-120.40625
+Station File     332= {{ RUN_DIR }}/inputs/met_data/data_48.15625_-120.40625
 
 Station Name     333= data_48.15625_-120.34375
 North Coordinate 333= 1566034.16451
 East Coordinate  333= 574421.883338
 Elevation        333= 1698.99
-Station File     333= {{ BASIN_DIR }}/inputs/met_data/data_48.15625_-120.34375
+Station File     333= {{ RUN_DIR }}/inputs/met_data/data_48.15625_-120.34375
 
 Station Name     334= data_48.15625_-120.28125
 North Coordinate 334= 1566016.09004
 East Coordinate  334= 579072.42893
 Elevation        334= 1577.73
-Station File     334= {{ BASIN_DIR }}/inputs/met_data/data_48.15625_-120.28125
+Station File     334= {{ RUN_DIR }}/inputs/met_data/data_48.15625_-120.28125
 
 Station Name     335= data_48.15625_-120.21875
 North Coordinate 335= 1566001.63045
 East Coordinate  335= 583722.987166
 Elevation        335= 1256.53
-Station File     335= {{ BASIN_DIR }}/inputs/met_data/data_48.15625_-120.21875
+Station File     335= {{ RUN_DIR }}/inputs/met_data/data_48.15625_-120.21875
 
 Station Name     336= data_48.15625_-120.15625
 North Coordinate 336= 1565990.78575
 East Coordinate  336= 588373.555237
 Elevation        336= 1016.83
-Station File     336= {{ BASIN_DIR }}/inputs/met_data/data_48.15625_-120.15625
+Station File     336= {{ RUN_DIR }}/inputs/met_data/data_48.15625_-120.15625
 
 Station Name     337= data_48.15625_-120.09375
 North Coordinate 337= 1565983.55595
 East Coordinate  337= 593024.130332
 Elevation        337= 858.62
-Station File     337= {{ BASIN_DIR }}/inputs/met_data/data_48.15625_-120.09375
+Station File     337= {{ RUN_DIR }}/inputs/met_data/data_48.15625_-120.09375
 
 Station Name     338= data_48.15625_-120.03125
 North Coordinate 338= 1565979.94104
 East Coordinate  338= 597674.709642
 Elevation        338= 793.34
-Station File     338= {{ BASIN_DIR }}/inputs/met_data/data_48.15625_-120.03125
+Station File     338= {{ RUN_DIR }}/inputs/met_data/data_48.15625_-120.03125
 
 Station Name     339= data_48.15625_-119.96875
 North Coordinate 339= 1565979.94104
 East Coordinate  339= 602325.290358
 Elevation        339= 820.99
-Station File     339= {{ BASIN_DIR }}/inputs/met_data/data_48.15625_-119.96875
+Station File     339= {{ RUN_DIR }}/inputs/met_data/data_48.15625_-119.96875
 
 Station Name     340= data_48.15625_-119.90625
 North Coordinate 340= 1565983.55595
 East Coordinate  340= 606975.869668
 Elevation        340= 794.13
-Station File     340= {{ BASIN_DIR }}/inputs/met_data/data_48.15625_-119.90625
+Station File     340= {{ RUN_DIR }}/inputs/met_data/data_48.15625_-119.90625
 
 Station Name     341= data_48.15625_-119.84375
 North Coordinate 341= 1565990.78575
 East Coordinate  341= 611626.444763
 Elevation        341= 712.75
-Station File     341= {{ BASIN_DIR }}/inputs/met_data/data_48.15625_-119.84375
+Station File     341= {{ RUN_DIR }}/inputs/met_data/data_48.15625_-119.84375
 
 Station Name     342= data_48.15625_-119.78125
 North Coordinate 342= 1566001.63045
 East Coordinate  342= 616277.012834
 Elevation        342= 603.36
-Station File     342= {{ BASIN_DIR }}/inputs/met_data/data_48.15625_-119.78125
+Station File     342= {{ RUN_DIR }}/inputs/met_data/data_48.15625_-119.78125
 
 Station Name     343= data_48.15625_-119.71875
 North Coordinate 343= 1566016.09004
 East Coordinate  343= 620927.57107
 Elevation        343= 465.95
-Station File     343= {{ BASIN_DIR }}/inputs/met_data/data_48.15625_-119.71875
+Station File     343= {{ RUN_DIR }}/inputs/met_data/data_48.15625_-119.71875
 
 Station Name     344= data_48.15625_-119.65625
 North Coordinate 344= 1566034.16451
 East Coordinate  344= 625578.116662
 Elevation        344= 466.81
-Station File     344= {{ BASIN_DIR }}/inputs/met_data/data_48.15625_-119.65625
+Station File     344= {{ RUN_DIR }}/inputs/met_data/data_48.15625_-119.65625
 
 Station Name     345= data_48.15625_-119.59375
 North Coordinate 345= 1566055.85386
 East Coordinate  345= 630228.646799
 Elevation        345= 605.91
-Station File     345= {{ BASIN_DIR }}/inputs/met_data/data_48.15625_-119.59375
+Station File     345= {{ RUN_DIR }}/inputs/met_data/data_48.15625_-119.59375
 
 Station Name     346= data_48.15625_-119.53125
 North Coordinate 346= 1566081.15806
 East Coordinate  346= 634879.158673
 Elevation        346= 685.32
-Station File     346= {{ BASIN_DIR }}/inputs/met_data/data_48.15625_-119.53125
+Station File     346= {{ RUN_DIR }}/inputs/met_data/data_48.15625_-119.53125
 
 Station Name     347= data_48.15625_-119.46875
 North Coordinate 347= 1566110.0771
 East Coordinate  347= 639529.649472
 Elevation        347= 705.01
-Station File     347= {{ BASIN_DIR }}/inputs/met_data/data_48.15625_-119.46875
+Station File     347= {{ RUN_DIR }}/inputs/met_data/data_48.15625_-119.46875
 
 Station Name     348= data_48.15625_-119.34375
 North Coordinate 348= 1566178.75964
 East Coordinate  348= 648830.55661
 Elevation        348= 591.17
-Station File     348= {{ BASIN_DIR }}/inputs/met_data/data_48.15625_-119.34375
+Station File     348= {{ RUN_DIR }}/inputs/met_data/data_48.15625_-119.34375
 
 Station Name     349= data_48.15625_-119.28125
 North Coordinate 349= 1566218.52309
 East Coordinate  349= 653480.967329
 Elevation        349= 579.64
-Station File     349= {{ BASIN_DIR }}/inputs/met_data/data_48.15625_-119.28125
+Station File     349= {{ RUN_DIR }}/inputs/met_data/data_48.15625_-119.28125
 
 Station Name     350= data_48.15625_-119.21875
 North Coordinate 350= 1566261.9013
 East Coordinate  350= 658131.345735
 Elevation        350= 639.04
-Station File     350= {{ BASIN_DIR }}/inputs/met_data/data_48.15625_-119.21875
+Station File     350= {{ RUN_DIR }}/inputs/met_data/data_48.15625_-119.21875
 
 Station Name     351= data_48.09375_-120.34375
 North Coordinate 351= 1559085.39078
 East Coordinate  351= 574392.176049
 Elevation        351= 1330.45
-Station File     351= {{ BASIN_DIR }}/inputs/met_data/data_48.09375_-120.34375
+Station File     351= {{ RUN_DIR }}/inputs/met_data/data_48.09375_-120.34375
 
 Station Name     352= data_48.09375_-120.28125
 North Coordinate 352= 1559067.29532
 East Coordinate  352= 579048.122941
 Elevation        352= 1316.76
-Station File     352= {{ BASIN_DIR }}/inputs/met_data/data_48.09375_-120.28125
+Station File     352= {{ RUN_DIR }}/inputs/met_data/data_48.09375_-120.28125
 
 Station Name     353= data_48.09375_-120.21875
 North Coordinate 353= 1559052.81893
 East Coordinate  353= 583704.082493
 Elevation        353= 1258.15
-Station File     353= {{ BASIN_DIR }}/inputs/met_data/data_48.09375_-120.21875
+Station File     353= {{ RUN_DIR }}/inputs/met_data/data_48.09375_-120.21875
 
 Station Name     354= data_48.09375_-120.15625
 North Coordinate 354= 1559041.96164
 East Coordinate  354= 588360.051891
 Elevation        354= 1145.66
-Station File     354= {{ BASIN_DIR }}/inputs/met_data/data_48.09375_-120.15625
+Station File     354= {{ RUN_DIR }}/inputs/met_data/data_48.09375_-120.15625
 
 Station Name     355= data_48.09375_-120.09375
 North Coordinate 355= 1559034.72344
 East Coordinate  355= 593016.028321
 Elevation        355= 979.28
-Station File     355= {{ BASIN_DIR }}/inputs/met_data/data_48.09375_-120.09375
+Station File     355= {{ RUN_DIR }}/inputs/met_data/data_48.09375_-120.09375
 
 Station Name     356= data_48.09375_-120.03125
 North Coordinate 356= 1559031.10433
 East Coordinate  356= 597672.008972
 Elevation        356= 840.8
-Station File     356= {{ BASIN_DIR }}/inputs/met_data/data_48.09375_-120.03125
+Station File     356= {{ RUN_DIR }}/inputs/met_data/data_48.09375_-120.03125
 
 Station Name     357= data_48.09375_-119.96875
 North Coordinate 357= 1559031.10433
 East Coordinate  357= 602327.991028
 Elevation        357= 730.2
-Station File     357= {{ BASIN_DIR }}/inputs/met_data/data_48.09375_-119.96875
+Station File     357= {{ RUN_DIR }}/inputs/met_data/data_48.09375_-119.96875
 
 Station Name     358= data_48.09375_-119.90625
 North Coordinate 358= 1559034.72344
 East Coordinate  358= 606983.971679
 Elevation        358= 653.12
-Station File     358= {{ BASIN_DIR }}/inputs/met_data/data_48.09375_-119.90625
+Station File     358= {{ RUN_DIR }}/inputs/met_data/data_48.09375_-119.90625
 
 Station Name     359= data_48.09375_-119.84375
 North Coordinate 359= 1559041.96164
 East Coordinate  359= 611639.948109
 Elevation        359= 609.55
-Station File     359= {{ BASIN_DIR }}/inputs/met_data/data_48.09375_-119.84375
+Station File     359= {{ RUN_DIR }}/inputs/met_data/data_48.09375_-119.84375
 
 Station Name     360= data_48.09375_-119.78125
 North Coordinate 360= 1559052.81893
 East Coordinate  360= 616295.917507
 Elevation        360= 540.22
-Station File     360= {{ BASIN_DIR }}/inputs/met_data/data_48.09375_-119.78125
+Station File     360= {{ RUN_DIR }}/inputs/met_data/data_48.09375_-119.78125
 
 Station Name     361= data_48.09375_-119.71875
 North Coordinate 361= 1559067.29532
 East Coordinate  361= 620951.877059
 Elevation        361= 445.13
-Station File     361= {{ BASIN_DIR }}/inputs/met_data/data_48.09375_-119.71875
+Station File     361= {{ RUN_DIR }}/inputs/met_data/data_48.09375_-119.71875
 
 Station Name     362= data_48.09375_-119.65625
 North Coordinate 362= 1559085.39078
 East Coordinate  362= 625607.823951
 Elevation        362= 448.21
-Station File     362= {{ BASIN_DIR }}/inputs/met_data/data_48.09375_-119.65625
+Station File     362= {{ RUN_DIR }}/inputs/met_data/data_48.09375_-119.65625
 
 Station Name     363= data_48.09375_-119.59375
 North Coordinate 363= 1559107.10532
 East Coordinate  363= 630263.755372
 Elevation        363= 549.47
-Station File     363= {{ BASIN_DIR }}/inputs/met_data/data_48.09375_-119.59375
+Station File     363= {{ RUN_DIR }}/inputs/met_data/data_48.09375_-119.59375
 
 Station Name     364= data_48.09375_-119.53125
 North Coordinate 364= 1559132.4389
 East Coordinate  364= 634919.668507
 Elevation        364= 605.7
-Station File     364= {{ BASIN_DIR }}/inputs/met_data/data_48.09375_-119.53125
+Station File     364= {{ RUN_DIR }}/inputs/met_data/data_48.09375_-119.53125
 
 Station Name     365= data_48.03125_-120.21875
 North Coordinate 365= 1552103.7239
 East Coordinate  365= 583685.177049
 Elevation        365= 1139.41
-Station File     365= {{ BASIN_DIR }}/inputs/met_data/data_48.03125_-120.21875
+Station File     365= {{ RUN_DIR }}/inputs/met_data/data_48.03125_-120.21875
 
 Station Name     366= data_48.03125_-120.15625
 North Coordinate 366= 1552092.854
 East Coordinate  366= 588346.547994
 Elevation        366= 1082.43
-Station File     366= {{ BASIN_DIR }}/inputs/met_data/data_48.03125_-120.15625
+Station File     366= {{ RUN_DIR }}/inputs/met_data/data_48.03125_-120.15625
 
 Station Name     367= data_48.03125_-120.09375
 North Coordinate 367= 1552085.60741
 East Coordinate  367= 593007.92598
 Elevation        367= 994.09
-Station File     367= {{ BASIN_DIR }}/inputs/met_data/data_48.03125_-120.09375
+Station File     367= {{ RUN_DIR }}/inputs/met_data/data_48.03125_-120.09375
 
 Station Name     368= data_48.03125_-120.03125
 North Coordinate 368= 1552081.98411
 East Coordinate  368= 597669.308191
 Elevation        368= 861.69
-Station File     368= {{ BASIN_DIR }}/inputs/met_data/data_48.03125_-120.03125
+Station File     368= {{ RUN_DIR }}/inputs/met_data/data_48.03125_-120.03125
 
 Station Name     369= data_48.03125_-119.96875
 North Coordinate 369= 1552081.98411
 East Coordinate  369= 602330.691809
 Elevation        369= 685.25
-Station File     369= {{ BASIN_DIR }}/inputs/met_data/data_48.03125_-119.96875
+Station File     369= {{ RUN_DIR }}/inputs/met_data/data_48.03125_-119.96875
 
 Station Name     370= data_48.03125_-119.90625
 North Coordinate 370= 1552085.60741
 East Coordinate  370= 606992.07402
 Elevation        370= 594.75
-Station File     370= {{ BASIN_DIR }}/inputs/met_data/data_48.03125_-119.90625
+Station File     370= {{ RUN_DIR }}/inputs/met_data/data_48.03125_-119.90625
 
 Station Name     371= data_48.03125_-119.84375
 North Coordinate 371= 1552092.854
 East Coordinate  371= 611653.452006
 Elevation        371= 590.18
-Station File     371= {{ BASIN_DIR }}/inputs/met_data/data_48.03125_-119.84375
+Station File     371= {{ RUN_DIR }}/inputs/met_data/data_48.03125_-119.84375
 
 Station Name     372= data_47.96875_-120.09375
 North Coordinate 372= 1545136.21736
 East Coordinate  372= 592999.823319
 Elevation        372= 903.04
-Station File     372= {{ BASIN_DIR }}/inputs/met_data/data_47.96875_-120.09375
+Station File     372= {{ RUN_DIR }}/inputs/met_data/data_47.96875_-120.09375
 
 Station Name     373= data_47.96875_-120.03125
 North Coordinate 373= 1545132.58986
 East Coordinate  373= 597666.607303
 Elevation        373= 856.04
-Station File     373= {{ BASIN_DIR }}/inputs/met_data/data_47.96875_-120.03125
+Station File     373= {{ RUN_DIR }}/inputs/met_data/data_47.96875_-120.03125
 
 Station Name     374= data_47.96875_-119.96875
 North Coordinate 374= 1545132.58986
 East Coordinate  374= 602333.392697
 Elevation        374= 686.14
-Station File     374= {{ BASIN_DIR }}/inputs/met_data/data_47.96875_-119.96875
+Station File     374= {{ RUN_DIR }}/inputs/met_data/data_47.96875_-119.96875
 
 Station Name     375= data_47.96875_-119.90625
 North Coordinate 375= 1545136.21736
 East Coordinate  375= 607000.176681
 Elevation        375= 619.02
-Station File     375= {{ BASIN_DIR }}/inputs/met_data/data_47.96875_-119.90625
+Station File     375= {{ RUN_DIR }}/inputs/met_data/data_47.96875_-119.90625
 
 Station Name     376= data_47.96875_-119.84375
 North Coordinate 376= 1545143.47236
 East Coordinate  376= 611666.956436
 Elevation        376= 654.66
-Station File     376= {{ BASIN_DIR }}/inputs/met_data/data_47.96875_-119.84375
+Station File     376= {{ RUN_DIR }}/inputs/met_data/data_47.96875_-119.84375
 
 Station Name     377= data_47.90625_-119.96875
 North Coordinate 377= 1538182.93108
 East Coordinate  377= 602336.093687
 Elevation        377= 669.25
-Station File     377= {{ BASIN_DIR }}/inputs/met_data/data_47.90625_-119.96875
+Station File     377= {{ RUN_DIR }}/inputs/met_data/data_47.90625_-119.96875
 
 Station Name     378= data_47.90625_-119.90625
 North Coordinate 378= 1538186.56278
 East Coordinate  378= 607008.279651
 Elevation        378= 648.15
-Station File     378= {{ BASIN_DIR }}/inputs/met_data/data_47.90625_-119.90625
+Station File     378= {{ RUN_DIR }}/inputs/met_data/data_47.90625_-119.90625
 
 Station Name     379= data_49.03125_-120.21875
 North Coordinate 379= 1663249.81477
 East Coordinate  379= 583987.556889
 Elevation        379= 2051.33
-Station File     379= {{ BASIN_DIR }}/inputs/met_data/data_49.03125_-120.21875
+Station File     379= {{ RUN_DIR }}/inputs/met_data/data_49.03125_-120.21875
 
 Station Name     380= data_49.03125_-120.15625
 North Coordinate 380= 1663239.14634
 East Coordinate  380= 588562.533725
 Elevation        380= 2458.68
-Station File     380= {{ BASIN_DIR }}/inputs/met_data/data_49.03125_-120.15625
+Station File     380= {{ RUN_DIR }}/inputs/met_data/data_49.03125_-120.15625
 
 Station Name     381= data_49.03125_-120.09375
 North Coordinate 381= 1663232.03405
 East Coordinate  381= 593137.517471
 Elevation        381= 2111.37
-Station File     381= {{ BASIN_DIR }}/inputs/met_data/data_49.03125_-120.09375
+Station File     381= {{ RUN_DIR }}/inputs/met_data/data_49.03125_-120.09375
 
 Station Name     382= data_49.03125_-120.03125
 North Coordinate 382= 1663228.4779
 East Coordinate  382= 597712.505363
 Elevation        382= 1582.13
-Station File     382= {{ BASIN_DIR }}/inputs/met_data/data_49.03125_-120.03125
+Station File     382= {{ RUN_DIR }}/inputs/met_data/data_49.03125_-120.03125
 
 Station Name     383= data_49.03125_-119.96875
 North Coordinate 383= 1663228.4779
 East Coordinate  383= 602287.494637
 Elevation        383= 1931.87
-Station File     383= {{ BASIN_DIR }}/inputs/met_data/data_49.03125_-119.96875
+Station File     383= {{ RUN_DIR }}/inputs/met_data/data_49.03125_-119.96875
 
 Station Name     384= data_49.03125_-119.90625
 North Coordinate 384= 1663232.03405
 East Coordinate  384= 606862.482529
 Elevation        384= 2176.69
-Station File     384= {{ BASIN_DIR }}/inputs/met_data/data_49.03125_-119.90625
+Station File     384= {{ RUN_DIR }}/inputs/met_data/data_49.03125_-119.90625
 
 ################ MM5 ###########################################################
 # The following block only needs to be filled out if MM5 = TRUE.  In that case
@@ -2532,8 +2534,8 @@ Precipitation lapse rate =
 ################################################################################
 [SOILS]                                   # Soil information
 
-Soil Map File	     = {{ BASIN_DIR }}/inputs/methow_soiltype.asc.bin
-Soil Depth File      = {{ BASIN_DIR }}/inputs/methow_soild.asc.bin
+Soil Map File	     = {{ RUN_DIR }}/inputs/methow_soiltype.asc.bin
+Soil Depth File      = {{ RUN_DIR }}/inputs/methow_soild.asc.bin
 Number of Soil Types = 19
 
 # Number of Soil Types = 19
@@ -2931,10 +2933,10 @@ Thermal Capacity       19 = 1.4e6 1.4e6 1.4e6 # Dry soil thermal capacity (J/(m3
 [VEGETATION]
 
 Vegetation Map File = {{ VEG_FILE }}
-#Vegetation Map File = {{ BASIN_DIR }}/inputs/methow_veg_dhsvm091420rmnan_int.asc.bin
-#Canopy Gap Map File = {{ BASIN_DIR }}/inputs/veg/    # Gap diameter spatial input
-#Vegetation FC Map File = {{ BASIN_DIR }}/inputs/veg/
-#Vegetation LAI Map File = {{ BASIN_DIR }}/inputs/veg/
+#Vegetation Map File = {{ RUN_DIR }}/inputs/methow_veg_dhsvm091420rmnan_int.asc.bin
+#Canopy Gap Map File = {{ RUN_DIR }}/inputs/veg/    # Gap diameter spatial input
+#Vegetation FC Map File = {{ RUN_DIR }}/inputs/veg/
+#Vegetation LAI Map File = {{ RUN_DIR }}/inputs/veg/
 
 Number of Vegetation Types = 173
 
@@ -9521,7 +9523,7 @@ Max Snow Int Capacity           173  =  0.00
 Mass Release Drip Ratio         173  =  0.0
 Snow Interception Eff           173  =  0.0
 Impervious Fraction             173  =  0.5
-IMPERVIOUS SURFACE ROUTING FILE = {{ BASIN_DIR }}/inputs/surface.routing.txt
+IMPERVIOUS SURFACE ROUTING FILE = {{ RUN_DIR }}/inputs/surface.routing.txt
 Height                          173  =  0.0
 Maximum Resistance              173  =  0.0
 Minimum Resistance              173  =  0.0
@@ -9547,7 +9549,7 @@ Canopy View Adj Factor 173 = 1.0
 ################################################################################
 [OUTPUT]                   # Information what to output when
 Output Directory = {{ RUN_DIR }}/output/
-Initial State Directory    = {{ BASIN_DIR }}/inputs/modelstate/
+Initial State Directory    = {{ RUN_DIR }}/inputs/modelstate/
 
 ################ PIXEL DUMPS ###################################################
 
