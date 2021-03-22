@@ -2,14 +2,16 @@ from datetime import datetime
 from django.utils.timezone import get_current_timezone
 from functools import partial
 import json
-import numpy
+# import numpy
 import os
+import tempfile
 import pyproj
 import rasterio
 from rasterio.mask import mask
 from rasterio.merge import merge
 import shapely
-from shapely.geometry import shape, GeometryCollection
+from shapely.geometry import shape
+import shapely.ops
 import shutil
 import statistics
 import sys
@@ -336,20 +338,6 @@ def getSuperBasinDetails():
 
 def setVegLayers(treatment_scenario, ts_superbasin_dict, ts_run_dir):
 
-    import json
-    import tempfile
-    import rasterio
-    from rasterio.mask import mask
-    from rasterio.merge import merge
-    from rasterio import Affine
-    from rasterio.io import MemoryFile
-    from rasterio.enums import Resampling
-    from shapely.geometry import shape
-    from functools import partial
-    import shapely.ops
-    import pyproj
-    import numpy
-
     ts_superbasin_dir = ts_superbasin_dict['basin_dir']
     ts_superbasin_code = ts_superbasin_dict['basin_code']
 
@@ -647,8 +635,10 @@ def runHarnessConfig(treatment_scenario):
 
     # Run DHSVM
     dhsvm_path = DHSVM_BUILD
+    # path to myconvert
+    dhsvm_run_path = os.path.join(DHSVM_BUILD, 'DHSVM', 'sourcecode', 'DHSVM')
     num_cores = 2
-    os.system("mpiexec -n %s %s %s" % (num_cores, dhsvm_path, ts_run_input_file))
+    os.system("mpiexec -n %s %s %s" % (num_cores, dhsvm_run_path, ts_run_input_file))
 
     # TODO: Populate DB
 
