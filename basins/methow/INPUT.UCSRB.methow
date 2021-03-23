@@ -112,15 +112,30 @@ Gap Wind Adj Factor = 1.0                 # Adjustment for wind received by gap 
 # The following fields in this section can take either a single value (i.e. basin-wide constant parameter value)
 # or the path to a spatial parameter binary file in the same format as DEM, soil and veg
 
-# Precipitation Multiplier Map =  # no correction be made if leave blank, or a constant applied basin-wide, or a spatial input
-Rain Threshold       = -1.00                       # Minimum temperature at which rain occurs (C)
-Snow Threshold       = 0.0319                        # Maximum temperature at which snow occurs (C)
+##################################
+# TODO: These next few settings use old bad data, BUT
+#   They were used to create the baseline data, so will
+#   return more meaningful results
+
+Precipitation Multiplier Map =  # no correction be made if leave blank, or a constant applied basin-wide, or a spatial input
+Rain Threshold       = -0.450848                       # Minimum temperature at which rain occurs (C)
+Snow Threshold       = 0.455319                        # Maximum temperature at which snow occurs (C)
 Fresh Snow Albedo    = 0.89                            # Fresh snow albedo (0.85 is the default value used in older versions)
-Albedo Accumulation Lambda = 0.52         # Lambda for accmulation period
-Albedo Melting Lambda = 0.469928               # Lambda for melting period
-Albedo Accumulation Min = 0.339644              # Min albedo value during accumulation period
-Albedo Melting Min = 0.522586                          # Min albedo value during melting period; set to -9999 if min value is not needed.
+Albedo Accumulation Lambda = 0.95 	                     # Lambda for accumulation period
+Albedo Melting Lambda = 0.7		                       # Lambda for melting period
+Albedo Accumulation Min = -9999 		                     # Min albedo value during accumulation period; set to -9999 if min value is not needed.
+Albedo Melting Min = -9999		                         # Min albedo value during melting period; set to -9999 if min value is not needed.
 Precipitation Multiplier Map =                         # no correction be made if leave blank, or a constant applied basin-wide
+
+# Precipitation Multiplier Map =  # no correction be made if leave blank, or a constant applied basin-wide, or a spatial input
+#Rain Threshold       = -1.00                       # Minimum temperature at which rain occurs (C)
+#Snow Threshold       = 0.0319                        # Maximum temperature at which snow occurs (C)
+#Fresh Snow Albedo    = 0.89                            # Fresh snow albedo (0.85 is the default value used in older versions)
+#Albedo Accumulation Lambda = 0.52         # Lambda for accmulation period
+#Albedo Melting Lambda = 0.469928               # Lambda for melting period
+#Albedo Accumulation Min = 0.339644              # Min albedo value during accumulation period
+#Albedo Melting Min = 0.522586                          # Min albedo value during melting period; set to -9999 if min value is not needed.
+#Precipitation Multiplier Map =                         # no correction be made if leave blank, or a constant applied basin-wide
                                                        # or path to a 2D spatial input in the same format as DEM, soil and veg
 
 ################################################################################
