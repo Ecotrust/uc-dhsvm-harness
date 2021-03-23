@@ -508,3 +508,4 @@ def runHarnessConfig(treatment_scenario):
     print("read started at %s" % str(read_start_time.timestamp()))
 
     print("TODO: delte run dir... %s" % str(datetime.now().timestamp()))
+    shutil.rmtree(ts_run_dir)
