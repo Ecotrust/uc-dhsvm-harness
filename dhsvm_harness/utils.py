@@ -230,8 +230,8 @@ def setVegLayers(treatment_scenario, ts_superbasin_dict, ts_run_dir):
     rx_id = treatment_scenario.prescription_treatment_selection
 
     if rx_id == 'notr':
-        # Just return baseline veg file
-        baseline_veg_file = os.path.join("%s/inputs/veg_files/%s_notr.tif" % (ts_superbasin_dir, ts_superbasin_code))
+        # Just return baseline veg file as a bin
+        baseline_veg_file = os.path.join("%s/inputs/veg_files/%s_notr.asc.bin" % (ts_superbasin_dir, ts_superbasin_code))
         return baseline_veg_file
 
     # Projection assigned for later use
@@ -507,5 +507,6 @@ def runHarnessConfig(treatment_scenario):
     print("model started at %s" % str(model_start_time.timestamp()))
     print("read started at %s" % str(read_start_time.timestamp()))
 
-    print("TODO: delte run dir... %s" % str(datetime.now().timestamp()))
+    print("delte run dir... %s" % str(datetime.now().timestamp()))
     shutil.rmtree(ts_run_dir)
+    print("TODO: Clear cache of report!!!")
