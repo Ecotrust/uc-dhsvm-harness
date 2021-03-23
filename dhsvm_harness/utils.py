@@ -497,7 +497,6 @@ def runHarnessConfig(treatment_scenario):
     command = "mpiexec -n %s %s %s" % (num_cores, dhsvm_run_path, ts_run_input_file)
     # print('Running command: %s' % command)
     model_start_time = datetime.now()
-    print("Running the Model...")
     os.system(command)
 
     read_start_time = datetime.now()
