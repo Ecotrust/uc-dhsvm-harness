@@ -20,7 +20,7 @@ import statistics
 import sys
 from ucsrb.models import StreamFlowReading, TreatmentScenario, FocusArea
 
-from dhsvm_harness.settings import FLOW_METRICS, TIMESTEP, ABSOLUTE_FLOW_METRIC, DELTA_FLOW_METRIC, BASINS_DIR, RUNS_DIR, SUPERBASINS, DHSVM_BUILD
+from dhsvm_harness.settings import FLOW_METRICS, TIMESTEP, ABSOLUTE_FLOW_METRIC, DELTA_FLOW_METRIC, BASINS_DIR, RUNS_DIR, SUPERBASINS, DHSVM_BUILD, RUN_CORES
 
 
 def getSegmentIdList(inlines):
@@ -493,14 +493,19 @@ def runHarnessConfig(treatment_scenario):
 
     # Run DHSVM
     dhsvm_run_path = os.path.join(DHSVM_BUILD, 'DHSVM', 'sourcecode', 'DHSVM')
-    num_cores = 2
+    num_cores = RUN_CORES
     command = "mpiexec -n %s %s %s" % (num_cores, dhsvm_run_path, ts_run_input_file)
     # print('Running command: %s' % command)
-    print("Running the Model... %s" % datetime.now().timestamp())
+    model_start_time = datetime.now()
+    print("Running the Model...")
     os.system(command)
 
-    print("Populating the DB... %s" % datetime.now().timestamp())
+    read_start_time = datetime.now()
+    print("Populating the DB...")
     segment_ids = [x.unit_id for x in ts_target_streams]
-    readStreamFlowData(os.path.join(readStreamFlowData, 'output', 'Stream.Flow'), segment_ids=segment_ids, scenario=treatment_scenario, is_baseline=False)
+    readStreamFlowData(os.path.join(ts_run_dir, 'output', 'Stream.Flow'), segment_ids=segment_ids, scenario=treatment_scenario, is_baseline=False)
 
-    print("TODO: delte run dir... %s" % datetime.now().timestamp())
+    print("model started at %s" % str(model_start_time.timestamp()))
+    print("read started at %s" % str(read_start_time.timestamp()))
+
+    print("TODO: delte run dir... %s" % str(datetime.now().timestamp()))

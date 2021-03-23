@@ -2,6 +2,8 @@ import os
 
 from collections import OrderedDict
 
+RUN_CORES = 2
+
 BASINS = ['entiat', 'methow', 'okan', 'wena']
 DEFAULT_BASIN_NAME = 'entiat'
 BASINS_DIR='/usr/local/apps/marineplanner-core/apps/uc-dhsvm-harness/basins'
