@@ -104,12 +104,18 @@ def readStreamFlowData(flow_file, segment_ids=None, scenario=None, is_baseline=T
     print('purging obsolete records...')
     for segment_id in segment_ids:
         StreamFlowReading.objects.filter(time__gte=start_time, time__lte=end_time, segment_id=segment_id, treatment=scenario).delete()
+        if scenario.prescription_treatment_selection == 'notr':
+            StreamFlowReading.objects.filter(time__gte=start_time, time__lte=end_time, segment_id=segment_id, is_baseline=True, treatment=None).delete()
+
+
 
     if len(inlines) < 10000:
         print('Importing data...')
         for line in inlines:
             basin_name = line.split('"')[1]
             if basin_name in segment_ids:
+                if scenario.prescription_treatment_selection == 'notr':
+                    importBasinLine(line, basin_name, is_baseline=True, scenario=None)
                 importBasinLine(line, basin_name, is_baseline, scenario)
 
     else:
@@ -133,6 +139,8 @@ def readStreamFlowData(flow_file, segment_ids=None, scenario=None, is_baseline=T
             for line in inlines:
                 basin_name = line.split('"')[1]
                 if basin_name in segment_ids:
+                    if scenario.prescription_treatment_selection == 'notr':
+                        importBasinLine(line, basin_name, is_baseline=True, scenario=None)
                     importBasinLine(line, basin_name, is_baseline, scenario)
             filecount +=1
 
