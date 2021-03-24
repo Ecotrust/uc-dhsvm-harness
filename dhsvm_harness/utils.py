@@ -102,10 +102,9 @@ def readStreamFlowData(flow_file, segment_ids=None, scenario=None, is_baseline=T
     end_time = tz.localize(datetime.strptime(end_timestamp, "%m.%d.%Y-%H:%M:%S"))
 
     print('purging obsolete records...')
-    for segment_id in segment_ids:
-        StreamFlowReading.objects.filter(time__gte=start_time, time__lte=end_time, segment_id=segment_id, treatment=scenario).delete()
-        if scenario.prescription_treatment_selection == 'notr':
-            StreamFlowReading.objects.filter(time__gte=start_time, time__lte=end_time, segment_id=segment_id, is_baseline=True, treatment=None).delete()
+    StreamFlowReading.objects.filter(time__gte=start_time, time__lte=end_time, segment_id__in=segment_ids, treatment=scenario).delete()
+    if scenario.prescription_treatment_selection == 'notr':
+        StreamFlowReading.objects.filter(time__gte=start_time, time__lte=end_time, segment_id__in=segment_ids, is_baseline=True, treatment=None).delete()
 
 
 
@@ -270,24 +269,22 @@ def setVegLayers(treatment_scenario, ts_superbasin_dict, ts_run_dir):
             # Clip - new dataset with bounds of original "larger area" that preserves only data that intersects the mask area of interest
 
         # Treatment Veg Layer
-
         clipped_treatment = mask(treatment_veg_file, ts_shape, nodata=0)
         clipped_treatment_mask = clipped_treatment[0]
 
         profile = treatment_veg_file.profile
 
         with tempfile.NamedTemporaryFile() as tmpfile:
-            with rasterio.open(tmpfile, 'w', **profile) as dataset:
-                tmpfile.write(clipped_treatment_mask)
+            profile.update(
+                dtype=rasterio.uint8,
+                driver='AAIGrid'
+            )
 
-            # with memfile.open( **profile) as treatment_memfile:
-                # treatment_memfile.write(clipped_treatment_mask)
+            with rasterio.open(tmpfile, 'w+', **profile) as dataset:
+                dataset.write(clipped_treatment_mask.astype(rasterio.uint8))
 
                 merged_veg = merge([dataset, baseline_veg_file], nodata=0, dtype="uint8")
                 merged_veg_layer = merged_veg[0]
-
-        profile['driver'] = 'AAIGrid'
-        # profile['nodata'] = 0
 
         with rasterio.open("%s/ts_clipped_treatment_layer.asc" % ts_run_dir_inputs, 'w', **profile) as dst:
             dst.write(merged_veg_layer)
@@ -532,9 +529,12 @@ def runHarnessConfig(treatment_scenario):
     segment_ids = [x.unit_id for x in ts_target_streams]
     readStreamFlowData(os.path.join(ts_run_dir, 'output', 'Stream.Flow'), segment_ids=segment_ids, scenario=treatment_scenario, is_baseline=False)
 
-    # print("model started at %d:%d:%d" % (model_start_time.hour, model_start_time.minute, model_start_time.second))
-    # print("read started at %d:%d:%d" % (read_start_time.hour, read_start_time.minute, read_start_time.second))
 
     # Remove run dir
     shutil.rmtree(ts_run_dir)
     # print("TODO: Clear cache of report!!!")
+
+    finish_time = datetime.now()
+    print("model started at %d:%d:%d" % (model_start_time.hour, model_start_time.minute, model_start_time.second))
+    print("read started at %d:%d:%d" % (read_start_time.hour, read_start_time.minute, read_start_time.second))
+    print("harness finished at %d:%d:%d" % (finish_time.hour, finish_time.minute, finish_time.second))
