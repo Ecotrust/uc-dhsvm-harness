@@ -159,7 +159,7 @@ Basin Mask File = {{ MASK }}
 # The following three fields are only used if Flow Routing = NETWORK
 Stream Map File      = {{ RUN_DIR }}/inputs/stream.map.dat
 # Stream Network File  = {{ RUN_DIR }}/inputs/methow_stream.network_v2.added.dat
-Stream Network File  = {{ RUN_DIR }}/inputs/methow_stream.network_v2.dat
+Stream Network File  = {{ NETWORK_FILE }}
 # Stream Class File    = {{ RUN_DIR }}/inputs/methow_class.txt
 Stream Class File    = {{ RUN_DIR }}/inputs/stream_property.class
 

@@ -284,20 +284,8 @@ def setVegLayers(treatment_scenario, ts_superbasin_dict, ts_run_dir):
         with rasterio.open("%s/ts_clipped_treatment_layer.asc" % ts_run_dir_inputs, 'w', **profile) as dst:
             dst.write(merged_veg_layer)
 
-        # Baseline Veg Layer
-
-        # clipped_baseline = mask(baseline_veg_file, ts_shape, nodata=0)
-        # clipped_baseline_mask = clipped_baseline[0]
-        #
-        # with rasterio.open("%s/baseline_veg_layer.asc" % ts_run_dir_inputs, 'w', **baseline_profile) as dst:
-        #     dst.write(clipped_baseline_mask)
-
-        # ts_treated_veg_layer = rasterio.open('%s/ts_clipped_treatment_layer.tif' % ts_run_dir, 'r+')
-
         baseline_veg_file.close()
         treatment_veg_file.close()
-
-        # dst_open.close()
 
     # Remove header from ascii
     ##########################
@@ -417,26 +405,57 @@ def getTargetBasin(treatment_scenario):
 def getTargetStreamSegments(basin):
 
     try:
-        basin_stream_segments = FocusArea.objects.filter(unit_type='PourPointDiscrete', geometry__within=basin.geometry)
+        basin_stream_segments = FocusArea.objects.filter(unit_type='PourPointOverlap', geometry__within=basin.geometry)
     except Exception as e:
         basin_stream_segments = None
         print('No sub basins found within "%s"' % basin)
 
     return basin_stream_segments
 
+# ======================================
+# IDENTIFY SUB BASINS OF LCD / STEAM SEGMENTS
+# ======================================
 
+def createTargetStreamNetworkFile(ts_target_streams, ts_run_dir, ts_superbasin_dir):
+    # return os.path.join(ts_superbasin_dir, 'inputs', 'stream.network_all.dat')
+    infile_name = os.path.join(ts_superbasin_dir, 'inputs', 'stream.network_clean.dat')
+    outfile_name = os.path.join(ts_run_dir, 'ts_inputs', 'stream.network.dat')
+    if ts_target_streams == None:
+        all_segments_file = os.path.join(ts_superbasin_dir, 'inputs', 'stream.network_all.dat')
+        shutil.copyfile(all_segments_file, outfile_name)
+    else:
+        # loop through target segment ids, creating a list of the related integers
+        segment_dict = {}
+        for basin in ts_target_streams:
+            try:
+                segment_dict[basin.unit_id.split('_')[1]] = basin.unit_id
+            except IndexError as e:
+                print("Found basin with unit_id == %s" % basin.unit_id)
+                pass
+        with open(infile_name, 'r') as infile:
+            inlines = infile.readlines()
+        with open(outfile_name, 'w') as outfile:
+            for index, line_string in enumerate(inlines):
+                parsed_line = line_string.split()
+                if parsed_line[0] in segment_dict.keys():
+                    parsed_line.append('SAVE"%s"' % segment_dict[parsed_line[0]])
+                line_string = '\t'.join(parsed_line)
+                line_string =  "%s\n" % line_string
+                outfile.write(line_string)
+    return outfile_name
 
 # ======================================
 # CREATE INPUT CONFIG FILE
 # ======================================
 
-def createInputConfig(ts_target_basin, ts_superbasin_dict, ts_run_dir, ts_veg_layer_file, model_year='baseline'):
+def createInputConfig(ts_target_basin, ts_superbasin_dict, ts_run_dir, ts_veg_layer_file, ts_network_file, model_year='baseline'):
 
     # SUPERBASINS = settings.SUPERBASINS
     ts_superbasin_code = ts_superbasin_dict['basin_code']
     ts_superbasin_name = SUPERBASINS[ts_superbasin_code]['name'].lower()
 
     # Get superbasin input config file
+    # ts_superbasin_input_template_name = 'INPUT.UCSRB.%s.bck' % ts_superbasin_name
     ts_superbasin_input_template_name = 'INPUT.UCSRB.%s' % ts_superbasin_name
     ts_superbasin_input_template = os.path.join(ts_superbasin_dict['basin_dir'], ts_superbasin_input_template_name)
 
@@ -455,6 +474,7 @@ def createInputConfig(ts_target_basin, ts_superbasin_dict, ts_run_dir, ts_veg_la
         'START': datetime.strftime(ucsrb_settings.MODEL_YEARS[model_year]['start'], "%m/%d/%Y-%H"),
         'STOP': datetime.strftime(ucsrb_settings.MODEL_YEARS[model_year]['end'], "%m/%d/%Y-%H"),
         'VEG_FILE': ts_veg_layer_file,
+        'NETWORK_FILE': ts_network_file,
         'MASK': mask_file,
         'TIMESTEP': TIMESTEP
     })
@@ -470,26 +490,27 @@ def createInputConfig(ts_target_basin, ts_superbasin_dict, ts_run_dir, ts_veg_la
 # ======================================
 
 def runHarnessConfig(treatment_scenario):
-
     # identify super dir to copy original files from
-    ts_superbasin_dict = getRunSuperBasinDir(treatment_scenario)
+    ts_superbasin_dict = getRunSuperBasinDir(treatment_scenario)        # 2 seconds
 
     # TreatmentScenario run directory
-    ts_run_dir = getRunDir(treatment_scenario, ts_superbasin_dict)
+    ts_run_dir = getRunDir(treatment_scenario, ts_superbasin_dict)      # 0 seconds
 
     # Create run layer
-    ts_veg_layer_file = setVegLayers(treatment_scenario, ts_superbasin_dict, ts_run_dir)
+    ts_veg_layer_file = setVegLayers(treatment_scenario, ts_superbasin_dict, ts_run_dir)    # 2 min, 2 sec
 
     # Get LCD basin
-    ts_target_basin = getTargetBasin(treatment_scenario)
+    ts_target_basin = getTargetBasin(treatment_scenario)                # 2 seconds
 
     # Get target stream segments basins
     if ts_target_basin:
-        ts_target_streams = getTargetStreamSegments(ts_target_basin)
+        ts_target_streams = getTargetStreamSegments(ts_target_basin)    # 0 seconds (???)
     else:
         ts_target_streams = None
 
-    ts_run_input_file = createInputConfig(ts_target_basin, ts_superbasin_dict, ts_run_dir, ts_veg_layer_file, model_year='baseline')
+    ts_network_file = createTargetStreamNetworkFile(ts_target_streams, ts_run_dir, ts_superbasin_dict['basin_dir'])
+
+    ts_run_input_file = createInputConfig(ts_target_basin, ts_superbasin_dict, ts_run_dir, ts_veg_layer_file, ts_network_file, model_year='baseline')
 
     # Run DHSVM
     dhsvm_run_path = os.path.join(DHSVM_BUILD, 'DHSVM', 'sourcecode', 'DHSVM')
@@ -500,13 +521,12 @@ def runHarnessConfig(treatment_scenario):
     os.system(command)
 
     read_start_time = datetime.now()
-    print("Populating the DB...")
     segment_ids = [x.unit_id for x in ts_target_streams]
     readStreamFlowData(os.path.join(ts_run_dir, 'output', 'Stream.Flow'), segment_ids=segment_ids, scenario=treatment_scenario, is_baseline=False)
 
-    print("model started at %s" % str(model_start_time.timestamp()))
-    print("read started at %s" % str(read_start_time.timestamp()))
+    # print("model started at %d:%d:%d" % (model_start_time.hour, model_start_time.minute, model_start_time.second))
+    # print("read started at %d:%d:%d" % (read_start_time.hour, read_start_time.minute, read_start_time.second))
 
-    print("delte run dir... %s" % str(datetime.now().timestamp()))
+    # Remove run dir
     shutil.rmtree(ts_run_dir)
-    print("TODO: Clear cache of report!!!")
+    # print("TODO: Clear cache of report!!!")
