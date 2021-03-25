@@ -44,6 +44,6 @@ FLOW_METRICS['Change in 7 Day Mean Flow Rate'] = {'measure': 'mean', 'delta':Tru
 FLOW_METRICS['Change in 1 Day Low Flow Rate'] = {'measure': 'low', 'delta':True, 'period':1, 'source_metric':'One Day Low Flow' }
 FLOW_METRICS['Change in 1 Day Mean Flow Rate'] = {'measure': 'mean', 'delta':True, 'period':1, 'source_metric':'One Day Mean Flow' }
 
-TIMESTEP = 3
+TIMESTEP = 6
 
 from dhsvm_harness.local_settings import *
