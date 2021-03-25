@@ -155,6 +155,8 @@ def getRunDir(treatment_scenario, ts_superbasin_dict):
     try:
         if not os.path.isdir(RUNS_DIR):
             os.mkdir(RUNS_DIR)
+            command = "chgrp www-data %s" % RUNS_DIR
+            
     except OSError:
         print("Runs dir not found. Add RUNS_DIR to settings")
 
