@@ -156,7 +156,7 @@ def getRunDir(treatment_scenario, ts_superbasin_dict):
         if not os.path.isdir(RUNS_DIR):
             os.mkdir(RUNS_DIR)
             command = "chgrp www-data %s" % RUNS_DIR
-            
+
     except OSError:
         print("Runs dir not found. Add RUNS_DIR to settings")
 
@@ -288,14 +288,20 @@ def setVegLayers(treatment_scenario, ts_superbasin_dict, ts_run_dir):
                 merged_veg = merge([dataset, baseline_veg_file], nodata=0, dtype="uint8")
                 merged_veg_layer = merged_veg[0]
 
-        with rasterio.open("%s/ts_clipped_treatment_layer.asc" % ts_run_dir_inputs, 'w', **profile) as dst:
+        asc_file = "%s/ts_clipped_treatment_layer.asc" % ts_run_dir_inputs
+        with rasterio.open(asc_file, 'w', **profile) as dst:
             dst.write(merged_veg_layer)
 
         baseline_veg_file.close()
         treatment_veg_file.close()
 
-    # Remove header from ascii
+    return asc_file + '.bin'
+
+def binAsciis(ts_run_dir):
+
+    # Remove header from asciis
     ##########################
+    ts_run_dir_inputs = os.path.join('%s/ts_inputs' % ts_run_dir)
 
     try:
         ts_run_inputs_listdir = os.listdir(ts_run_dir_inputs)
@@ -380,7 +386,6 @@ def setVegLayers(treatment_scenario, ts_superbasin_dict, ts_run_dir):
                 % (myconvert, use_type, ascii_file_path, bin_file_path, nrows, ncols)
             )
 
-    return bin_file_path
 
 
 # ======================================
@@ -460,6 +465,7 @@ def createInputConfig(ts_target_basin, ts_superbasin_dict, ts_run_dir, ts_veg_la
     # SUPERBASINS = settings.SUPERBASINS
     ts_superbasin_code = ts_superbasin_dict['basin_code']
     ts_superbasin_name = SUPERBASINS[ts_superbasin_code]['name'].lower()
+    ts_superbasin_dir = SUPERBASINS[ts_superbasin_code]['inputs']
 
     # Get superbasin input config file
     # ts_superbasin_input_template_name = 'INPUT.UCSRB.%s.bck' % ts_superbasin_name
@@ -469,7 +475,10 @@ def createInputConfig(ts_target_basin, ts_superbasin_dict, ts_run_dir, ts_veg_la
     # Location for new run input config file
     ts_run_input_file = os.path.join(ts_run_dir, 'INPUT.UCSRB.run')
 
-    mask_file = os.path.join(ts_superbasin_dict['basin_dir'], 'masks', "%s.asc.bin" % ts_target_basin.unit_id)
+    # mask_file = os.path.join(ts_superbasin_dict['basin_dir'], 'masks', "%s.asc.bin" % ts_target_basin.unit_id)
+    mask_file = os.path.join(ts_run_dir, 'ts_inputs', "mask.asc.bin")
+
+    createMaskFile(ts_superbasin_code, ts_superbasin_dir, ts_target_basin, ts_run_dir)
 
     # Create new input from superbasin
     with open(ts_superbasin_input_template, 'r') as file_contents:
@@ -491,6 +500,52 @@ def createInputConfig(ts_target_basin, ts_superbasin_dict, ts_run_dir, ts_veg_la
 
     return ts_run_input_file
 
+# ======================================
+# CREATE MASK FILE
+# ======================================
+def createMaskFile(basin_id, ts_superbasin_dir, focus_area, ts_run_dir):
+    ts_run_dir_inputs = os.path.join('%s/ts_inputs' % ts_run_dir)
+    # get focus_area geometry
+    # CREATE treatment shape/feature from TreatmentScenario geometry
+    feature = json.loads(focus_area.geometry.json)
+    feature_shape = shape(feature)
+
+
+    # Transform and reproject TS shape/feature to match UCSRB data bin files
+    PROJECTION = 'PROJCS["NAD_1983_USFS_R6_Albers",GEOGCS["GCS_North_American_1983",DATUM["D_North_American_1983",SPHEROID["GRS_1980",6378137.0,298.257222101]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Albers"],PARAMETER["False_Easting",600000.0],PARAMETER["False_Northing",0.0],PARAMETER["Central_Meridian",-120.0],PARAMETER["Standard_Parallel_1",43.0],PARAMETER["Standard_Parallel_2",48.0],PARAMETER["Latitude_Of_Origin",34.0],UNIT["Meter",1.0]]'
+    tfm = partial(pyproj.transform, pyproj.Proj("epsg:3857"), pyproj.Proj(PROJECTION))
+    ts_shape = shapely.ops.transform(tfm, feature_shape)
+    # get superbasin bounds/header values
+    # rasterize the geometry (to ascii)
+    #   Read in full basin mask raster
+
+    # basin_blank_file = rasterio.open("%s/masks/%s_blank.tif" % (ts_superbasin_dir, basin_id), "r")
+    basin_mask_file = rasterio.open("%s/masks/%s_mask.tif" % (ts_superbasin_dir, basin_id), "r")
+    #   Read in blank (0) raster of basin dimensions
+    clipped_treatment = mask(basin_mask_file, ts_shape, nodata=0)
+    clipped_treatment_mask = clipped_treatment[0]
+
+    profile = basin_mask_file.profile
+    # convert to asc.bin
+    # save file to filename
+    # with tempfile.NamedTemporaryFile() as tmpfile:
+    profile.update(
+        dtype=rasterio.uint8,
+        driver='AAIGrid'
+    )
+    #
+    #     with rasterio.open(tmpfile, 'w+', **profile) as dataset:
+    #         dataset.write(clipped_treatment_mask.astype(rasterio.uint8))
+    #
+    #         merged_veg = merge([dataset, basin_blank_file], nodata=0, dtype="uint8")
+    #         merged_veg_layer = merged_veg[0]
+
+    with rasterio.open("%s/mask.asc" % ts_run_dir_inputs, 'w', **profile) as dst:
+        # dst.write(merged_veg_layer)
+        dst.write(clipped_treatment_mask)
+
+    # basin_blank_file.close()
+    basin_mask_file.close()
 
 # ======================================
 # CONFIGURE TREATMENT SCENARIO RUN
@@ -517,13 +572,18 @@ def runHarnessConfig(treatment_scenario):
 
     ts_network_file = createTargetStreamNetworkFile(ts_target_streams, ts_run_dir, ts_superbasin_dict['basin_dir'])
 
+    # TODO: run for all three weather years: ['wet', 'baseline', 'dry']
     ts_run_input_file = createInputConfig(ts_target_basin, ts_superbasin_dict, ts_run_dir, ts_veg_layer_file, ts_network_file, model_year='baseline')
+
+    # Convert all .asc to .asc.bin
+    binAsciis(ts_run_dir)
 
     # Run DHSVM
     dhsvm_run_path = os.path.join(DHSVM_BUILD, 'DHSVM', 'sourcecode', 'DHSVM')
     num_cores = RUN_CORES
     command = "mpiexec -n %s %s %s" % (num_cores, dhsvm_run_path, ts_run_input_file)
-    # print('Running command: %s' % command)
+    print('Running command: %s' % command)
+
     model_start_time = datetime.now()
     os.system(command)
 
