@@ -414,31 +414,33 @@ def getTargetBasin(treatment_scenario):
 # IDENTIFY SUB BASINS OF LCD / STEAM SEGMENTS
 # ======================================
 
-def getTargetStreamSegments(basin):
+def getTargetStreamSegmentBasins(basin):
 
     try:
-        basin_stream_segments = FocusArea.objects.filter(unit_type='PourPointOverlap', geometry__within=basin.geometry)
+        # 'contained' is used because 'within' is not working with the current matching of Overlapping basins.
+        #   While a few extra basins may get caught up in this, there is no real harm done.
+        basin_stream_segment_basins = FocusArea.objects.filter(unit_type='PourPointOverlap', geometry__contained=basin.geometry)
     except Exception as e:
-        basin_stream_segments = None
+        basin_stream_segment_basins = None
         print('No sub basins found within "%s"' % basin)
 
-    return basin_stream_segments
+    return basin_stream_segment_basins
 
 # ======================================
 # IDENTIFY SUB BASINS OF LCD / STEAM SEGMENTS
 # ======================================
 
-def createTargetStreamNetworkFile(ts_target_streams, ts_run_dir, ts_superbasin_dir):
+def createTargetStreamNetworkFile(ts_target_stream_basins, ts_run_dir, ts_superbasin_dir):
     # return os.path.join(ts_superbasin_dir, 'inputs', 'stream.network_all.dat')
     infile_name = os.path.join(ts_superbasin_dir, 'inputs', 'stream.network_clean.dat')
     outfile_name = os.path.join(ts_run_dir, 'ts_inputs', 'stream.network.dat')
-    if ts_target_streams == None:
+    if ts_target_stream_basins == None:
         all_segments_file = os.path.join(ts_superbasin_dir, 'inputs', 'stream.network_all.dat')
         shutil.copyfile(all_segments_file, outfile_name)
     else:
         # loop through target segment ids, creating a list of the related integers
         segment_dict = {}
-        for basin in ts_target_streams:
+        for basin in ts_target_stream_basins:
             try:
                 segment_dict[basin.unit_id.split('_')[1]] = basin.unit_id
             except IndexError as e:
@@ -566,11 +568,11 @@ def runHarnessConfig(treatment_scenario):
 
     # Get target stream segments basins
     if ts_target_basin:
-        ts_target_streams = getTargetStreamSegments(ts_target_basin)    # 0 seconds (???)
+        ts_target_stream_basins = getTargetStreamSegmentBasins(ts_target_basin)    # 0 seconds (???)
     else:
-        ts_target_streams = None
+        ts_target_stream_basins = None
 
-    ts_network_file = createTargetStreamNetworkFile(ts_target_streams, ts_run_dir, ts_superbasin_dict['basin_dir'])
+    ts_network_file = createTargetStreamNetworkFile(ts_target_stream_basins, ts_run_dir, ts_superbasin_dict['basin_dir'])
 
     # TODO: run for all three weather years: ['wet', 'baseline', 'dry']
     ts_run_input_file = createInputConfig(ts_target_basin, ts_superbasin_dict, ts_run_dir, ts_veg_layer_file, ts_network_file, model_year='baseline')
@@ -588,7 +590,7 @@ def runHarnessConfig(treatment_scenario):
     os.system(command)
 
     read_start_time = datetime.now()
-    segment_ids = [x.unit_id for x in ts_target_streams]
+    segment_ids = [x.unit_id for x in ts_target_stream_basins]
     readStreamFlowData(os.path.join(ts_run_dir, 'output', 'Stream.Flow'), segment_ids=segment_ids, scenario=treatment_scenario, is_baseline=False)
 
 
