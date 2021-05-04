@@ -70,7 +70,7 @@ def main(argv):
     for ppt in ppt_reader:
         for basin_key in basin_dict.keys():
             if basin_key in ppt['seg_ID']:
-                basin_dict[basin_key]['ids'].append(int(ppt['POINTID']))
+                basin_dict[basin_key]['ids'].append(int(ppt['GRID_CODE']))
                 break
 
     # For each superbasin, go line-by-line through stream.network_clean.dat and
