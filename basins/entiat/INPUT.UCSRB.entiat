@@ -141,7 +141,7 @@ Basin Mask File   = {{ MASK }}
 # The following three fields are only used if Flow Routing = NETWORK
 Stream Map File      = {{ RUN_DIR }}/inputs/stream.map.dat
 Stream Network File  = {{ NETWORK_FILE }}
-Stream Class File    = {{ RUN_DIR }}/inputs/entiat_class.txt
+Stream Class File    = {{ RUN_DIR }}/inputs/stream_property.class
 
 ################ ROAD NETWORK ##################################################
 
@@ -8493,7 +8493,7 @@ State Date               1 = 10/01/1994-00
 State Date               2 = 10/01/1995-00
 State Date               3 = 10/01/1996-00
 State Date               4 = 10/01/1997-00
-State Date               5 = 10/01/1998-00 
+State Date               5 = 10/01/1998-00
 State Date               6 = 10/01/1999-00
 State Date               7 = 10/01/2000-00
 State Date		 		 8 = 10/01/2001-00
