@@ -9,3 +9,19 @@ FLOW_FILE = os.path.join(pathlib.Path(__file__).parent.absolute(), 'test_data', 
 
 ANONYMOUS_USER_PK = 2
 INPUT_TEMPLATE = os.path.join(pathlib.Path(__file__).parent.absolute(), 'test_data', 'INPUT.test.template')
+
+RESET_BASIN_JSON = os.path.join(pathlib.Path(__file__).parent.absolute(), 'test_data', 'enti_1065.geojson')
+RESET_BASIN_ID = "enti_1065"
+
+RESET_TEST_BASIN_IDS = [
+    'enti_11',      # NW tip
+    'enti_270',     # Top of weird Western 'mouth'
+    'enti_396',     # Near the center of the basin
+    'enti_436',     # Bottom of weird Western 'mouth'
+    'enti_464',     # Mid-way down Eastern border
+    'enti_1065',    # Mouth
+    'enti_1119',    # Southernmost
+]
+
+ENTI_OVERLAP_BASINS_FILE = os.path.join(pathlib.Path(__file__).parent.absolute(), 'test_data', 'enti_osheds.zip')
+ENTI_DISCRETE_BASINS_FILE = os.path.join(pathlib.Path(__file__).parent.absolute(), 'test_data', 'enti_dsheds.zip')

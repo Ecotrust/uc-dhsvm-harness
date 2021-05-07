@@ -1,13 +1,15 @@
 import json, datetime, statistics
 
 from django.test import TestCase
+from django.contrib.auth.models import User
 from django.contrib.gis.geos import GEOSGeometry
 
-from ucsrb.models import StreamFlowReading, FocusArea
+from ucsrb.models import StreamFlowReading, FocusArea, TreatmentScenario, ScenarioState
+from django.core.management import call_command
 
 from dhsvm_harness import settings as harness_settings
 from dhsvm_harness.tests import testing_settings as settings
-from dhsvm_harness.utils import readStreamFlowData, cleanStreamFlowData
+from dhsvm_harness.utils import readStreamFlowData, cleanStreamFlowData, runHarnessConfig
 
 class ImportTestCase(TestCase):
     def setUp(self):
@@ -15,33 +17,87 @@ class ImportTestCase(TestCase):
         print('=====================')
         print('ImportTestCase: setUp')
         print('=====================')
+
+        user = User.objects.create(username='user')
+        user.save()
+
+        call_command('import_focus_areas', settings.ENTI_OVERLAP_BASINS_FILE, 'PourPointOverlap')
+        # call_command('import_focus_areas', settings.ENTI_DISCRETE_BASINS_FILE, 'PourPointDiscrete')
+
         with open(settings.BASIN_JSON_1) as f:
             basin_1_json = json.load(f)
-        basin_1_geom = GEOSGeometry(json.dumps(basin_1_json['features'][0]['geometry']))
-        basin_1_geom.srid = 3857
+            basin_1_geom = GEOSGeometry(json.dumps(basin_1_json['features'][0]['geometry']))
+            basin_1_geom.srid = 3857
 
-        basin1 = FocusArea.objects.create(
+            basin1 = FocusArea.objects.create(
             unit_type='PourPointOverlap',
             unit_id=settings.BASIN_1_ID,
             geometry=basin_1_geom
             # area=basin_1_json['features'][0]['properties']['acres'],
             # superbasin=settings.BASIN_1_ID.split('_')[0]
-        )
-        basin1.save()
+            )
+            basin1.save()
 
-        with open(settings.BASIN_JSON_2) as f:
-            basin_2_json = json.load(f)
-        basin_2_geom = GEOSGeometry(json.dumps(basin_2_json['features'][0]['geometry']))
-        basin_2_geom.srid = 3857
+            with open(settings.BASIN_JSON_2) as f:
+                basin_2_json = json.load(f)
+                basin_2_geom = GEOSGeometry(json.dumps(basin_2_json['features'][0]['geometry']))
+                basin_2_geom.srid = 3857
 
-        basin2 = FocusArea.objects.create(
-            unit_type='PourPointOverlap',
-            unit_id=settings.BASIN_2_ID,
-            geometry=basin_2_geom
-            # area=basin_2_json['features'][0]['properties']['acres'],
-            # superbasin=settings.BASIN_2_ID.split('_')[0]
+                basin2 = FocusArea.objects.create(
+                unit_type='PourPointOverlap',
+                unit_id=settings.BASIN_2_ID,
+                geometry=basin_2_geom
+                # area=basin_2_json['features'][0]['properties']['acres'],
+                # superbasin=settings.BASIN_2_ID.split('_')[0]
+                )
+                basin2.save()
+
+        with open(settings.RESET_BASIN_JSON) as f:
+            reset_basin_json = json.load(f)
+        reset_basin_geom = GEOSGeometry(json.dumps(reset_basin_json['features'][0]['geometry']))
+        reset_basin_geom.srid = 3857
+
+        reset_basin = FocusArea.objects.create(
+            unit_type='Drawing',
+            unit_id=settings.RESET_BASIN_ID,
+            geometry=reset_basin_geom
         )
-        basin2.save()
+        reset_basin.save()
+
+        # reset_scenario = ScenarioState.objects.create(
+        #     name='reset scenario state',
+        #     user=user,
+        #     scenario_type="Draw"
+        # )
+        # reset_scenario.save()
+
+        reset_treatment = TreatmentScenario.objects.create(
+            user=user,
+            name='Reset Entiat Treatment',
+            description="NOTR",
+            focus_area=True,
+            focus_area_input=reset_basin,
+            # scenario=reset_scenario,
+            prescription_treatment_selection='notr'
+        )
+
+        reset_treatment.save()
+
+    def test_update_baseline_data(self):
+        # Get reset_basin
+        reset_basin = FocusArea.objects.get(unit_type='Drawing', unit_id=settings.RESET_BASIN_ID)
+        # Get reset_treatment using reset_basin
+        reset_treatment = TreatmentScenario.objects.get(focus_area_input=reset_basin)
+        # call runHarnessConfig
+        runHarnessConfig(reset_treatment)
+        # Check for baseline values related to each ID in settings.RESET_TEST_BASIN_IDS
+        # for basin_id in settings.RESET_TEST_BASIN_IDS:
+        #     basin_readings = StreamFlowReading.objects.filter(segment_id=basin_id)
+        #     self.assertTrue(StreamFlowReading.objects.filter(segment_id=basin_id, is_baseline=True) >= 365*(24/harness_settings.TIMESTEP)) # basins*BASIN_READINGS_COUNT
+        # Check for readings for every 'enti_' overlapping pourpoint
+        for basin in FocusArea.objects.filter(unit_type="PourPointOverlap", unit_id__contains="enti_"):
+            # basin_readings = StreamFlowReading.objects.filter(segment_id=basin.unit_id)
+            self.assertTrue(StreamFlowReading.objects.filter(segment_id=basin.unit_id, is_baseline=True).count() >= 365*(24/harness_settings.TIMESTEP)) # basins*BASIN_READINGS_COUNT
 
     def test_import_flow_data(self):
         print('=====================================')
@@ -71,8 +127,9 @@ class ImportTestCase(TestCase):
 
 
         BASINS = [settings.BASIN_1_ID, settings.BASIN_2_ID]
-        BASIN_READINGS_COUNT = 8*365+1  # daily_timesteps*days_per_year+1
-        ONE_DAY_READINGS_COUNT = int(24/harness_settings.TIMESTEP)
+        # ONE_DAY_READINGS_COUNT = int(24/harness_settings.TIMESTEP)
+        ONE_DAY_READINGS_COUNT = 8 # the test data is on a 3 hr timestep
+        BASIN_READINGS_COUNT = ONE_DAY_READINGS_COUNT*365+1  # daily_timesteps*days_per_year+1
         SEVEN_DAY_READINGS_COUNT = 7*ONE_DAY_READINGS_COUNT
         # read in flow data to DB
         readStreamFlowData(settings.FLOW_FILE, segment_ids=BASINS)
