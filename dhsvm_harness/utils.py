@@ -3,6 +3,8 @@ from datetime import datetime
 from django.conf import settings as ucsrb_settings
 from django.template import Template, Context
 from django.utils.timezone import get_current_timezone
+from django.contrib.gis.geos import GEOSGeometry
+from django.contrib.gis.gdal.error import GDALException
 from functools import partial
 import json
 # import numpy
@@ -85,6 +87,14 @@ def importBasinLine(line, basin_name, is_baseline, scenario):
         value=value
     )
 
+def importBasinLines(inlines, segment_ids, scenario, is_baseline):
+    for line in inlines:
+        basin_name = line.split('"')[1]
+        if basin_name in segment_ids:
+            if scenario and scenario.prescription_treatment_selection == 'notr':
+                importBasinLine(line, basin_name, is_baseline=True, scenario=None)
+            importBasinLine(line, basin_name, is_baseline, scenario)
+
 def readStreamFlowData(flow_file, segment_ids=None, scenario=None, is_baseline=True):
 
     # readings_per_day = 24/TIMESTEP
@@ -103,19 +113,14 @@ def readStreamFlowData(flow_file, segment_ids=None, scenario=None, is_baseline=T
 
     print('purging obsolete records...')
     StreamFlowReading.objects.filter(time__gte=start_time, time__lte=end_time, segment_id__in=segment_ids, treatment=scenario).delete()
-    if scenario.prescription_treatment_selection == 'notr':
+    if scenario and scenario.prescription_treatment_selection == 'notr':
         StreamFlowReading.objects.filter(time__gte=start_time, time__lte=end_time, segment_id__in=segment_ids, is_baseline=True, treatment=None).delete()
 
 
 
     if len(inlines) < 10000:
         print('Importing data...')
-        for line in inlines:
-            basin_name = line.split('"')[1]
-            if basin_name in segment_ids:
-                if scenario.prescription_treatment_selection == 'notr':
-                    importBasinLine(line, basin_name, is_baseline=True, scenario=None)
-                importBasinLine(line, basin_name, is_baseline, scenario)
+        importBasinLines(inlines, segment_ids, scenario, is_baseline)
 
     else:
         # release memory
@@ -135,12 +140,8 @@ def readStreamFlowData(flow_file, segment_ids=None, scenario=None, is_baseline=T
             with open(file_slice, 'r') as f:
                 inlines=f.readlines()
 
-            for line in inlines:
-                basin_name = line.split('"')[1]
-                if basin_name in segment_ids:
-                    if scenario.prescription_treatment_selection == 'notr':
-                        importBasinLine(line, basin_name, is_baseline=True, scenario=None)
-                    importBasinLine(line, basin_name, is_baseline, scenario)
+            importBasinLines(inlines, segment_ids, scenario, is_baseline)
+
             filecount +=1
 
         shutil.rmtree(split_dir)
@@ -196,6 +197,42 @@ def getRunDir(treatment_scenario, ts_superbasin_dict):
 # TREATMENT SCENARIO RUN SUPER BASIN
 # ======================================
 
+def identifyBestParentBasin(treatment_geometry):
+    # Attempting to apply lessons about determining intersection area here: https://stackoverflow.com/a/58818873/706797
+
+    overlapping_basins = FocusArea.objects.filter(unit_type='PourPointOverlap', geometry__contains=treatment_geometry)
+    if len(overlapping_basins) > 1:
+        # grab the second-smallest containing basin so we get at least 1 downstream ppt
+        return sorted(overlapping_basins, key=lambda x: x.geometry.area)[1].unit_id.split('_')[0]
+    elif len(overlapping_basins) == 1:
+        return overlapping_basins[0]
+    else: # none found
+        overlapping_basins = FocusArea.objects.filter(unit_type='PourPointOverlap', geometry__intersects=treatment_geometry)
+        overlap_scores = []
+        # GEOS doesn't like the geometries as is. Intersecting them with themselves makes GEOS happy
+        treatment_geometry = treatment_geometry.intersection(treatment_geometry)
+        for overlapping_basin in overlapping_basins:
+            overlap_geom = overlapping_basin.geometry.intersection(overlapping_basin.geometry)
+            overlap_area = overlap_geom.intersection(treatment_geometry).area
+            overlap_scores.append({
+                'id':overlapping_basin.id,
+                'area':overlapping_basin.geometry.area,
+                'intersection_area':overlap_area
+            })
+        # sorted_scores = sorted(overlap_scores, key=lambda x: x['area'])
+        top_score = 0
+        for score in overlap_scores:
+            if score['intersection_area'] > top_score:
+                top_score = score['intersection_area']
+        best_basins = [x for x in overlap_scores if x['intersection_area'] == top_score]
+        best_basin = best_basins[0]
+        for basin in best_basins:
+            if basin['area'] > best_basin['area']:
+                best_basin = basin
+        best_basin_focus_area = FocusArea.objects.get(id=best_basin['id'])
+        return best_basin_focus_area
+
+
 def getRunSuperBasinDir(treatment_scenario):
 
     # Original basin files directory
@@ -209,11 +246,8 @@ def getRunSuperBasinDir(treatment_scenario):
     if treatment_scenario.focus_area_input.unit_type == 'PourPointOverlap':
         ts_superbasin_code = treatment_scenario.focus_area_input.unit_id.split('_')[0]
     else:
-        overlapping_basins = FocusArea.objects.filter(unit_type='PourPointOverlap', geometry__contains=treatment_scenario.focus_area_input.geometry)
-        if len(overlapping_basins) > 1:
-            ts_superbasin_code = sorted(overlapping_basins, key=lambda x: x.geometry.area)[1].unit_id.split('_')[0]
-        else:
-            ts_superbasin_code = overlapping_basins[0].unit_id.split('_')[0]
+        parent_basin = identifyBestParentBasin(treatment_scenario.focus_area_input.geometry)
+        ts_superbasin_code = parent_basin.unit_id.split('_')[0]
 
     # Superbasin dir
     ts_superbasin_dir = SUPERBASINS[ts_superbasin_code]['inputs']
@@ -402,8 +436,10 @@ def getTargetBasin(treatment_scenario):
         target_basins =  FocusArea.objects.filter(unit_type="PourPointOverlap", geometry__contains=treatment_scenario.focus_area_input.geometry)
         if len(target_basins) > 1:
             target_basin = sorted(target_basins, key=lambda x: x.geometry.area)[1]
-        else:
+        elif len(target_basins) == 1:
             target_basin = target_basins[0]
+        else:
+            target_basin = identifyBestParentBasin(treatment_scenario.focus_area_input.geometry)
     else:
         print("No TreatmentScenario focus area provided")
 
@@ -509,7 +545,14 @@ def createMaskFile(basin_id, ts_superbasin_dir, focus_area, ts_run_dir):
     ts_run_dir_inputs = os.path.join('%s/ts_inputs' % ts_run_dir)
     # get focus_area geometry
     # CREATE treatment shape/feature from TreatmentScenario geometry
-    feature = json.loads(focus_area.geometry.json)
+    try:
+        feature = json.loads(focus_area.geometry.json)
+    except GDALException as e:
+        # There is a GEOS error here, possibly related to Rasterio:
+        #   https://github.com/mapbox/rasterio/issues/888
+        # However, we can get wkt, if not json, and can create a functional GEOSGeometry from that.
+        geos_feature = GEOSGeometry(focus_area.geometry.wkt)
+        feature = json.loads(geos_feature.json)
     feature_shape = shape(feature)
 
 
@@ -583,11 +626,13 @@ def runHarnessConfig(treatment_scenario):
     # Run DHSVM
     dhsvm_run_path = os.path.join(DHSVM_BUILD, 'DHSVM', 'sourcecode', 'DHSVM')
     num_cores = RUN_CORES
+
     command = "mpiexec -n %s %s %s" % (num_cores, dhsvm_run_path, ts_run_input_file)
     print('Running command: %s' % command)
 
     model_start_time = datetime.now()
     os.system(command)
+
 
     read_start_time = datetime.now()
     segment_ids = [x.unit_id for x in ts_target_stream_basins]
