@@ -30,11 +30,11 @@ class ImportTestCase(TestCase):
             basin_1_geom.srid = 3857
 
             basin1 = FocusArea.objects.create(
-            unit_type='PourPointOverlap',
-            unit_id=settings.BASIN_1_ID,
-            geometry=basin_1_geom
-            # area=basin_1_json['features'][0]['properties']['acres'],
-            # superbasin=settings.BASIN_1_ID.split('_')[0]
+                unit_type='PourPointOverlap',
+                unit_id=settings.BASIN_1_ID,
+                geometry=basin_1_geom
+                # area=basin_1_json['features'][0]['properties']['acres'],
+                # superbasin=settings.BASIN_1_ID.split('_')[0]
             )
             basin1.save()
 

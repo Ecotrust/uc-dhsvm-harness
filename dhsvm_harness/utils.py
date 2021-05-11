@@ -111,15 +111,15 @@ def readStreamFlowData(flow_file, segment_ids=None, scenario=None, is_baseline=T
     end_timestamp = inlines[-1].split()[0]
     end_time = tz.localize(datetime.strptime(end_timestamp, "%m.%d.%Y-%H:%M:%S"))
 
-    print('purging obsolete records...')
-    StreamFlowReading.objects.filter(time__gte=start_time, time__lte=end_time, segment_id__in=segment_ids, treatment=scenario).delete()
+    old_records = StreamFlowReading.objects.filter(time__gte=start_time, time__lte=end_time, segment_id__in=segment_ids, treatment=scenario)
+    print('purging {} obsolete records...'.format(old_records.count()))
+    old_records.delete()
     if scenario and scenario.prescription_treatment_selection == 'notr':
         StreamFlowReading.objects.filter(time__gte=start_time, time__lte=end_time, segment_id__in=segment_ids, is_baseline=True, treatment=None).delete()
 
-
-
-    if len(inlines) < 10000:
-        print('Importing data...')
+    inline_count = len(inlines)
+    print('Importing {} data records...'.format(inline_count))
+    if inline_count < 10000:
         importBasinLines(inlines, segment_ids, scenario, is_baseline)
 
     else:
@@ -203,23 +203,25 @@ def identifyBestParentBasin(treatment_geometry):
     overlapping_basins = FocusArea.objects.filter(unit_type='PourPointOverlap', geometry__contains=treatment_geometry)
     if len(overlapping_basins) > 1:
         # grab the second-smallest containing basin so we get at least 1 downstream ppt
-        return sorted(overlapping_basins, key=lambda x: x.geometry.area)[1].unit_id.split('_')[0]
+        return sorted(overlapping_basins, key=lambda x: x.geometry.area)[1]
     elif len(overlapping_basins) == 1:
         return overlapping_basins[0]
     else: # none found
         overlapping_basins = FocusArea.objects.filter(unit_type='PourPointOverlap', geometry__intersects=treatment_geometry)
         overlap_scores = []
-        # GEOS doesn't like the geometries as is. Intersecting them with themselves makes GEOS happy
-        treatment_geometry = treatment_geometry.intersection(treatment_geometry)
         for overlapping_basin in overlapping_basins:
-            overlap_geom = overlapping_basin.geometry.intersection(overlapping_basin.geometry)
-            overlap_area = overlap_geom.intersection(treatment_geometry).area
+            try:
+                overlap_area = overlapping_basin.geometry.intersection(treatment_geometry).area
+            except Exception as e:
+                # GEOS doesn't like the geometries as is. Intersecting them with themselves makes GEOS happy
+                clean_basin = overlapping_basin.geometry.intersection(overlapping_basin.geometry)
+                overlap_area = clean_basin.intersection(treatment_geometry).area
             overlap_scores.append({
                 'id':overlapping_basin.id,
+                'unit_id': overlapping_basin.unit_id,
                 'area':overlapping_basin.geometry.area,
                 'intersection_area':overlap_area
             })
-        # sorted_scores = sorted(overlap_scores, key=lambda x: x['area'])
         top_score = 0
         for score in overlap_scores:
             if score['intersection_area'] > top_score:
@@ -227,7 +229,7 @@ def identifyBestParentBasin(treatment_geometry):
         best_basins = [x for x in overlap_scores if x['intersection_area'] == top_score]
         best_basin = best_basins[0]
         for basin in best_basins:
-            if basin['area'] > best_basin['area']:
+            if basin['area'] < best_basin['area']:
                 best_basin = basin
         best_basin_focus_area = FocusArea.objects.get(id=best_basin['id'])
         return best_basin_focus_area
