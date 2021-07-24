@@ -96,9 +96,11 @@ def importBasinLines(inlines, segment_ids, scenario, is_baseline):
             importBasinLine(line, basin_name, is_baseline, scenario)
 
 def readStreamFlowData(flow_file, segment_ids=None, scenario=None, is_baseline=True):
-
+    flow_file_dir = os.path.split(flow_file)[0]
+    status_log = os.path.join(flow_file_dir, 'dhsvm_status.log')
     # readings_per_day = 24/TIMESTEP
     tz = get_current_timezone()
+
 
     print("Reading in flow data...")
     with open(flow_file, 'r') as f:
@@ -137,6 +139,9 @@ def readStreamFlowData(flow_file, segment_ids=None, scenario=None, is_baseline=T
         for filename in split_files:
             file_slice = os.path.join(split_dir, filename)
             print('Reading %d (of %d) "%s" at %s' % (filecount, len(split_files), file_slice, str(datetime.now())))
+            with open(status_log, "w+") as f:
+                progress = int((filecount/len(split_files))*100)
+                f.write(str(progress))
             with open(file_slice, 'r') as f:
                 inlines=f.readlines()
 

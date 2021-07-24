@@ -2,7 +2,7 @@ import os
 
 from collections import OrderedDict
 
-RUN_CORES = 2
+RUN_CORES = 4
 
 BASINS = ['entiat', 'methow', 'okan', 'wena']
 DEFAULT_BASIN_NAME = 'entiat'
@@ -24,7 +24,13 @@ SUPERBASINS = {
     },
     'wena': {
         'name': 'Wenatchee',
-        'inputs': os.path.join(BASINS_DIR, 'wena')
+        'inputs': os.path.join(BASINS_DIR, 'wena'),
+        'ncols': 719,
+        'nrows': 1123,
+        'xllcorner': 511270.7258,
+        'yllcorner': 1468481.1592,
+        'cellsize': 90,
+        'NODATA_value': 0
     }
 }
 
