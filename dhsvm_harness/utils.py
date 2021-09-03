@@ -5,6 +5,7 @@ from django.template import Template, Context
 from django.utils.timezone import get_current_timezone
 from django.contrib.gis.geos import GEOSGeometry
 from django.contrib.gis.gdal.error import GDALException
+from django.db import transaction, connection
 from functools import partial
 import json
 # import numpy
@@ -67,34 +68,52 @@ def cleanStreamFlowData(flow_file, out_file, segment_ids=None):
                         f.write(line)
         return True
 
-def importBasinLine(line, basin_name, is_baseline, scenario):
+def getBasinLineInsertTuple(line, basin_name, is_baseline, scenario):
     tz = get_current_timezone()
-    # basin = basins[basin_name]
     data = line.split()
-    timestamp = data[0]
     reading = data[4]
-    # time = tz.localize(datetime.strptime(timestamp, "%m.%d.%Y-%H:%M:%S"))
+    timestamp = data[0]
 
-    value = float(reading)/float(TIMESTEP)
-
-    new_reading = StreamFlowReading.objects.create(
-        timestamp=timestamp,
-        time=tz.localize(datetime.strptime(timestamp, "%m.%d.%Y-%H:%M:%S")),
-        segment_id=basin_name,
-        metric=ABSOLUTE_FLOW_METRIC,
-        is_baseline=is_baseline,
-        treatment=scenario,
-        value=value
+    return "('{TIMESTAMP}', '{TIME}'::timestamptz, '{SEGMENT_ID}', '{METRIC}', {IS_BASELINE}, {TREATMENT_ID}, {VALUE})".format(
+        TIMESTAMP=timestamp,
+        TIME='T'.join(str(tz.localize(datetime.strptime(timestamp, "%m.%d.%Y-%H:%M:%S"))).split(' ')),
+        SEGMENT_ID=basin_name,
+        METRIC=ABSOLUTE_FLOW_METRIC,
+        IS_BASELINE=str(is_baseline).lower(),
+        TREATMENT_ID=scenario.pk,
+        VALUE=float(reading)/float(TIMESTEP)
     )
 
 def importBasinLines(inlines, segment_ids, scenario, is_baseline):
+    insert_command_start = ('INSERT INTO '
+                        '"ucsrb_streamflowreading" ( '
+                        '"timestamp", "time", "segment_id", '
+                        '"metric", "is_baseline", '
+                        '"treatment_id", "value"'
+                        ') VALUES '
+    )
+
+    insert_command_end = ''
+    insert_command_lines = []
+
     for line in inlines:
         basin_name = line.split('"')[1]
         if basin_name in segment_ids:
             if scenario and scenario.prescription_treatment_selection == 'notr':
-                importBasinLine(line, basin_name, is_baseline=True, scenario=None)
-            importBasinLine(line, basin_name, is_baseline, scenario)
+                insert_command_lines.append(getBasinLineInsertTuple(line, basin_name, is_baseline=True, scenario=None))
+            insert_command_lines.append(getBasinLineInsertTuple(line, basin_name, is_baseline, scenario))
 
+    connection.cursor().execute("{START} {VALUES} {END}; COMMIT;".format(
+        START=insert_command_start,
+        VALUES=','.join(insert_command_lines),
+        END=insert_command_end
+    ))
+
+# RDH 2021-09-03
+# Prior to using raw SQL for bulk inserts, 'atomic'' saved a lot of time.
+# However, it doesn't seem much faster now we have bulk inserts, and not
+# dealing with locking the table seems a good strategy.
+# @transaction.atomic
 def readStreamFlowData(flow_file, segment_ids=None, scenario=None, is_baseline=True):
     flow_file_dir = os.path.split(flow_file)[0]
     status_log = os.path.join(flow_file_dir, 'dhsvm_status.log')
@@ -640,15 +659,12 @@ def runHarnessConfig(treatment_scenario):
     model_start_time = datetime.now()
     os.system(command)
 
-
     read_start_time = datetime.now()
     segment_ids = [x.unit_id for x in ts_target_stream_basins]
     readStreamFlowData(os.path.join(ts_run_dir, 'output', 'Stream.Flow'), segment_ids=segment_ids, scenario=treatment_scenario, is_baseline=False)
 
-
     # Remove run dir
     shutil.rmtree(ts_run_dir)
-    # print("TODO: Clear cache of report!!!")
 
     finish_time = datetime.now()
     print("model started at %d:%d:%d" % (model_start_time.hour, model_start_time.minute, model_start_time.second))
