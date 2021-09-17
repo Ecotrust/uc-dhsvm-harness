@@ -3,8 +3,9 @@ from datetime import datetime
 from django.conf import settings as ucsrb_settings
 from django.template import Template, Context
 from django.utils.timezone import get_current_timezone
-from django.contrib.gis.geos import GEOSGeometry
+from django.contrib.gis.geos import GEOSGeometry, MultiPolygon
 from django.contrib.gis.gdal.error import GDALException
+from django.contrib.gis.db.models.aggregates import Union
 from django.db import transaction, connection
 from functools import partial
 import json
@@ -21,8 +22,8 @@ import shapely.ops
 import shutil
 import statistics
 import sys
-from ucsrb.models import StreamFlowReading, TreatmentScenario, FocusArea
-
+from ucsrb.models import StreamFlowReading, TreatmentScenario, FocusArea, TreatmentArea, VegPlanningUnit
+from ucsrb.views import break_up_multipolygons
 from dhsvm_harness.settings import FLOW_METRICS, TIMESTEP, ABSOLUTE_FLOW_METRIC, DELTA_FLOW_METRIC, BASINS_DIR, RUNS_DIR, SUPERBASINS, DHSVM_BUILD, RUN_CORES
 
 
@@ -73,6 +74,7 @@ def getBasinLineInsertTuple(line, basin_name, is_baseline, scenario):
     data = line.split()
     reading = data[4]
     timestamp = data[0]
+    treatment_id = scenario.pk if scenario else "NULL"
 
     return "('{TIMESTAMP}', '{TIME}'::timestamptz, '{SEGMENT_ID}', '{METRIC}', {IS_BASELINE}, {TREATMENT_ID}, {VALUE})".format(
         TIMESTAMP=timestamp,
@@ -80,7 +82,7 @@ def getBasinLineInsertTuple(line, basin_name, is_baseline, scenario):
         SEGMENT_ID=basin_name,
         METRIC=ABSOLUTE_FLOW_METRIC,
         IS_BASELINE=str(is_baseline).lower(),
-        TREATMENT_ID=scenario.pk,
+        TREATMENT_ID=treatment_id,
         VALUE=float(reading)/float(TIMESTEP)
     )
 
@@ -97,10 +99,14 @@ def importBasinLines(inlines, segment_ids, scenario, is_baseline):
     insert_command_lines = []
 
     for line in inlines:
-        basin_name = line.split('"')[1]
+        try:
+            basin_name = line.split('"')[1]
+            if basin_name in segment_ids:
+                insert_command_lines.append(getBasinLineInsertTuple(line, basin_name, is_baseline, scenario))
+        except IndexError as e:
+            # handle empty lines (why would we have these?)
+            pass
         if basin_name in segment_ids:
-            if scenario and scenario.prescription_treatment_selection == 'notr':
-                insert_command_lines.append(getBasinLineInsertTuple(line, basin_name, is_baseline=True, scenario=None))
             insert_command_lines.append(getBasinLineInsertTuple(line, basin_name, is_baseline, scenario))
 
     connection.cursor().execute("{START} {VALUES} {END}; COMMIT;".format(
@@ -132,16 +138,20 @@ def readStreamFlowData(flow_file, segment_ids=None, scenario=None, is_baseline=T
     end_timestamp = inlines[-1].split()[0]
     end_time = tz.localize(datetime.strptime(end_timestamp, "%m.%d.%Y-%H:%M:%S"))
 
-    old_records = StreamFlowReading.objects.filter(time__gte=start_time, time__lte=end_time, segment_id__in=segment_ids, treatment=scenario)
-    print('purging {} obsolete records...'.format(old_records.count()))
-    old_records.delete()
-    if scenario and scenario.prescription_treatment_selection == 'notr':
+    if scenario:
+        old_records = StreamFlowReading.objects.filter(time__gte=start_time, time__lte=end_time, segment_id__in=segment_ids, treatment=scenario)
+        print('purging {} obsolete records...'.format(old_records.count()))
+        old_records.delete()
+    if is_baseline: # if not scenario or scenario.prescription_treatment_selection == 'notr':
         StreamFlowReading.objects.filter(time__gte=start_time, time__lte=end_time, segment_id__in=segment_ids, is_baseline=True, treatment=None).delete()
 
     inline_count = len(inlines)
     print('Importing {} data records...'.format(inline_count))
     if inline_count < 10000:
-        importBasinLines(inlines, segment_ids, scenario, is_baseline)
+        if scenario:
+            importBasinLines(inlines, segment_ids, scenario, is_baseline)
+        if is_baseline: # if not scenario or scenario.prescription_treatment_selection == 'notr':
+            importBasinLines(inlines, segment_ids, None, True)
 
     else:
         # release memory
@@ -164,7 +174,10 @@ def readStreamFlowData(flow_file, segment_ids=None, scenario=None, is_baseline=T
             with open(file_slice, 'r') as f:
                 inlines=f.readlines()
 
-            importBasinLines(inlines, segment_ids, scenario, is_baseline)
+            if scenario:
+                importBasinLines(inlines, segment_ids, scenario, is_baseline)
+            if is_baseline: # not scenario or scenario.prescription_treatment_selection == 'notr':
+                importBasinLines(inlines, segment_ids, None, True)
 
             filecount +=1
 
@@ -284,6 +297,30 @@ def getRunSuperBasinDir(treatment_scenario):
     }
 
 # ======================================
+# CONVERT TREATMENT AREAS TO VPU GEOMETRIES
+# ======================================
+
+def dissolveTreatmentGeometries(treatment_areas):
+    ta_geom_union = treatment_areas.aggregate(Union('geometry'))
+    if ta_geom_union:
+        ta_geom = ta_geom_union['geometry__union']
+        vpus = VegPlanningUnit.objects.filter(geometry__intersects=ta_geom)
+        try:
+            dissolved_geom = vpus.aggregate(Union('geometry'))
+            if dissolved_geom:
+                dissolved_geom = dissolved_geom['geometry__union']
+                if type(dissolved_geom) == MultiPolygon:
+                    return dissolved_geom
+                elif type(dissolved_geom) == Polygon:
+                    try:
+                        return MultiPolygon(dissolved_geom, srid=dissolved_geom.srid)
+                    except:
+                        return None
+        except:
+            pass
+    return None
+
+# ======================================
 # CREATE TREATED VEG LAYER
 # ======================================
 
@@ -295,65 +332,87 @@ def setVegLayers(treatment_scenario, ts_superbasin_dict, ts_run_dir):
     # inputs for TreatmentScenario to feed into DHSVM
     ts_run_dir_inputs = os.path.join('%s/ts_inputs' % ts_run_dir)
 
-    # Prescription ID
-    rx_id = treatment_scenario.prescription_treatment_selection
-
-    if rx_id == 'notr':
-        # Just return baseline veg file as a bin
-        baseline_veg_file = os.path.join("%s/inputs/veg_files/%s_notr.asc.bin" % (ts_superbasin_dir, ts_superbasin_code))
-        return baseline_veg_file
-
-    # Projection assigned for later use
-    # TODO: add to settings
-    PROJECTION = 'PROJCS["NAD_1983_USFS_R6_Albers",GEOGCS["GCS_North_American_1983",DATUM["D_North_American_1983",SPHEROID["GRS_1980",6378137.0,298.257222101]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Albers"],PARAMETER["False_Easting",600000.0],PARAMETER["False_Northing",0.0],PARAMETER["Central_Meridian",-120.0],PARAMETER["Standard_Parallel_1",43.0],PARAMETER["Standard_Parallel_2",48.0],PARAMETER["Latitude_Of_Origin",34.0],UNIT["Meter",1.0]]'
-
-
     # Start a rasterio environment
     with rasterio.Env():
-
-        # OPEN:
-            # Baeline Veg Layer
-            # Treatment Veg Layer
-        baseline_veg_file = rasterio.open("%s/inputs/veg_files/%s_notr.tif" % (ts_superbasin_dir, ts_superbasin_code), "r")
-        treatment_veg_file = rasterio.open("%s/inputs/veg_files/%s_%s.tif" % (ts_superbasin_dir, ts_superbasin_code, rx_id), "r")
-
-
-        # CREATE treatment shape/feature from TreatmentScenario geometry
-        feature = json.loads(treatment_scenario.geometry_dissolved.json)
-        feature_shape = shape(feature)
-
+        # Projection assigned for later use
+        # TODO: add to settings
+        PROJECTION = 'PROJCS["NAD_1983_USFS_R6_Albers",GEOGCS["GCS_North_American_1983",DATUM["D_North_American_1983",SPHEROID["GRS_1980",6378137.0,298.257222101]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Albers"],PARAMETER["False_Easting",600000.0],PARAMETER["False_Northing",0.0],PARAMETER["Central_Meridian",-120.0],PARAMETER["Standard_Parallel_1",43.0],PARAMETER["Standard_Parallel_2",48.0],PARAMETER["Latitude_Of_Origin",34.0],UNIT["Meter",1.0]]'
         # Transform and reproject TS shape/feature to match UCSRB data bin files
         tfm = partial(pyproj.transform, pyproj.Proj("epsg:3857"), pyproj.Proj(PROJECTION))
-        ts_shape = shapely.ops.transform(tfm, feature_shape)
+
+        # OPEN:
+        # Baseline Veg Layer
+        baseline_veg_file = rasterio.open("%s/inputs/veg_files/%s_notr.tif" % (ts_superbasin_dir, ts_superbasin_code), "r")
+
+        # create rx dict
+        rx_dict = {}
+        # collect all features by rx in dict
+        for rx_def in ucsrb_settings.PRESCRIPTION_TREATMENT_CHOICES:
+            rx_id = rx_def[0]
+            queryset = treatment_scenario.treatmentarea_set.filter(prescription_treatment_selection=rx_id)
+            if queryset.count() > 0:
+
+                rx_dict[rx_id] = {
+                'name': rx_def[1],
+                # convert each group of rx features into single multipolygon
+                'geometry': dissolveTreatmentGeometries(queryset),
+                # Treatment Veg Layer
+                'veg_file': rasterio.open("%s/inputs/veg_files/%s_%s.tif" % (ts_superbasin_dir, ts_superbasin_code, rx_id), "r"),
+                }
+                if rx_dict[rx_id]['geometry']:
+                    feature = json.loads(rx_dict[rx_id]['geometry'].json)
+                    feature_shape = shape(feature)
+                    rx_dict[rx_id]['shape'] = shapely.ops.transform(tfm, feature_shape)
+                else:
+                    rx_dict[rx_id]['shape'] = None
+
+        profile = baseline_veg_file.profile
+
+        profile.update(
+            dtype=rasterio.uint8,
+            driver='AAIGrid'
+        )
+
+        datasets = []
 
         # TERMINOLOGY:
-            # Mask - a shape/feature area of interest within a "larger area"
-            # Clip - new dataset with bounds of original "larger area" that preserves only data that intersects the mask area of interest
+        # Mask -
+        #   Noun: a shape/feature area of interest within a "larger area"
+        #   Verb: Use an AOI feature to identify the part of the layer we are concerned with
+        # Clip -
+        #   Noun (uncommon): new dataset with bounds of original "larger area" that preserves only data that intersects the mask area of interest
+        #       - Normally this would be called the 'clipped result'
+        #   Verb: To remove unwanted data (outside of n. mask), leaving only the data we are interested in.
 
-        # Treatment Veg Layer
-        clipped_treatment = mask(treatment_veg_file, ts_shape, nodata=0)
-        clipped_treatment_mask = clipped_treatment[0]
+        # loop through rxs, clipping each related veg layer to be added to the base
+        for rx_id in rx_dict.keys():
+            # skip notr (it will be the base layer)
+            if rx_dict[rx_id]['shape'] and not rx_id == 'notr' :
+                tmpfile = tempfile.NamedTemporaryFile()
 
-        profile = treatment_veg_file.profile
+                # RDH 2021-09-17: `with rasterio.open(tmpfile,...) as foo` gives BuffDataset writer
+                # but `foo = rasterio.open(tmpfile,...)` gives _GeneratorContextManager
+                # handing the tmpfile name to rasterio fixes the issue.
+                dataset = rasterio.open(tmpfile.name, 'w+', **profile)
+                clipped_treatment = mask(rx_dict[rx_id]['veg_file'], rx_dict[rx_id]['shape'], nodata=0)
+                clipped_treatment_mask = clipped_treatment[0]
 
-        with tempfile.NamedTemporaryFile() as tmpfile:
-            profile.update(
-                dtype=rasterio.uint8,
-                driver='AAIGrid'
-            )
-
-            with rasterio.open(tmpfile, 'w+', **profile) as dataset:
                 dataset.write(clipped_treatment_mask.astype(rasterio.uint8))
+                datasets.append(dataset)
 
-                merged_veg = merge([dataset, baseline_veg_file], nodata=0, dtype="uint8")
-                merged_veg_layer = merged_veg[0]
+        datasets.append(baseline_veg_file)
+        merged_veg = merge(datasets, nodata=0, dtype="uint8")
+        merged_veg_layer = merged_veg[0]
+
+        for dataset in datasets:
+            dataset.close()
 
         asc_file = "%s/ts_clipped_treatment_layer.asc" % ts_run_dir_inputs
         with rasterio.open(asc_file, 'w', **profile) as dst:
             dst.write(merged_veg_layer)
 
-        baseline_veg_file.close()
-        treatment_veg_file.close()
+        for rx_id in rx_dict.keys():
+            rx_dict[rx_id]['veg_file'].close()
 
     return asc_file + '.bin'
 
@@ -604,12 +663,6 @@ def createMaskFile(basin_id, ts_superbasin_dir, focus_area, ts_run_dir):
         dtype=rasterio.uint8,
         driver='AAIGrid'
     )
-    #
-    #     with rasterio.open(tmpfile, 'w+', **profile) as dataset:
-    #         dataset.write(clipped_treatment_mask.astype(rasterio.uint8))
-    #
-    #         merged_veg = merge([dataset, basin_blank_file], nodata=0, dtype="uint8")
-    #         merged_veg_layer = merged_veg[0]
 
     with rasterio.open("%s/mask.asc" % ts_run_dir_inputs, 'w', **profile) as dst:
         # dst.write(merged_veg_layer)
@@ -661,7 +714,8 @@ def runHarnessConfig(treatment_scenario):
 
     read_start_time = datetime.now()
     segment_ids = [x.unit_id for x in ts_target_stream_basins]
-    readStreamFlowData(os.path.join(ts_run_dir, 'output', 'Stream.Flow'), segment_ids=segment_ids, scenario=treatment_scenario, is_baseline=False)
+    flow_file = os.path.join(ts_run_dir, 'output', 'Stream.Flow')
+    readStreamFlowData(flow_file, segment_ids=segment_ids, scenario=treatment_scenario, is_baseline=False)
 
     # Remove run dir
     shutil.rmtree(ts_run_dir)
