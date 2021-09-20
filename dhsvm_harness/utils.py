@@ -199,7 +199,10 @@ def getRunDir(treatment_scenario, ts_superbasin_dict):
         print("Runs dir not found. Add RUNS_DIR to settings")
 
     # Create a dir for treatment scenario run using id
-    treatment_scenario_id = treatment_scenario.id
+    if hasattr(treatment_scenario, 'id'):
+        treatment_scenario_id = treatment_scenario.id
+    else:
+        treatment_scenario_id = 'baseline_{}'.format(treatment_scenario)
     ts_run_dir_name = 'run_' + str(treatment_scenario_id)
     ts_run_dir = os.path.join(RUNS_DIR, ts_run_dir_name)
 
@@ -347,24 +350,25 @@ def setVegLayers(treatment_scenario, ts_superbasin_dict, ts_run_dir):
         # create rx dict
         rx_dict = {}
         # collect all features by rx in dict
-        for rx_def in ucsrb_settings.PRESCRIPTION_TREATMENT_CHOICES:
-            rx_id = rx_def[0]
-            queryset = treatment_scenario.treatmentarea_set.filter(prescription_treatment_selection=rx_id)
-            if queryset.count() > 0:
+        if hasattr(treatment_scenario, 'id'):   # otherwise this is a baseline run
+            for rx_def in ucsrb_settings.PRESCRIPTION_TREATMENT_CHOICES:
+                rx_id = rx_def[0]
+                queryset = treatment_scenario.treatmentarea_set.filter(prescription_treatment_selection=rx_id)
+                if queryset.count() > 0:
 
-                rx_dict[rx_id] = {
-                'name': rx_def[1],
-                # convert each group of rx features into single multipolygon
-                'geometry': dissolveTreatmentGeometries(queryset),
-                # Treatment Veg Layer
-                'veg_file': rasterio.open("%s/inputs/veg_files/%s_%s.tif" % (ts_superbasin_dir, ts_superbasin_code, rx_id), "r"),
-                }
-                if rx_dict[rx_id]['geometry']:
-                    feature = json.loads(rx_dict[rx_id]['geometry'].json)
-                    feature_shape = shape(feature)
-                    rx_dict[rx_id]['shape'] = shapely.ops.transform(tfm, feature_shape)
-                else:
-                    rx_dict[rx_id]['shape'] = None
+                    rx_dict[rx_id] = {
+                    'name': rx_def[1],
+                    # convert each group of rx features into single multipolygon
+                    'geometry': dissolveTreatmentGeometries(queryset),
+                    # Treatment Veg Layer
+                    'veg_file': rasterio.open("%s/inputs/veg_files/%s_%s.tif" % (ts_superbasin_dir, ts_superbasin_code, rx_id), "r"),
+                    }
+                    if rx_dict[rx_id]['geometry']:
+                        feature = json.loads(rx_dict[rx_id]['geometry'].json)
+                        feature_shape = shape(feature)
+                        rx_dict[rx_id]['shape'] = shapely.ops.transform(tfm, feature_shape)
+                    else:
+                        rx_dict[rx_id]['shape'] = None
 
         profile = baseline_veg_file.profile
 
@@ -413,6 +417,8 @@ def setVegLayers(treatment_scenario, ts_superbasin_dict, ts_run_dir):
 
         for rx_id in rx_dict.keys():
             rx_dict[rx_id]['veg_file'].close()
+        if not 'notr' in rx_dict.keys():
+            baseline_veg_file.close()
 
     return asc_file + '.bin'
 
@@ -517,15 +523,21 @@ def getTargetBasin(treatment_scenario):
 
     # Basin will have 1 field which is cat name of superbasin_segmentId
     # Query run against overlapping_pourpoint_basin
-    if treatment_scenario.focus_area_input:
-        target_basins =  FocusArea.objects.filter(unit_type="PourPointOverlap", geometry__contains=treatment_scenario.focus_area_input.geometry)
+    try:
+        if hasattr(treatment_scenario, 'focus_area_input') and treatment_scenario.focus_area_input:
+            basin_geometry = treatment_scenario.focus_area_input.geometry
+        else:
+            basin_geometry = FocusArea.objects.get(unit_type='PourPointOverlap', unit_id=ucsrb_settings.BASIN_RESET_LOOKUP[treatment_scenario.lower()]['UNIT_ID']).geometry
+
+        target_basins =  FocusArea.objects.filter(unit_type="PourPointOverlap", geometry__contains=basin_geometry)
         if len(target_basins) > 1:
             target_basin = sorted(target_basins, key=lambda x: x.geometry.area)[1]
         elif len(target_basins) == 1:
             target_basin = target_basins[0]
         else:
             target_basin = identifyBestParentBasin(treatment_scenario.focus_area_input.geometry)
-    else:
+    except Exception as e:
+        print(e)
         print("No TreatmentScenario focus area provided")
 
     return target_basin
@@ -675,18 +687,28 @@ def createMaskFile(basin_id, ts_superbasin_dir, focus_area, ts_run_dir):
 # CONFIGURE TREATMENT SCENARIO RUN
 # ======================================
 
-def runHarnessConfig(treatment_scenario):
-    # identify super dir to copy original files from
-    ts_superbasin_dict = getRunSuperBasinDir(treatment_scenario)        # 2 seconds
+def runHarnessConfig(treatment_scenario, basin=None):
+    if treatment_scenario:
+        # identify super dir to copy original files from
+        ts_superbasin_dict = getRunSuperBasinDir(treatment_scenario)        # 2 seconds
 
-    # TreatmentScenario run directory
-    ts_run_dir = getRunDir(treatment_scenario, ts_superbasin_dict)      # 0 seconds
+        # TreatmentScenario run directory
+        ts_run_dir = getRunDir(treatment_scenario, ts_superbasin_dict)      # 0 seconds
 
-    # Create run layer
-    ts_veg_layer_file = setVegLayers(treatment_scenario, ts_superbasin_dict, ts_run_dir)    # 2 min, 2 sec
+        # Create run layer
+        ts_veg_layer_file = setVegLayers(treatment_scenario, ts_superbasin_dict, ts_run_dir)    # 2 min, 2 sec
 
-    # Get LCD basin
-    ts_target_basin = getTargetBasin(treatment_scenario)                # 2 seconds
+        # Get LCD basin
+        ts_target_basin = getTargetBasin(treatment_scenario)                # 2 seconds
+    elif basin:
+        basin_code = ucsrb_settings.BASIN_RESET_LOOKUP[basin.lower()]['BASIN_ID']
+        ts_superbasin_dict = {
+            'basin_dir': SUPERBASINS[basin_code]['inputs'],
+            'basin_code': basin_code
+        }
+        ts_run_dir = getRunDir(basin_code, ts_superbasin_dict)
+        ts_veg_layer_file = setVegLayers(basin_code, ts_superbasin_dict, ts_run_dir)
+        ts_target_basin = getTargetBasin(basin)
 
     # Get target stream segments basins
     if ts_target_basin:
@@ -715,7 +737,8 @@ def runHarnessConfig(treatment_scenario):
     read_start_time = datetime.now()
     segment_ids = [x.unit_id for x in ts_target_stream_basins]
     flow_file = os.path.join(ts_run_dir, 'output', 'Stream.Flow')
-    readStreamFlowData(flow_file, segment_ids=segment_ids, scenario=treatment_scenario, is_baseline=False)
+    is_baseline = False if treatment_scenario else True
+    readStreamFlowData(flow_file, segment_ids=segment_ids, scenario=treatment_scenario, is_baseline=is_baseline)
 
     # Remove run dir
     shutil.rmtree(ts_run_dir)
