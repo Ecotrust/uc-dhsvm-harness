@@ -716,7 +716,13 @@ def runHarnessConfig(treatment_scenario, basin=None):
     else:
         ts_target_stream_basins = None
 
-    ts_network_file = createTargetStreamNetworkFile(ts_target_stream_basins, ts_run_dir, ts_superbasin_dict['basin_dir'])
+    if basin == None:
+        ts_network_file = createTargetStreamNetworkFile(ts_target_stream_basins, ts_run_dir, ts_superbasin_dict['basin_dir'])
+        segment_ids = [x.unit_id for x in ts_target_stream_basins]
+    else:
+        ts_network_file = createTargetStreamNetworkFile(None, ts_run_dir, ts_superbasin_dict['basin_dir'])
+        segment_ids = None
+
 
     # TODO: run for all three weather years: ['wet', 'baseline', 'dry']
     ts_run_input_file = createInputConfig(ts_target_basin, ts_superbasin_dict, ts_run_dir, ts_veg_layer_file, ts_network_file, model_year='baseline')
@@ -735,7 +741,6 @@ def runHarnessConfig(treatment_scenario, basin=None):
     os.system(command)
 
     read_start_time = datetime.now()
-    segment_ids = [x.unit_id for x in ts_target_stream_basins]
     flow_file = os.path.join(ts_run_dir, 'output', 'Stream.Flow')
     is_baseline = False if treatment_scenario else True
     readStreamFlowData(flow_file, segment_ids=segment_ids, scenario=treatment_scenario, is_baseline=is_baseline)
