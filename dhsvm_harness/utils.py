@@ -187,7 +187,7 @@ def readStreamFlowData(flow_file, segment_ids=None, scenario=None, is_baseline=T
 # CREATE TREATMENT SCENARIO RUN DIR
 # ======================================
 
-def getRunDir(treatment_scenario, ts_superbasin_dict):
+def getRunDir(treatment_scenario, ts_superbasin_dict, weather_year='baseline'):
 
     # Runs directory
     try:
@@ -203,7 +203,7 @@ def getRunDir(treatment_scenario, ts_superbasin_dict):
         treatment_scenario_id = treatment_scenario.id
     else:
         treatment_scenario_id = 'baseline_{}'.format(treatment_scenario)
-    ts_run_dir_name = 'run_' + str(treatment_scenario_id)
+    ts_run_dir_name = 'run_{}_{}'.format(str(treatment_scenario_id), weather_year)
     ts_run_dir = os.path.join(RUNS_DIR, ts_run_dir_name)
 
     if os.path.isdir(ts_run_dir):
@@ -687,13 +687,13 @@ def createMaskFile(basin_id, ts_superbasin_dir, focus_area, ts_run_dir):
 # CONFIGURE TREATMENT SCENARIO RUN
 # ======================================
 
-def runHarnessConfig(treatment_scenario, basin=None):
+def runHarnessConfig(treatment_scenario, basin=None, weather_year='baseline'):
     if treatment_scenario:
         # identify super dir to copy original files from
         ts_superbasin_dict = getRunSuperBasinDir(treatment_scenario)        # 2 seconds
 
         # TreatmentScenario run directory
-        ts_run_dir = getRunDir(treatment_scenario, ts_superbasin_dict)      # 0 seconds
+        ts_run_dir = getRunDir(treatment_scenario, ts_superbasin_dict, weather_year)      # 0 seconds
 
         # Create run layer
         ts_veg_layer_file = setVegLayers(treatment_scenario, ts_superbasin_dict, ts_run_dir)    # 2 min, 2 sec
@@ -706,7 +706,7 @@ def runHarnessConfig(treatment_scenario, basin=None):
             'basin_dir': SUPERBASINS[basin_code]['inputs'],
             'basin_code': basin_code
         }
-        ts_run_dir = getRunDir(basin_code, ts_superbasin_dict)
+        ts_run_dir = getRunDir(basin_code, ts_superbasin_dict, weather_year='baseline')
         ts_veg_layer_file = setVegLayers(basin_code, ts_superbasin_dict, ts_run_dir)
         ts_target_basin = getTargetBasin(basin)
 
@@ -725,7 +725,7 @@ def runHarnessConfig(treatment_scenario, basin=None):
 
 
     # TODO: run for all three weather years: ['wet', 'baseline', 'dry']
-    ts_run_input_file = createInputConfig(ts_target_basin, ts_superbasin_dict, ts_run_dir, ts_veg_layer_file, ts_network_file, model_year='baseline')
+    ts_run_input_file = createInputConfig(ts_target_basin, ts_superbasin_dict, ts_run_dir, ts_veg_layer_file, ts_network_file, model_year=weather_year)
 
     # Convert all .asc to .asc.bin
     binAsciis(ts_run_dir)
