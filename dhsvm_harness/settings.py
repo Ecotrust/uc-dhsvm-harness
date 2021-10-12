@@ -34,6 +34,7 @@ SUPERBASINS = {
     }
 }
 
+MASK_RUNS = False
 
 ABSOLUTE_FLOW_METRIC = 'Absolute Flow Rate'
 DELTA_FLOW_METRIC = 'Change in Flow Rate'

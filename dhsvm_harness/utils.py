@@ -24,7 +24,7 @@ import statistics
 import sys
 from ucsrb.models import StreamFlowReading, TreatmentScenario, FocusArea, TreatmentArea, VegPlanningUnit
 from ucsrb.views import break_up_multipolygons
-from dhsvm_harness.settings import FLOW_METRICS, TIMESTEP, ABSOLUTE_FLOW_METRIC, DELTA_FLOW_METRIC, BASINS_DIR, RUNS_DIR, SUPERBASINS, DHSVM_BUILD, RUN_CORES
+from dhsvm_harness.settings import FLOW_METRICS, TIMESTEP, ABSOLUTE_FLOW_METRIC, DELTA_FLOW_METRIC, BASINS_DIR, RUNS_DIR, SUPERBASINS, DHSVM_BUILD, RUN_CORES, MASK_RUNS
 
 
 def getSegmentIdList(inlines):
@@ -611,9 +611,12 @@ def createInputConfig(ts_target_basin, ts_superbasin_dict, ts_run_dir, ts_veg_la
     ts_run_input_file = os.path.join(ts_run_dir, 'INPUT.UCSRB.run')
 
     # mask_file = os.path.join(ts_superbasin_dict['basin_dir'], 'masks', "%s.asc.bin" % ts_target_basin.unit_id)
-    mask_file = os.path.join(ts_run_dir, 'ts_inputs', "mask.asc.bin")
+    if MASK_RUNS:
+        createMaskFile(ts_superbasin_code, ts_superbasin_dir, ts_target_basin, ts_run_dir)
+        mask_file = os.path.join(ts_run_dir, 'ts_inputs', "mask.asc.bin")
+    else:
+        mask_file = "%s/masks/%s_mask.asc.bin" % (ts_superbasin_dir, ts_superbasin_code)
 
-    createMaskFile(ts_superbasin_code, ts_superbasin_dir, ts_target_basin, ts_run_dir)
 
     # Create new input from superbasin
     with open(ts_superbasin_input_template, 'r') as file_contents:
