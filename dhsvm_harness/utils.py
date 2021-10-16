@@ -709,7 +709,7 @@ def runHarnessConfig(treatment_scenario, basin=None, weather_year=ucsrb_settings
             'basin_dir': SUPERBASINS[basin_code]['inputs'],
             'basin_code': basin_code
         }
-        ts_run_dir = getRunDir(basin_code, ts_superbasin_dict, weather_year=ucsrb_settings.NORMAL_YEAR_LABEL)
+        ts_run_dir = getRunDir(basin_code, ts_superbasin_dict, weather_year=weather_year)
         ts_veg_layer_file = setVegLayers(basin_code, ts_superbasin_dict, ts_run_dir)
         ts_target_basin = getTargetBasin(basin)
 
